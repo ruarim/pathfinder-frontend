@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
-export default function Example() {
+export default function Header() {
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
