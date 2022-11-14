@@ -151,10 +151,36 @@ export default function Header() {
                               "block px-4 py-2 text-sm text-gray-700"
                             )}
                           >
-                            Sign out
+                            Login
                           </a>
                         )}
                       </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={clsx(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
+                          >
+                            Register
+                          </a>
+                        )}
+                      </Menu.Item>
+                      {/* <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={clsx(
+                              active ? "bg-gray-100" : "bg-blue-400",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
+                          >
+                            Login Out
+                          </a>
+                        )}
+                      </Menu.Item> */}
                     </Menu.Items>
                   </Transition>
                 </Menu>
