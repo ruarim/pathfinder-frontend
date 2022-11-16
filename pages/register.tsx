@@ -1,16 +1,21 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-
-type FormValues = {
-  username: string;
-  password: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-};
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import client from "../axios/apiClient";
+import { useRegistser } from "../hooks/mutations/useRegister";
+import { useAuthContext } from "../hooks/context/useAuthContext";
 
 export default function Register() {
-  const { register, handleSubmit } = useForm<FormValues>();
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {};
+  const queryClient = useQueryClient();
+  const { mutateAsync: registerUser, data: User } = useRegistser();
+  const { register, handleSubmit } = useForm<RegisterUserMutationData>();
+  const { setUser } = useAuthContext();
+
+  const onSubmit = handleSubmit(async (data) => {
+    const response = await registerUser(data);
+  });
+
+  console.log(User);
+
   return (
     <>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -37,12 +42,12 @@ export default function Register() {
                 </label>
                 <div className="mt-1">
                   <input
-                    {...register("firstName", { required: true })}
+                    {...register("first_name", { required: true })}
                     placeholder="First name"
-                    id="firstName"
-                    name="firstName"
-                    type="firstName"
-                    autoComplete="firstName"
+                    id="first_name"
+                    name="first_name"
+                    type="first_name"
+                    autoComplete="first_name"
                     required
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   />
@@ -57,12 +62,12 @@ export default function Register() {
                 </label>
                 <div className="mt-1">
                   <input
-                    {...register("lastName")}
+                    {...register("last_name")}
                     placeholder="Last name"
-                    id="lastName"
-                    name="lastName"
-                    type="lastName"
-                    autoComplete="lastName"
+                    id="last_name"
+                    name="last_name"
+                    type="last_name"
+                    autoComplete="last_name"
                     required
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   />
