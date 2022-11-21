@@ -1,11 +1,8 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import client from "../axios/apiClient";
+import { useForm } from "react-hook-form";
 import { useRegistser } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 
 export default function Register() {
-  const queryClient = useQueryClient();
   const { mutateAsync: registerUser, data: user } = useRegistser();
   const { handleSubmit, register } = useForm<RegisterUserMutationData>();
   const { registerHandler } = useAuthContext();
@@ -15,7 +12,6 @@ export default function Register() {
       const response = await registerUser(data);
       registerHandler(response);
     }
-    // const response = await register(data);
   });
 
   return (
