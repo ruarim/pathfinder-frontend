@@ -16,6 +16,9 @@ type RegisterUserMutationData = {
 };
 
 type RegisterResponse = {
-  token: string;
-  user: User;
+  data: {
+    token: string;
+    user: User;
+  };
+  status: number;
 };

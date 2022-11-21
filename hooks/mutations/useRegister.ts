@@ -4,7 +4,7 @@ import client from "../../axios/apiClient";
 // const queryClient = useQueryClient();
 
 export const useRegistser = () => {
-  return useMutation<unknown, unknown, RegisterUserMutationData>({
+  return useMutation<RegisterResponse, unknown, RegisterUserMutationData>({
     mutationFn: (data) => {
       return client.post("/register", data);
     },

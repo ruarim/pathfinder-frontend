@@ -7,11 +7,14 @@ import { useAuthContext } from "../hooks/context/useAuthContext";
 export default function Register() {
   const queryClient = useQueryClient();
   const { mutateAsync: registerUser, data: user } = useRegistser();
-  const { handleSubmit } = useForm<RegisterUserMutationData>();
-  const { register } = useAuthContext();
+  const { handleSubmit, register } = useForm<RegisterUserMutationData>();
+  const { registerHandler } = useAuthContext();
 
   const onSubmit = handleSubmit(async (data) => {
-    await register(data);
+    if (registerHandler) {
+      const response = await registerUser(data);
+      registerHandler(response);
+    }
     // const response = await register(data);
   });
 

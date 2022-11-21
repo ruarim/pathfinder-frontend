@@ -1,25 +1,29 @@
 import React, { createContext } from "react";
 
+type RegisterFunction = (data: RegisterResponse) => void;
+
 interface AuthenticationContextInterface {
-  register: (data: RegisterResponse) => Promise<void>;
+  registerHandler: RegisterFunction;
 }
-const AuthenticationContext = createContext<AuthenticationContextInterface>({
-  register: async (data) => undefined,
+
+const AuthenticationContext = createContext<
+  Partial<AuthenticationContextInterface>
+>({
+  registerHandler: (data) => undefined,
 });
 
 function AuthenticationProvider({ children }: { children: React.ReactNode }) {
-  function login() {}
+  async function login() {}
 
-  async function register(data: RegisterResponse) {
-    console.log(data);
-    localStorage.setItem("token", data.token ?? "");
+  async function registerHandler(data: RegisterResponse) {
+    localStorage.setItem("token", data.data.token ?? "");
   }
 
-  function logout() {}
+  async function logout() {}
   return (
     <AuthenticationContext.Provider
       value={{
-        register,
+        registerHandler,
       }}
     >
       {children}
