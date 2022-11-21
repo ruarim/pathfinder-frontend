@@ -3,8 +3,10 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { useAuthContext } from "../hooks/context/useAuthContext";
 
 export default function Header() {
+  const { logout } = useAuthContext();
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -168,10 +170,10 @@ export default function Header() {
                           </a>
                         )}
                       </Menu.Item>
-                      {/* <Menu.Item>
+                      <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="#"
+                            onClick={logout}
                             className={clsx(
                               active ? "bg-gray-100" : "bg-blue-400",
                               "block px-4 py-2 text-sm text-gray-700"
@@ -180,7 +182,7 @@ export default function Header() {
                             Login Out
                           </a>
                         )}
-                      </Menu.Item> */}
+                      </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>
