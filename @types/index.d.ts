@@ -14,3 +14,8 @@ type RegisterUserMutationData = {
   first_name: string;
   last_name: string;
 };
+
+type RegisterResponse = {
+  token: string;
+  user: User;
+};

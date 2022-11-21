@@ -1,43 +1,25 @@
-import React, {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useState,
-} from "react";
+import React, { createContext } from "react";
 
 interface AuthenticationContextInterface {
-  setUser: Dispatch<SetStateAction<User | undefined>>;
-  setToken: Dispatch<SetStateAction<string | undefined>>;
-  token: string | undefined;
-  user: User | undefined;
+  register: (data: RegisterResponse) => Promise<void>;
 }
-const AuthenticationContext = createContext<
-  Partial<AuthenticationContextInterface>
->({
-  setUser: () => undefined,
-  setToken: () => undefined,
-  token: undefined,
-  user: undefined,
+const AuthenticationContext = createContext<AuthenticationContextInterface>({
+  register: async (data) => undefined,
 });
 
 function AuthenticationProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>();
-  const [token, setToken] = useState<string>();
-
   function login() {}
 
-  function register() {
-    localStorage.setItem("token", token ?? "");
+  async function register(data: RegisterResponse) {
+    console.log(data);
+    localStorage.setItem("token", data.token ?? "");
   }
 
   function logout() {}
   return (
     <AuthenticationContext.Provider
       value={{
-        token,
-        user,
-        setToken,
-        setUser,
+        register,
       }}
     >
       {children}
