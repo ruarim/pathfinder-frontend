@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { VenueResponse } from "../../@types";
 import client from "../../axios/apiClient";
 
 export const useGetVenues = () => {
