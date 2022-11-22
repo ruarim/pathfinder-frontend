@@ -51,6 +51,12 @@ type Venue = {
   beverages: Beverage[];
 };
 
+type VenueResponse = {
+  data: {
+    data: Venue[];
+  };
+};
+
 type Address = {
   address_1: stirng;
   address_2?: string;

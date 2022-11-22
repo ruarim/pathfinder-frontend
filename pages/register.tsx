@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useRegistser } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
+import { RegisterUserMutationData } from "../@types";
 
 export default function Register() {
   const { mutateAsync: registerUser, data: user } = useRegistser();

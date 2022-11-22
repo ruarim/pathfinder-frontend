@@ -3,21 +3,18 @@ import { useGetVenues } from "../../hooks/queries/getVenues";
 import dayjs from "dayjs";
 import timeFormatter from "../../helpers/timeFormatter";
 import { Venue } from "../../@types";
+import PaginatorScrollBar from "../../components/PaginatorScrollBar";
+import SearchInput from "../../components/SearchInput";
 
 export default function Venues() {
   const { data: venueData } = useGetVenues();
-  console.log(venueData?.data?.data);
 
-  //fuzzy search sort input
-  //venue singlular page
-  //pagination
-  //requests to get venues in
   return (
     <div className="relative bg-gray-50 px-4 pt-16 pb-20 sm:px-6 lg:px-8 lg:pt-24 lg:pb-28">
       <div className="absolute inset-0">
         <div className="h-1/3 bg-white sm:h-2/3" />
       </div>
-      <div className="relative mx-auto max-w-7xl">
+      <div className="relative mx-auto  max-w-7xl">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Our Venues
@@ -26,7 +23,10 @@ export default function Venues() {
             Search through to find the perfect spot.
           </p>
         </div>
-        <div className="mx-auto mt-12 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
+        <div className="pt-12">
+          <SearchInput />
+        </div>
+        <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
           {venueData &&
             venueData.data.data.map((venue: Venue) => {
               return (
@@ -98,6 +98,9 @@ export default function Venues() {
                 </div>
               );
             })}
+        </div>
+        <div className="py-4">
+          <PaginatorScrollBar />
         </div>
       </div>
     </div>
