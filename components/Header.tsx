@@ -52,7 +52,7 @@ const navigation = [
   },
 ];
 
-export function DesktopNavLink({ name, href }: { name: string; href: string }) {
+function DesktopNavLink({ name, href }: { name: string; href: string }) {
   const router = useRouter();
   return (
     <a
