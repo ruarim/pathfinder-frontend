@@ -35,19 +35,19 @@ function SerachInput() {
 
 const navigation = [
   {
-    name: "home",
+    name: "Home",
     href: "/",
   },
   {
-    name: "venues",
+    name: "Venues",
     href: "/venues",
   },
   {
-    name: "plans",
+    name: "Plans",
     href: "/plans",
   },
   {
-    name: "favourites",
+    name: "Favourites",
     href: "/favourites",
   },
 ];
@@ -57,25 +57,42 @@ function DesktopNavLink({ name, href }: { name: string; href: string }) {
   return (
     <a
       {...{ href }}
-      className="relative mt-4 my-2 px-6 py-2 font-bold text-black group"
+      className="relative mt-4 my-2 px-6 py-2 font-bold text-primary group"
     >
       <span
         className={clsx(
           router.pathname === href
-            ? "bg-blue-500/30"
-            : "transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-green-600/40 group-hover:translate-x-0 group-hover:translate-y-0",
+            ? "bg-transparent"
+            : "transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-notice/50 group-hover:translate-x-0 group-hover:translate-y-0",
           "absolute inset-0"
         )}
       ></span>
-      <span className="absolute inset-0 border-2 border-black"></span>
+      <span className="absolute inset-0 border-2 border-primary"></span>
       <span className="relative">{name}</span>
     </a>
   );
 }
 
+function MobileNavLink() {
+  return (
+    <>
+      {navigation.map((link) => {
+        return (
+          <Disclosure.Button
+            as="a"
+            href={link.href}
+            className="block px-4 py-2 text-base font-medium text-primary/700 hover:bg-gray-100 hover:text-primary"
+          >
+            {link.name}
+          </Disclosure.Button>
+        );
+      })}
+    </>
+  );
+}
+
 export default function Header() {
   const { logout, isLoggedIn } = useAuthContext();
-  // Desktop navigation
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -96,7 +113,7 @@ export default function Header() {
 
               <div className="flex items-center lg:hidden">
                 {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-primary/50 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -137,7 +154,7 @@ export default function Header() {
                                 href="/login"
                                 className={clsx(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-primary/50"
                                 )}
                               >
                                 Login
@@ -150,7 +167,7 @@ export default function Header() {
                                 href="/register"
                                 className={clsx(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-primary/50"
                                 )}
                               >
                                 Register
@@ -167,7 +184,7 @@ export default function Header() {
                                 href="#"
                                 className={clsx(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-primary/50"
                                 )}
                               >
                                 Your Profile
@@ -180,7 +197,7 @@ export default function Header() {
                                 href="#"
                                 className={clsx(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-primary/50"
                                 )}
                               >
                                 Settings
@@ -195,7 +212,7 @@ export default function Header() {
                                   active
                                     ? "bg-green-400/50  cursor-pointer"
                                     : "bg-blue-400/50",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-primary/50"
                                 )}
                               >
                                 Log Out
@@ -213,35 +230,7 @@ export default function Header() {
 
           <Disclosure.Panel className="lg:hidden">
             <div className="space-y-1 pt-2 pb-3">
-              {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800" */}
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="block border-l-4 border-indigo-500 bg-indigo-50 py-2 pl-3 pr-4 text-base font-medium text-indigo-700"
-              >
-                Dashboard
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800"
-              >
-                Team
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800"
-              >
-                Projects
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
-                href="#"
-                className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800"
-              >
-                Calendar
-              </Disclosure.Button>
+              <MobileNavLink />
             </div>
             <div className="border-t border-gray-200 pt-4 pb-3">
               <div className="flex items-center px-4">
@@ -252,44 +241,6 @@ export default function Header() {
                     alt=""
                   />
                 </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">
-                    Tom Cook
-                  </div>
-                  <div className="text-sm font-medium text-gray-500">
-                    tom@example.com
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="mt-3 space-y-1">
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                >
-                  Your Profile
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                >
-                  Settings
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                >
-                  Sign out
-                </Disclosure.Button>
               </div>
             </div>
           </Disclosure.Panel>
