@@ -25,8 +25,6 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   async function loginHandler(data: LoginResponse) {
-    console.log(data);
-
     localStorage.setItem("token", data.data.token ?? "");
     setIsLoggedIn(true);
     router.push("/");
