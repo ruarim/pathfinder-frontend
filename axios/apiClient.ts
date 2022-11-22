@@ -10,7 +10,7 @@ const client = axios.create({
     }),
     // ...(token && { "auth": "TOKEN"})
   },
-  baseURL: "http://localhost:8000/api",
+  baseURL: "http://localhost:8000/api/",
   withCredentials: true,
 });
 

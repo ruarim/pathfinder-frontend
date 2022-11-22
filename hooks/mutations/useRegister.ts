@@ -1,16 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
-
-// const queryClient = useQueryClient();
 
 export const useRegistser = () => {
   return useMutation<RegisterResponse, unknown, RegisterUserMutationData>({
     mutationFn: (data) => {
-      return client.post("/register", data);
+      return client.post("register", data);
     },
-    // onSuccess: () => {
-    //   // Invalidate and refetch
-    //   queryClient.invalidateQueries({ queryKey: ["user"] });
-    // },
   });
 };

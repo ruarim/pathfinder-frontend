@@ -22,3 +22,16 @@ type RegisterResponse = {
   };
   status: number;
 };
+
+type LoginUserMutationData = {
+  username: string;
+  password: string;
+};
+
+type LoginResponse = {
+  data: {
+    token: string;
+    user: User;
+  };
+  status: number;
+};
