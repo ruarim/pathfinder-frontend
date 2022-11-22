@@ -2,12 +2,12 @@ import React from "react";
 import { useGetVenues } from "../../hooks/queries/getVenues";
 import dayjs from "dayjs";
 import timeFormatter from "../../helpers/timeFormatter";
+import { Venue } from "../../@types";
 
 export default function Venues() {
   const { data: venueData } = useGetVenues();
   console.log(venueData?.data?.data);
 
-  //grid displaying venues
   //fuzzy search sort input
   //venue singlular page
   //pagination
@@ -28,7 +28,7 @@ export default function Venues() {
         </div>
         <div className="mx-auto mt-12 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
           {venueData &&
-            venueData.data.data.map((venue) => {
+            venueData.data.data.map((venue: Venue) => {
               return (
                 <div
                   key={venue.name}
@@ -43,7 +43,7 @@ export default function Venues() {
                   </div>
                   <div className="flex flex-1 flex-col justify-between bg-white p-6">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-indigo-600">
+                      <p className="text-xl font-medium text-primary">
                         <a
                           href={`venues/${venue.id}`}
                           className="hover:underline"
@@ -52,10 +52,22 @@ export default function Venues() {
                         </a>
                       </p>
                       <a href={`venues/${venue.id}`} className="mt-2 block">
-                        <p className="text-xl font-semibold text-gray-900">
-                          {venue.name}
+                        <p className="mt-3 text-primary text-lg">Address</p>
+                        <p className="text-primary text-sm">
+                          {venue.address.address_1}
                         </p>
-                        <p className="mt-3 text-base text-gray-500">Address</p>
+                        <p className="text-primary text-sm">
+                          {venue.address?.address_2}
+                        </p>
+                        <p className="text-primary text-sm">
+                          {venue.address.town_city}
+                        </p>
+                        <p className="text-primary text-sm">
+                          {venue.address.postcode}
+                        </p>
+                        <p className="text-primary text-sm">
+                          {venue.address.country}
+                        </p>
                       </a>
                     </div>
                     <div className="mt-6 flex items-center">
@@ -66,21 +78,20 @@ export default function Venues() {
                           </span>
                         </a>
                       </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">
-                          <a
-                            href={`venues/${venue.id}`}
-                            className="hover:underline"
-                          ></a>
-                        </p>
-                        <div className="flex flex-col text-sm text-primary">
-                          <time dateTime={venue.opening_time}>
-                            Opening Time {timeFormatter(venue.opening_time)}
-                          </time>
-                          <time dateTime={venue.closing_time}>
-                            Closing Time {timeFormatter(venue.closing_time)}
-                          </time>
-                        </div>
+
+                      <p className="text-sm font-medium text-gray-900">
+                        <a
+                          href={`venues/${venue.id}`}
+                          className="hover:underline"
+                        ></a>
+                      </p>
+                      <div className="flex flex-col text-sm text-primary">
+                        <time dateTime={venue.opening_time}>
+                          Opening Time {timeFormatter(venue.opening_time)}
+                        </time>
+                        <time dateTime={venue.closing_time}>
+                          Closing Time {timeFormatter(venue.closing_time)}
+                        </time>
                       </div>
                     </div>
                   </div>
