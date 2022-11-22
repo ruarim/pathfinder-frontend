@@ -13,7 +13,6 @@ type RegisterUserMutationData = {
   email: string;
   first_name: string;
   last_name: string;
-  z;
 };
 
 type RegisterResponse = {
