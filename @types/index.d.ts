@@ -1,3 +1,5 @@
+import { STRING_LITERAL_DROP_BUNDLE } from "next/dist/shared/lib/constants";
+
 type User = {
   id: number;
   username: string;
@@ -13,6 +15,7 @@ type RegisterUserMutationData = {
   email: string;
   first_name: string;
   last_name: string;
+  z;
 };
 
 type RegisterResponse = {
@@ -35,3 +38,41 @@ type LoginResponse = {
   };
   status: number;
 };
+
+type Venue = {
+  id: number;
+  capacity: number;
+  closing_time: string;
+  name: string;
+  opening_time: string;
+  venue_type: "Pub" | "Bar" | "Restaurant";
+  address: Address;
+  attributes: Attribute[];
+  beverages: Beverage[];
+};
+
+type Address = {
+  address_1: stirng;
+  address_2?: string;
+  country: string;
+  postcode: string;
+  town_city: string;
+};
+
+type Attribute = {
+  key: string;
+  value: string;
+};
+
+type Attributes = Attribute[];
+
+type Beverage = {
+  name: string;
+  type: string;
+  style: string;
+  brewery: string;
+  country: string;
+  abv: string;
+};
+
+type Bevarages = Beverage[];
