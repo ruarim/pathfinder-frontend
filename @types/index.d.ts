@@ -1,5 +1,3 @@
-import { STRING_LITERAL_DROP_BUNDLE } from "next/dist/shared/lib/constants";
-
 type User = {
   id: number;
   username: string;
