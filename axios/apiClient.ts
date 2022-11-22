@@ -20,7 +20,7 @@ client.interceptors.request.use(
     return {
       ...config,
       headers: {
-        Authentication: `Bearer ${"getToken"}`,
+        Authentication: `Bearer ${localStorage.getItem("token")}`,
       },
     };
   },
