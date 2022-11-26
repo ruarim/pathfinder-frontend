@@ -82,7 +82,6 @@ export default function Header() {
                   })}
                 </div>
               </div>
-              <SerachInput />
 
               <div className="flex items-center lg:hidden">
                 {/* Mobile menu button */}
