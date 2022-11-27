@@ -32,7 +32,7 @@ export default function plans() {
               <button
                 onClick={(e) => addParam(e)}
                 className={clsx(
-                  "p-2 w-full my-2 border-2 border-black hover:bg-notice/50 md:w-1/2",
+                  "p-2 w-full my-2 border-2 border-black transition hover:bg-notice/50 md:w-1/2",
                   attributesParams.includes(attribute) && "bg-notice/50"
                 )}
                 key={attribute}
@@ -43,7 +43,7 @@ export default function plans() {
           })}
           <button
             onClick={() => setAttributesParams([])}
-            className="p-2 my-2 border-2 border-black w-1/2 hover:bg-red-300"
+            className="p-2 my-2 border-2 border-black w-1/2 bg-red-200 transition hover:bg-red-300"
           >
             Clear
           </button>
