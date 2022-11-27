@@ -28,13 +28,11 @@ export default function plans() {
       {attributesData?.data && (
         <div className="grid grid-cols-1 w-1/2">
           {attributesData?.data.data.map((attribute: string) => {
-            let style =
-              "p-2 my-2 border-2 border-black hover:bg-notice/50 md:w-1/2";
             return (
               <button
                 onClick={(e) => addParam(e)}
                 className={clsx(
-                  style,
+                  "p-2 w-full my-2 border-2 border-black hover:bg-notice/50 md:w-1/2",
                   attributesParams.includes(attribute) && "bg-notice/50"
                 )}
                 key={attribute}
