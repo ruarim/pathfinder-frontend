@@ -4,7 +4,6 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useRouter } from "next/router";
-import SerachInput from "./SearchInput";
 
 const navigation = [
   {
