@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { LoginUserMutationData } from "../@types";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useLogin } from "../hooks/mutations/useLogin";
 
@@ -37,15 +36,15 @@ export default function Register() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Email
+                  Username
                 </label>
                 <div className="mt-1">
                   <input
-                    {...register("email")}
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
+                    {...register("username")}
+                    id="username"
+                    name="username"
+                    type="username"
+                    autoComplete="username"
                     required
                     className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   />

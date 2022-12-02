@@ -24,7 +24,7 @@ type RegisterResponse = {
 };
 
 type LoginUserMutationData = {
-  email: string;
+  username: string;
   password: string;
 };
 
