@@ -26,12 +26,9 @@ export default function SearchInput({ setSearchParam }: SearchInputProps) {
             placeholder="Search"
             type="search"
             // @dev fix TooManyRequests error
-            // onChange={(e: SyntheticEvent<HTMLInputElement>) =>  
-            //   //setSearchParam(e.currentTarget.value)
-            // }
-            onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key == "Enter") setSearchParam(e.currentTarget.value);
-            }}
+            onChange={(e: SyntheticEvent<HTMLInputElement>) =>
+              setSearchParam(e.currentTarget.value)
+            }
           />
         </div>
       </div>
