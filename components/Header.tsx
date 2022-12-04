@@ -75,7 +75,7 @@ export default function Header() {
                 <div className="flex flex-shrink-0 items-center">
                   {/* Logo goes here */}
                 </div>
-                <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
+                <div className="flex gap-3 lg:gap-1 lg:ml-6 lg:flex lg:space-x-8">
                   {navigation.map((link) => {
                     return <DesktopNavLink href={link.href} name={link.name} />;
                   })}

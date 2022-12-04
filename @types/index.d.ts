@@ -60,6 +60,8 @@ type Address = {
   country: string;
   postcode: string;
   town_city: string;
+  latitude: number;
+  longitude: number;
 };
 
 type Attribute = {
