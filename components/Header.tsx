@@ -77,7 +77,13 @@ export default function Header() {
                 </div>
                 <div className="flex gap-3 lg:gap-1 lg:ml-6 lg:flex lg:space-x-8">
                   {navigation.map((link) => {
-                    return <DesktopNavLink href={link.href} name={link.name} />;
+                    return (
+                      <DesktopNavLink
+                        key={link.name}
+                        href={link.href}
+                        name={link.name}
+                      />
+                    );
                   })}
                 </div>
               </div>

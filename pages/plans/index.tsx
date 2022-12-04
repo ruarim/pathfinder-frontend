@@ -18,10 +18,6 @@ export default function plans() {
   const { data: attributesData } = useGetAttributes();
   const { data: venuesData, isLoading: venuesLoading } =
     useGetVenuesByAttributes(attributesParams);
-  const [latLongValues, setLatLongValues] = useState<{
-    lat: number;
-    long: number;
-  }>();
 
   const addParam = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
