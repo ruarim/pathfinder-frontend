@@ -4,6 +4,11 @@ import { StarIcon } from "@heroicons/react/20/solid";
 import { Tab } from "@headlessui/react";
 import clsx from "clsx";
 
+function setRating(rating: number) {
+  console.log(rating + 1);
+  //updates database with the star count
+}
+
 const product = {
   name: "Application UI Icon Pack",
   version: { name: "1.0", date: "June 5, 2021", datetime: "2021-06-05" },
@@ -63,35 +68,6 @@ const faqs = [
   },
   // More FAQs...
 ];
-const license = {
-  href: "#",
-  summary:
-    "For personal and professional use. You cannot resell or redistribute these icons in their original or modified state.",
-  content: `
-    <h4>Overview</h4>
-    
-    <p>For personal and professional use. You cannot resell or redistribute these icons in their original or modified state.</p>
-    
-    <ul role="list">
-    <li>You\'re allowed to use the icons in unlimited projects.</li>
-    <li>Attribution is not required to use the icons.</li>
-    </ul>
-    
-    <h4>What you can do with it</h4>
-    
-    <ul role="list">
-    <li>Use them freely in your personal and professional work.</li>
-    <li>Make them your own. Change the colors to suit your project or brand.</li>
-    </ul>
-    
-    <h4>What you can\'t do with it</h4>
-    
-    <ul role="list">
-    <li>Don\'t be greedy. Selling or distributing these icons in their original or modified state is prohibited.</li>
-    <li>Don\'t be evil. These icons cannot be used on websites or applications that promote illegal or immoral beliefs or activities.</li>
-    </ul>
-  `,
-};
 
 export default function Venue() {
   return (
@@ -103,7 +79,7 @@ export default function Venue() {
           <div className="lg:col-span-4 lg:row-end-1">
             <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100">
               <img
-                src={product.imageSrc}
+                src={"/pub-placeholder.jpg"}
                 alt={product.imageAlt}
                 className="object-cover object-center"
               />
@@ -132,20 +108,21 @@ export default function Venue() {
 
               <div>
                 <h3 className="sr-only">Reviews</h3>
-                <div className="flex items-center">
+                <button className="flex items-center">
                   {[0, 1, 2, 3, 4].map((rating) => (
                     <StarIcon
+                      onClick={() => setRating(rating)}
                       key={rating}
                       className={clsx(
                         reviews.average > rating
                           ? "text-yellow-400"
                           : "text-gray-300",
-                        "h-5 w-5 flex-shrink-0"
+                        "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
                       )}
                       aria-hidden="true"
                     />
                   ))}
-                </div>
+                </button>
                 <p className="sr-only">{reviews.average} out of 5 stars</p>
               </div>
             </div>
@@ -157,13 +134,13 @@ export default function Venue() {
                 type="button"
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
-                Pay {product.price}
+                Add to favourites
               </button>
               <button
                 type="button"
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-50 py-3 px-8 text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
-                Preview
+                Write a review
               </button>
             </div>
 
@@ -179,14 +156,14 @@ export default function Venue() {
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">License</h3>
+              <h3 className="text-sm font-medium text-gray-900">Title</h3>
               <p className="mt-4 text-sm text-gray-500">
-                {license.summary}{" "}
+                I could be some content{" "}
                 <a
-                  href={license.href}
+                  href="#"
                   className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
-                  Read full license
+                  Link
                 </a>
               </p>
             </div>
@@ -292,7 +269,7 @@ export default function Venue() {
                       )
                     }
                   >
-                    License
+                    Some other content
                   </Tab>
                 </Tab.List>
               </div>
@@ -370,12 +347,9 @@ export default function Venue() {
                 </Tab.Panel>
 
                 <Tab.Panel className="pt-10">
-                  <h3 className="sr-only">License</h3>
+                  <h3 className="sr-only">Some content</h3>
 
-                  <div
-                    className="prose prose-sm max-w-none text-gray-500"
-                    dangerouslySetInnerHTML={{ __html: license.content }}
-                  />
+                  <div>Hello world</div>
                 </Tab.Panel>
               </Tab.Panels>
             </Tab.Group>
