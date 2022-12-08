@@ -26,18 +26,21 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   async function loginHandler(data: LoginResponse) {
     localStorage.setItem("token", data.data.token ?? "");
+    localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
     router.push("/");
   }
 
   function registerHandler(data: RegisterResponse) {
     localStorage.setItem("token", data.data.token ?? "");
+    localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
     router.push("/");
   }
 
   function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("user_id");
     setIsLoggedIn(false);
     router.push("/");
   }

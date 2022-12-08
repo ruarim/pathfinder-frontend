@@ -1,24 +1,36 @@
-import React, { Key } from "react";
+import React, { Key, useState } from "react";
 import { Fragment } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Tab } from "@headlessui/react";
 import clsx from "clsx";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
 
-function Rating() {
-  function setRating(rating: number) {
-    console.log(rating + 1);
-    //updates database with the star count
+interface RatingData {
+  venueId: number;
+  venueRating: number;
+}
+
+function Rating({ venueRating }: { venueRating: number | undefined }) {
+  const [rating, setRating] = useState<number | undefined>(venueRating);
+
+  const { mutateAsync } = useMutation<void, any, RatingData>({
+    mutationFn: (data: RatingData) => client.post("venues/rate_venue", data),
+    mutationKey: ["rate_venue"],
+  });
+
+  function setRatingHandler(rating: number) {
+    setRating(rating);
   }
+
   return (
     <div>
       <h3 className="sr-only">Reviews</h3>
       <button className="flex items-center">
         {[0, 1, 2, 3, 4].map((rating) => (
           <StarIcon
-            onClick={() => setRating(rating)}
+            onClick={() => setRatingHandler(rating)}
             key={rating}
             className={clsx(
               reviews.average > rating ? "text-yellow-400" : "text-gray-300",
@@ -103,7 +115,8 @@ export default function Venue() {
   );
 
   const venue = venueData?.data?.data;
-  const venueAddress: string[] = Object.values(venue?.address) ?? [];
+  const venueAddress: string[] = venue && Object.values(venue.address);
+  const venueRating: number = venue && venue.rating;
 
   return (
     <div>
@@ -133,7 +146,7 @@ export default function Venue() {
                     Pub information
                   </h2>
                 </div>
-                <Rating />
+                <Rating {...{ venueRating }} />
               </div>
 
               <p className="mt-6 text-gray-500">
