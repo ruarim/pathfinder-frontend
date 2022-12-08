@@ -4,7 +4,7 @@ import {
   useGetVenuesByAttributes,
 } from "../../hooks/queries";
 import clsx from "clsx";
-import VenueCard from "../../components/VenueCard";
+import VenueMapCard from "../../components/VenueMapCard";
 import Map, {
   Marker,
   FullscreenControl,
@@ -35,31 +35,33 @@ export default function plans() {
   const long = -2.591221556113587;
 
   return (
-    <div className="mx-auto pt-5 p-2 md:px-24 md:space-x-2">
-      {attributesData?.data && (
-        <div className="grid grid-cols-4 w-full gap-2">
-          {attributesData?.data.data.map((attribute: string) => {
-            return (
-              <button
-                onClick={(e) => addParam(e)}
-                className={clsx(
-                  "p-2 w-full my-2 border-2 border-black transition hover:bg-notice/50 ",
-                  attributesParams.includes(attribute) && "bg-notice/50"
-                )}
-                key={attribute}
-              >
-                {attribute}
-              </button>
-            );
-          })}
-          <button
-            onClick={() => setAttributesParams([])}
-            className="p-2 w-full my-2 border-2 border-black bg-red-200 transition hover:bg-red-300 md:w-1/2"
-          >
-            Clear
-          </button>
-        </div>
-      )}
+    <div className="mx-auto overflow-hidden">
+      <div className="absolute">
+        {attributesData?.data && (
+          <div className="grid grid-cols-4 w-full gap-2 bg-gray-300 p-3 m-3">
+            {attributesData?.data.data.map((attribute: string) => {
+              return (
+                <button
+                  onClick={(e) => addParam(e)}
+                  className={clsx(
+                    "p-2 w-full my-2 border-2 border-black transition hover:bg-notice/50 ",
+                    attributesParams.includes(attribute) && "bg-notice/50"
+                  )}
+                  key={attribute}
+                >
+                  {attribute}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setAttributesParams([])}
+              className="p-2 w-full my-2 border-2 border-black bg-red-300 transition hover:bg-red-300 "
+            >
+              Clear
+            </button>
+          </div>
+        )}
+      </div>
       {/* <div className="pt-6 lg:grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3 w-full">
         {venuesData?.data?.data?.map((venue: Venue) => {
           return <VenueCard key={venue.id} venue={venue} />;
@@ -77,7 +79,7 @@ export default function plans() {
           bearing: 0,
           pitch: 0,
         }}
-        style={{ height: 600 }}
+        style={{ height: "94%", position: "absolute", zIndex: -1 }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}
       >
@@ -95,7 +97,7 @@ export default function plans() {
               longitude={venue.address.longitude}
               anchor="bottom"
             >
-              {Pin}
+              <VenueMapCard key={venue.id} venue={venue} />
             </Marker>
           );
         })}
@@ -103,25 +105,3 @@ export default function plans() {
     </div>
   );
 }
-
-const Pin = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-8 h-8"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
-    />
-  </svg>
-);
