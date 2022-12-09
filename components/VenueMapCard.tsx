@@ -1,17 +1,24 @@
 import { useState } from "react";
 import timeFormatter from "../helpers/timeFormatter";
+import clsx from "clsx";
 
 interface VenueMapCardProps {
   venue: Venue;
+  venuesPath: string[];
+  toggleVenue: (venue: string) => void;
 }
 
-export default function VenueMapCard({ venue }: VenueMapCardProps) {
+export default function VenueMapCard({
+  venue,
+  venuesPath,
+  toggleVenue,
+}: VenueMapCardProps) {
   const [isOpen, setOpen] = useState(false);
 
   return (
     <div>
       {isOpen && (
-        <div className=" -z-10" onClick={() => setOpen(true)}>
+        <div onClick={() => setOpen(true)}>
           <div
             key={venue.name}
             className="flex flex-col overflow-hidden rounded-lg shadow-lg"
@@ -73,10 +80,28 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
               </div>
             </div>
           </div>
+          {!venuesPath.includes(venue.name) ? (
+            <button
+              onClick={() => toggleVenue(venue.name)}
+              className="p-2 mt-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400 text-lg"
+            >
+              Add to path
+            </button>
+          ) : (
+            <button
+              onClick={() => toggleVenue(venue.name)}
+              className="p-2 mt-2 w-full rounded-lg bg-red-300 transition hover:bg-red-400 text-lg"
+            >
+              Remove
+            </button>
+          )}
         </div>
       )}
       <div
-        className="flex justify-center"
+        className={clsx(
+          "flex justify-center text-red-400",
+          venuesPath.includes(venue.name) && "text-blue-400"
+        )}
         onClick={() => (isOpen ? setOpen(false) : setOpen(true))}
       >
         {Pin}
@@ -88,11 +113,11 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
 const Pin = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    fill="none"
     viewBox="0 0 24 24"
     strokeWidth={1.5}
-    stroke="currentColor"
-    className="w-8 h-8"
+    stroke="black"
+    fill="currentColor"
+    className="w-10 h-10"
   >
     <path
       strokeLinecap="round"
