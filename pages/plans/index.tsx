@@ -5,7 +5,13 @@ import {
 } from "../../hooks/queries";
 import clsx from "clsx";
 import VenueMapCard from "../../components/VenueMapCard";
-import Map, { Marker } from "react-map-gl";
+import Map, {
+  Marker,
+  NavigationControl,
+  FullscreenControl,
+  GeolocateControl,
+} from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function Plans() {
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
@@ -130,10 +136,6 @@ export default function Plans() {
           </div>
         )}
       </div>
-      <link
-        href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css"
-        rel="stylesheet"
-      />
       <Map
         initialViewState={{
           latitude: lat,
@@ -146,6 +148,10 @@ export default function Plans() {
         mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}
       >
+        <GeolocateControl position="top-right" />
+        <FullscreenControl position="top-right" />
+        <NavigationControl position="top-right" />
+
         {venues?.data?.data
           ?.sort(
             (first: Venue, second: Venue) =>
