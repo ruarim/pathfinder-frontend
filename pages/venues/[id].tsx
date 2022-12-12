@@ -1,4 +1,4 @@
-import React, { Key, useState } from "react";
+import React, { useState } from "react";
 import { Fragment } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Tab } from "@headlessui/react";
@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
+import useUser from "../../hooks/mutations/useUser";
 
 interface RatingData {
   venueId: string | string[] | undefined;

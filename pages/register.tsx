@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form";
 import { useRegistser } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
-import { RegisterUserMutationData } from "../@types";
+import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
 export default function Register() {
   const { mutateAsync: registerUser, data: user } = useRegistser();
   const { handleSubmit, register } = useForm<RegisterUserMutationData>();
   const { registerHandler } = useAuthContext();
+  const { data } = useGetXsrfHeaders();
 
   const onSubmit = handleSubmit(async (data) => {
     if (registerHandler) {

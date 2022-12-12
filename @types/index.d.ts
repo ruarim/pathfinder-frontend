@@ -7,8 +7,10 @@ type User = {
   email: string;
 };
 
+type RegistrationResponse = {};
+
 type RegisterUserMutationData = {
-  username: string;
+  email: string;
   password: string;
   email: string;
   first_name: string;

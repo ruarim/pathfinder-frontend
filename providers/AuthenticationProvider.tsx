@@ -32,8 +32,8 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   }
 
   function registerHandler(data: RegisterResponse) {
+    console.log(data.data);
     localStorage.setItem("token", data.data.token ?? "");
-    localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
     router.push("/");
   }
