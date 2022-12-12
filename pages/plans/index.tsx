@@ -7,7 +7,7 @@ import clsx from "clsx";
 import VenueMapCard from "../../components/VenueMapCard";
 import Map, { Marker } from "react-map-gl";
 
-export default function plans() {
+export default function Plans() {
   const [attributesParams, setAttributesParams] = useState<string[]>([]);
   const [isPathModalOpen, setPathModalOpen] = useState(true);
   const [venuesPath, setVenuesPath] = useState<string[]>([]);
@@ -26,7 +26,7 @@ export default function plans() {
     setAttributesParams([...params]);
   };
 
-  const toggleVenue = (venue: string) => {
+  const toggleVenueInPath = (venue: string) => {
     let path = venuesPath;
     if (path.includes(venue)) {
       const index = path.indexOf(venue);
@@ -35,7 +35,7 @@ export default function plans() {
     setVenuesPath([...path]);
   };
 
-  //@dev get from users current locaion
+  //@dev get from users current location
   const lat = 51.47513029807826;
   const long = -2.591221556113587;
 
@@ -68,40 +68,11 @@ export default function plans() {
             {isPathModalOpen && (
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="ml-px block pl-4 text-lg font-medium text-gray-700"
-                    >
-                      Start
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        className="block w-full rounded-full bg-gray-200 p-3 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Choose a starting point"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="ml-px block pl-4 text-lg font-medium text-gray-700"
-                    >
-                      End
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        className="block w-full rounded-full bg-gray-200 p-3 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Chose an endpoint"
-                      />
-                    </div>
-                  </div>
+                  <TextInput
+                    label={"Start"}
+                    placeholder={"Choose a starting point"}
+                  />
+                  <TextInput label={"End"} placeholder={"Choose an endpoint"} />
                 </div>
                 <div>
                   <div className="text-lg font-medium text-gray-900 mb-2">
@@ -133,7 +104,7 @@ export default function plans() {
                 </div>
                 <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
                 {venuesPath.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <h3 className="text-lg">Path</h3>
                     <div className="space-y-2">
                       {venuesPath?.map((name) => {
@@ -143,7 +114,9 @@ export default function plans() {
                             className="flex justify-between bg-gray-200 p-2 rounded-md"
                           >
                             {name}
-                            <div onClick={() => toggleVenue(name)}>{Cross}</div>
+                            <button onClick={() => toggleVenueInPath(name)}>
+                              {Cross}
+                            </button>
                           </div>
                         );
                       })}
@@ -158,11 +131,6 @@ export default function plans() {
           </div>
         )}
       </div>
-      {/* <div className="pt-6 lg:grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3 w-full">
-        {venuesData?.data?.data?.map((venue: Venue) => {
-          return <VenueCard key={venue.id} venue={venue} />;
-        })}
-      </div> */}
       <link
         href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css"
         rel="stylesheet"
@@ -179,30 +147,55 @@ export default function plans() {
         mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}
       >
-        {/* @dev these dont look right - probably a css importing issue  */}
-        {/* <GeolocateControl position="top-left" />
-        <FullscreenControl position="top-left" />
-        <NavigationControl position="top-left" />
-        <ScaleControl /> */}
-
-        {venuesData?.data?.data?.map((venue: Venue) => {
-          return (
-            <Marker
-              key={venue.id}
-              latitude={venue.address.latitude}
-              longitude={venue.address.longitude}
-              anchor="bottom"
-            >
-              <VenueMapCard
+        {venuesData?.data?.data
+          ?.sort(
+            (first: Venue, second: Venue) =>
+              second.address.longitude - first.address.longitude
+          )
+          .map((venue: Venue) => {
+            return (
+              <Marker
                 key={venue.id}
-                venue={venue}
-                venuesPath={venuesPath}
-                toggleVenue={toggleVenue}
-              />
-            </Marker>
-          );
-        })}
+                latitude={venue.address.latitude}
+                longitude={venue.address.longitude}
+                anchor="bottom"
+              >
+                <VenueMapCard
+                  key={venue.id}
+                  venue={venue}
+                  venuesPath={venuesPath}
+                  toggleVenueInPath={toggleVenueInPath}
+                />
+              </Marker>
+            );
+          })}
       </Map>
+    </div>
+  );
+}
+
+interface TextInputProps {
+  placeholder: string;
+  label: string;
+}
+function TextInput({ label, placeholder }: TextInputProps) {
+  return (
+    <div>
+      <label
+        htmlFor="name"
+        className="ml-px block pl-4 text-lg font-medium text-gray-700"
+      >
+        {label}
+      </label>
+      <div className="mt-1">
+        <input
+          type="text"
+          name="name"
+          id="name"
+          className="block w-full rounded-full bg-gray-200 p-3 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          placeholder={placeholder}
+        />
+      </div>
     </div>
   );
 }
