@@ -92,7 +92,6 @@ export default function VenueMapCard({
           venuesPath.includes(venue.name) && "text-blue-400"
         )}
         onClick={() => (isOpen ? setOpen(false) : setOpen(true))}
-        //onMouseOver={() => (isOpen ? setOpen(false) : setOpen(true))}
       >
         {Pin}
       </div>

@@ -8,12 +8,11 @@ import VenueMapCard from "../../components/VenueMapCard";
 import Map, { Marker } from "react-map-gl";
 
 export default function Plans() {
-  const [attributesParams, setAttributesParams] = useState<string[]>([]);
+  const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const [isPathModalOpen, setPathModalOpen] = useState(true);
   const [venuesPath, setVenuesPath] = useState<string[]>([]);
-  const { data: attributesData } = useGetAttributes();
-  const { data: venuesData, isLoading: venuesLoading } =
-    useGetVenuesByAttributes(attributesParams);
+  const { data: attributes } = useGetAttributes();
+  const { data: venues } = useGetVenuesByAttributes(attributesParams);
 
   const addParam = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
@@ -23,7 +22,7 @@ export default function Plans() {
       const index = params.indexOf(value);
       params.splice(index, 1);
     } else params?.push(value);
-    setAttributesParams([...params]);
+    setAttributesSearchParams([...params]);
   };
 
   const toggleVenueInPath = (venue: string) => {
@@ -42,7 +41,7 @@ export default function Plans() {
   return (
     <div className="mx-auto overflow-hidden">
       <div className="absolute">
-        {attributesData?.data && (
+        {attributes?.data && (
           <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md">
             <div className="flex justify-between gap-3">
               <h2 className="text-xl font-medium text-gray-900">
@@ -79,12 +78,12 @@ export default function Plans() {
                     Pick some attributes
                   </div>
                   <div className="grid grid-cols-4 w-full gap-2">
-                    {attributesData?.data.data.map((attribute: string) => {
+                    {attributes?.data.data.map((attribute: string) => {
                       return (
                         <button
                           onClick={(e) => addParam(e)}
                           className={clsx(
-                            "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-md",
+                            "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
                             attributesParams.includes(attribute) &&
                               "bg-gray-300"
                           )}
@@ -96,7 +95,7 @@ export default function Plans() {
                     })}
                   </div>
                   <button
-                    onClick={() => setAttributesParams([])}
+                    onClick={() => setAttributesSearchParams([])}
                     className="p-2 mt-2 w-full rounded-lg bg-red-300 transition hover:bg-red-400"
                   >
                     Clear attributes
@@ -147,7 +146,7 @@ export default function Plans() {
         mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}
       >
-        {venuesData?.data?.data
+        {venues?.data?.data
           ?.sort(
             (first: Venue, second: Venue) =>
               second.address.longitude - first.address.longitude
