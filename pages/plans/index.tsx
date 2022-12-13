@@ -107,7 +107,9 @@ export default function Plans() {
                     Clear attributes
                   </button>
                 </div>
-                <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
+                {venuesPath.length > 0 && (
+                  <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
+                )}
                 {venuesPath.length > 0 && (
                   <div className="space-y-3">
                     <h3 className="text-lg">Path</h3>
@@ -155,7 +157,7 @@ export default function Plans() {
         {venues?.data?.data
           ?.sort(
             (first: Venue, second: Venue) =>
-              second.address.longitude - first.address.longitude
+              second.address.latitude - first.address.latitude
           )
           .map((venue: Venue) => {
             return (
