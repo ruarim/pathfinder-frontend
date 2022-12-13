@@ -32,7 +32,6 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   }
 
   function registerHandler(data: RegisterResponse) {
-    console.log(data.data);
     localStorage.setItem("token", data.data.token ?? "");
     setIsLoggedIn(true);
     router.push("/");
