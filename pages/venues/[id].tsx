@@ -1,17 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Fragment } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Tab } from "@headlessui/react";
 import clsx from "clsx";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
-import useUser from "../../hooks/mutations/useUser";
 
 interface RatingData {
-  venueId: string | string[] | undefined;
-  venueRating: number | undefined;
-  userId?: string | null;
+  rating: number;
 }
 
 function Rating({
@@ -22,40 +18,76 @@ function Rating({
   venueId: string | string[] | undefined;
 }) {
   const [rating, setRating] = useState<number | undefined>(venueRating);
+  const queryClient = useQueryClient();
+
+  const { data: ratingData } = useQuery<any, any, any>(
+    ["rating", venueId],
+    () => client.get(`venues/${venueId}/rating`),
+    {
+      enabled: localStorage.getItem("token") !== null,
+    }
+  );
+
+  const userRatingObject = ratingData?.data?.data?.rating;
 
   const { mutateAsync } = useMutation<void, any, RatingData>({
-    mutationFn: (data: RatingData) => client.post("venues/rate_venue", data),
+    mutationFn: (data: RatingData) =>
+      client.post(`venues/${venueId}/rate`, data),
     mutationKey: ["rate_venue"],
   });
-
-  const userId = localStorage.getItem("user_id");
 
   async function setRatingHandler(rating: number) {
     setRating(rating);
     const ratingData: RatingData = {
-      venue_id: parseInt(venueId),
       rating: rating + 1,
-      user_id: userId,
     };
     await mutateAsync(ratingData);
+    queryClient.invalidateQueries(["rating", venueId]);
   }
 
   return (
     <div>
       <h3 className="sr-only">Reviews</h3>
-      <button className="flex items-center">
-        {[0, 1, 2, 3, 4].map((rating) => (
-          <StarIcon
-            onClick={() => setRatingHandler(rating)}
-            key={rating}
-            className={clsx(
-              reviews.average > rating ? "text-yellow-400" : "text-gray-300",
-              "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
-            )}
-            aria-hidden="true"
-          />
-        ))}
-      </button>
+      <div className="pb-2">
+        {/* {@TODO: This needs the concept of an actual user something that is to be done at a later date as a lot of the conditional logic requires a user} */}
+        <p>Rate this venue</p>
+        <button className="flex items-center">
+          {[0, 1, 2, 3, 4].map((rating) => (
+            <StarIcon
+              onClick={() => setRatingHandler(rating)}
+              key={rating}
+              className={clsx(
+                userRatingObject?.average_rating > rating
+                  ? "text-yellow-400"
+                  : "text-gray-300",
+                "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
+              )}
+              aria-hidden="true"
+            />
+          ))}
+        </button>
+      </div>
+      <div className="py-2">
+        {userRatingObject?.my_rating && (
+          <>
+            <p>Your score</p>
+            <div className="flex items-center">
+              {Array.from(Array(userRatingObject.my_rating).keys()).map(
+                (rating) => (
+                  <StarIcon
+                    key={rating}
+                    className={clsx(
+                      userRatingObject.my_rating ? "text-yellow-400" : "",
+                      "h-5 w-5 flex-shrink-0"
+                    )}
+                    aria-hidden="true"
+                  />
+                )
+              )}
+            </div>
+          </>
+        )}
+      </div>
       <p className="sr-only">{reviews.average} out of 5 stars</p>
     </div>
   );
@@ -105,13 +137,14 @@ const faqs = [
   // More FAQs...
 ];
 
-export default function Venue() {
-  const router = useRouter();
-  const id = router.query.id;
-
+export default function Venue({ id }: { id: string }) {
+  const queryClient = useQueryClient();
   const { data: venueData } = useQuery<VenueResponse, any, any>(
     ["venue", id],
-    () => client.get(`venues/${id}`)
+    () => client.get(`venues/${id}`),
+    {
+      onSuccess: () => queryClient.invalidateQueries(["rating", id]),
+    }
   );
 
   const venue = venueData?.data?.data;
@@ -385,4 +418,12 @@ export default function Venue() {
       )}
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {
+    props: {
+      id: context.query.id,
+    },
+  };
 }

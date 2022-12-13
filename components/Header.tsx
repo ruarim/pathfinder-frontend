@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useRouter } from "next/router";
+import client from "../axios/apiClient";
 
 const navigation = [
   {
@@ -65,6 +66,11 @@ function MobileNavLink() {
 
 export default function Header() {
   const { logout, isLoggedIn } = useAuthContext();
+
+  function logoutHandler() {
+    client.post("logout");
+    logout && logout();
+  }
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -178,7 +184,7 @@ export default function Header() {
                           <Menu.Item>
                             {({ active }) => (
                               <a
-                                onClick={logout}
+                                onClick={logoutHandler}
                                 className={clsx(
                                   active
                                     ? "bg-green-400/50  cursor-pointer"
