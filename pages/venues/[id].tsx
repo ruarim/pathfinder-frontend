@@ -19,7 +19,6 @@ function Rating({
 }) {
   const [rating, setRating] = useState<number | undefined>(venueRating);
   const queryClient = useQueryClient();
-
   const { data: ratingData } = useQuery<any, any, any>(
     ["rating", venueId],
     () => client.get(`venues/${venueId}/rating`),
@@ -27,15 +26,11 @@ function Rating({
       enabled: localStorage.getItem("token") !== null,
     }
   );
-
-  const userRatingObject = ratingData?.data?.data?.rating;
-
   const { mutateAsync } = useMutation<void, any, RatingData>({
     mutationFn: (data: RatingData) =>
       client.post(`venues/${venueId}/rate`, data),
     mutationKey: ["rate_venue"],
   });
-
   async function setRatingHandler(rating: number) {
     setRating(rating);
     const ratingData: RatingData = {
@@ -44,6 +39,7 @@ function Rating({
     await mutateAsync(ratingData);
     queryClient.invalidateQueries(["rating", venueId]);
   }
+  const userRatingObject = ratingData?.data?.data?.rating;
 
   return (
     <div>
@@ -123,19 +119,6 @@ const reviews = {
     // More reviews...
   ],
 };
-const faqs = [
-  {
-    question: "What format are these icons?",
-    answer:
-      "The icons are in SVG (Scalable Vector Graphic) format. They can be imported into your design tool of choice and used directly in code.",
-  },
-  {
-    question: "Can I use the icons at different sizes?",
-    answer:
-      "Yes. The icons are drawn on a 24 x 24 pixel grid, but the icons can be scaled to different sizes as needed. We don't recommend going smaller than 20 x 20 or larger than 64 x 64 to retain legibility and visual balance.",
-  },
-  // More FAQs...
-];
 
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
@@ -210,19 +193,6 @@ export default function Venue({ id }: { id: string }) {
                     ))}
                   </ul>
                 </div>
-              </div>
-
-              <div className="mt-10 border-t border-gray-200 pt-10">
-                <h3 className="text-sm font-medium text-gray-900">Title</h3>
-                <p className="mt-4 text-sm text-gray-500">
-                  I could be some content{" "}
-                  <a
-                    href="#"
-                    className="font-medium text-indigo-600 hover:text-indigo-500"
-                  >
-                    Link
-                  </a>
-                </p>
               </div>
 
               <div className="mt-10 border-t border-gray-200 pt-10">
@@ -314,18 +284,6 @@ export default function Venue({ id }: { id: string }) {
                         )
                       }
                     >
-                      FAQ
-                    </Tab>
-                    <Tab
-                      className={({ selected }) =>
-                        clsx(
-                          selected
-                            ? "border-indigo-600 text-indigo-600"
-                            : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-                          "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
-                        )
-                      }
-                    >
                       Some other content
                     </Tab>
                   </Tab.List>
@@ -386,23 +344,6 @@ export default function Venue({ id }: { id: string }) {
                         </div>
                       </div>
                     ))}
-                  </Tab.Panel>
-
-                  <Tab.Panel className="text-sm text-gray-500">
-                    <h3 className="sr-only">Frequently Asked Questions</h3>
-
-                    <dl>
-                      {faqs.map((faq) => (
-                        <Fragment key={faq.question}>
-                          <dt className="mt-10 font-medium text-gray-900">
-                            {faq.question}
-                          </dt>
-                          <dd className="prose prose-sm mt-2 max-w-none text-gray-500">
-                            <p>{faq.answer}</p>
-                          </dd>
-                        </Fragment>
-                      ))}
-                    </dl>
                   </Tab.Panel>
 
                   <Tab.Panel className="pt-10">
