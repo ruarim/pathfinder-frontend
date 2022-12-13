@@ -2,12 +2,9 @@ import axios from "axios";
 
 const client = axios.create({
   headers: {
+    "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/json",
     Accept: "application/json",
-    ...(process.env.NODE_ENV === "development" && {
-      "Access-Control-Allow-Origin": "*",
-    }),
-    // ...(token && { "auth": "TOKEN"})
   },
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,

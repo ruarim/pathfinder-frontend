@@ -9,6 +9,7 @@ import { useGetVenuesByName } from "../../hooks/queries/getVenuesByName";
 import { useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useDebounce } from "../../hooks/utility/useDebounce";
+import { useGetUser } from "../../hooks/queries/getUser";
 
 export default function Venues() {
   const { data: venueData } = useGetVenues();
