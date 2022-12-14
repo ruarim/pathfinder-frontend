@@ -1,19 +1,23 @@
 import { useState } from "react";
 import timeFormatter from "../helpers/timeFormatter";
 import clsx from "clsx";
+import { useMap } from "react-map-gl";
 
 interface VenueMapCardProps {
   venue: Venue;
   venuesPath: string[];
   toggleVenueInPath: (venue: string) => void;
+  latLong: latLong;
 }
 
 export default function VenueMapCard({
   venue,
   venuesPath,
   toggleVenueInPath,
+  latLong,
 }: VenueMapCardProps) {
   const [isOpen, setOpen] = useState(false);
+  const { current: map } = useMap();
 
   return (
     <div>
@@ -91,7 +95,11 @@ export default function VenueMapCard({
           "flex justify-center text-red-400",
           venuesPath.includes(venue.name) && "text-blue-400"
         )}
-        onClick={() => (isOpen ? setOpen(false) : setOpen(true))}
+        onClick={() => {
+          isOpen ? setOpen(false) : setOpen(true);
+          if (!isOpen && map)
+            map.flyTo({ center: [latLong.long, latLong.lat] });
+        }}
       >
         {Pin}
       </div>

@@ -1,6 +1,7 @@
 import { BaseSyntheticEvent, useState } from "react";
 import {
   useGetAttributes,
+  useGetMapBoxLocations,
   useGetVenuesByAttributes,
 } from "../../hooks/queries";
 import clsx from "clsx";
@@ -10,17 +11,37 @@ import Map, {
   NavigationControl,
   FullscreenControl,
   GeolocateControl,
+  MapRef,
+  MapProvider,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import MapSearch from "../../components/MapSearch";
+
+const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 
 export default function Plans() {
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const [isPathModalOpen, setPathModalOpen] = useState(true);
   const [venuesPath, setVenuesPath] = useState<string[]>([]);
+  const [centerPoint, setCenterPoint] = useState<latLong>({
+    lat: 51.47513029807826,
+    long: -2.591221556113587, //use geoLoacation from browser
+  }); //@dev create helper to initalise to browser default location
+  const [selectedStart, setSelectedStart] = useState<MapLocation>({
+    place_name: "",
+    center: [0, 0],
+  });
+  const [selectedEnd, setSelectedEnd] = useState<MapLocation>({
+    place_name: "",
+    center: [0, 0],
+  });
+
+  //@dev create map ref instance to pass down to components
+
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
 
-  const addParam = (e: BaseSyntheticEvent) => {
+  const toggleVenueAttribute = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
     let params = attributesParams;
 
@@ -28,7 +49,7 @@ export default function Plans() {
       const index = params.indexOf(value);
       params.splice(index, 1);
     } else params?.push(value);
-    setAttributesSearchParams([...params]);
+    setAttributesSearchParams([...params]); //this could probably be refactored
   };
 
   const toggleVenueInPath = (venue: string) => {
@@ -37,18 +58,15 @@ export default function Plans() {
       const index = path.indexOf(venue);
       path.splice(index, 1);
     } else path.push(venue);
-    setVenuesPath([...path]);
+    setVenuesPath([...path]); //this also
   };
 
-  //@dev get from users current location
-  const lat = 51.47513029807826;
-  const long = -2.591221556113587;
-
   return (
-    <div className="mx-auto overflow-hidden">
-      <div className="absolute">
+    <MapProvider>
+      <div className="mx-auto">
+        {/* create path modal */}
         {attributes?.data && (
-          <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md">
+          <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
             <div className="flex justify-between gap-3">
               <h2 className="text-xl font-medium text-gray-900">
                 Plan your path
@@ -69,15 +87,22 @@ export default function Plans() {
                 </div>
               )}
             </div>
-
             {isPathModalOpen && (
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <TextInput
+                  <MapSearch
                     label={"Start"}
-                    placeholder={"Choose a starting point"}
+                    placeholder={"Choose a starting location"}
+                    selected={selectedStart}
+                    setSelected={setSelectedStart}
                   />
-                  <TextInput label={"End"} placeholder={"Choose an endpoint"} />
+                  {/* @dev make endpoint optional */}
+                  <MapSearch
+                    label={"End"}
+                    placeholder={"Choose an ending location"}
+                    selected={selectedEnd}
+                    setSelected={setSelectedEnd}
+                  />
                 </div>
                 <div>
                   <div className="text-lg font-medium text-gray-900 mb-2">
@@ -87,7 +112,7 @@ export default function Plans() {
                     {attributes?.data.data.map((attribute: string) => {
                       return (
                         <button
-                          onClick={(e) => addParam(e)}
+                          onClick={(e) => toggleVenueAttribute(e)}
                           className={clsx(
                             "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
                             attributesParams.includes(attribute) &&
@@ -137,75 +162,90 @@ export default function Plans() {
             )}
           </div>
         )}
-      </div>
-      <Map
-        initialViewState={{
-          latitude: lat,
-          longitude: long,
-          zoom: 14,
-          bearing: 0,
-          pitch: 0,
-        }}
-        style={{ height: "94%", position: "absolute", zIndex: -1 }}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}
-      >
-        <GeolocateControl position="top-right" />
-        <FullscreenControl position="top-right" />
-        <NavigationControl position="top-right" />
 
-        {venues?.data?.data
-          ?.sort(
-            (first: Venue, second: Venue) =>
-              second.address.latitude - first.address.latitude
-          )
-          .map((venue: Venue) => {
-            return (
-              <Marker
-                key={venue.id}
-                latitude={venue.address.latitude}
-                longitude={venue.address.longitude}
-                anchor="bottom"
-              >
-                <VenueMapCard
+        {/* map box */}
+        <Map
+          id="map"
+          initialViewState={{
+            latitude: centerPoint.lat,
+            longitude: centerPoint.long,
+            zoom: 14,
+            bearing: 0,
+            pitch: 0,
+          }}
+          style={{ height: "94%", position: "absolute", zIndex: -1 }}
+          mapStyle="mapbox://styles/mapbox/streets-v12"
+          mapboxAccessToken={mapboxToken}
+        >
+          <GeolocateControl position="top-right" />
+          <FullscreenControl position="top-right" />
+          <NavigationControl position="top-right" />
+
+          {selectedStart.place_name !== "" && (
+            <Marker
+              latitude={selectedStart.center[1]}
+              longitude={selectedStart.center[0]}
+              anchor="bottom"
+            >
+              {Pin}
+            </Marker>
+          )}
+          {selectedEnd.place_name !== "" && (
+            <Marker
+              latitude={selectedEnd.center[1]}
+              longitude={selectedEnd.center[0]}
+              anchor="bottom"
+            >
+              {Pin}
+            </Marker>
+          )}
+
+          {venues?.data?.data
+            ?.sort(
+              (first: Venue, second: Venue) =>
+                second.address.latitude - first.address.latitude
+            )
+            .map((venue: Venue) => {
+              return (
+                <Marker
                   key={venue.id}
-                  venue={venue}
-                  venuesPath={venuesPath}
-                  toggleVenueInPath={toggleVenueInPath}
-                />
-              </Marker>
-            );
-          })}
-      </Map>
-    </div>
-  );
-}
-
-interface TextInputProps {
-  placeholder: string;
-  label: string;
-}
-function TextInput({ label, placeholder }: TextInputProps) {
-  return (
-    <div>
-      <label
-        htmlFor="name"
-        className="ml-px block pl-4 text-lg font-medium text-gray-700"
-      >
-        {label}
-      </label>
-      <div className="mt-1">
-        <input
-          type="text"
-          name="name"
-          id="name"
-          className="block w-full rounded-full bg-gray-200 p-3 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          placeholder={placeholder}
-        />
+                  latitude={venue.address.latitude}
+                  longitude={venue.address.longitude}
+                  anchor="bottom"
+                >
+                  <VenueMapCard
+                    key={venue.id}
+                    venue={venue}
+                    venuesPath={venuesPath}
+                    toggleVenueInPath={toggleVenueInPath}
+                    latLong={{
+                      lat: venue.address.latitude,
+                      long: venue.address.longitude,
+                    }}
+                  />
+                </Marker>
+              );
+            })}
+        </Map>
       </div>
-    </div>
+    </MapProvider>
   );
 }
+const Pin = //@dev use heroicons package
+  (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className="w-8 h-8"
+    >
+      <path
+        fillRule="evenodd"
+        d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
 
 const ModalOpenArrow = (
   <svg

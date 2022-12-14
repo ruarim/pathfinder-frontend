@@ -60,7 +60,7 @@ type Address = {
   country: string;
   postcode: string;
   town_city: string;
-  latitude: number;
+  latitude: number; //@dev could use latLong type here
   longitude: number;
 };
 
@@ -71,4 +71,14 @@ type Beverage = {
   brewery: string;
   country: string;
   abv: string;
+};
+
+type latLong = {
+  lat: number;
+  long: number;
+};
+
+type MapLocation = {
+  place_name: string;
+  center: number[];
 };
