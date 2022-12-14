@@ -53,7 +53,7 @@ function MobileNavLink() {
           <Disclosure.Button
             as="a"
             href={link.href}
-            className="block px-4 py-2 text-base font-medium text-primary/700 hover:bg-gray-100 hover:text-primary"
+            className="block w-full px-4 py-2 text-base font-medium text-primary/700 hover:bg-gray-100 hover:text-primary"
           >
             {link.name}
           </Disclosure.Button>
@@ -75,7 +75,7 @@ export default function Header() {
                 <div className="flex flex-shrink-0 items-center">
                   {/* Logo goes here */}
                 </div>
-                <div className="flex gap-3 lg:gap-1 lg:ml-6 lg:flex lg:space-x-8">
+                <div className="grid gap-3 max-[600px]:hidden grid-cols-4">
                   {navigation.map((link) => {
                     return (
                       <DesktopNavLink
