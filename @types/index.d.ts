@@ -73,7 +73,7 @@ type Beverage = {
   abv: string;
 };
 
-type latLong = {
+type LatLong = {
   lat: number;
   long: number;
 };

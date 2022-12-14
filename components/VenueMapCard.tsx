@@ -7,7 +7,7 @@ interface VenueMapCardProps {
   venue: Venue;
   venuesPath: string[];
   toggleVenueInPath: (venue: string) => void;
-  latLong: latLong;
+  latLong: LatLong;
 }
 
 export default function VenueMapCard({
