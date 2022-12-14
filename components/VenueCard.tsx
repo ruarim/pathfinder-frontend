@@ -1,10 +1,10 @@
 import timeFormatter from "../helpers/timeFormatter";
 
-interface VenueProps {
+interface VenueCardProps {
   venue: Venue;
 }
 
-export default function VenueCard({ venue }: VenueProps) {
+export default function VenueCard({ venue }: VenueCardProps) {
   return (
     <div
       key={venue.name}

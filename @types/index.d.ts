@@ -46,7 +46,7 @@ type Venue = {
   opening_time: string;
   venue_type: "Pub" | "Bar" | "Restaurant";
   address: Address;
-  attributes: Attribute[];
+  attributes: string[];
   beverages: Beverage[];
 };
 
@@ -62,14 +62,9 @@ type Address = {
   country: string;
   postcode: string;
   town_city: string;
+  latitude: number;
+  longitude: number;
 };
-
-type Attribute = {
-  key: string;
-  value: string;
-};
-
-type Attributes = Attribute[];
 
 type Beverage = {
   name: string;
@@ -79,5 +74,3 @@ type Beverage = {
   country: string;
   abv: string;
 };
-
-type Bevarages = Beverage[];
