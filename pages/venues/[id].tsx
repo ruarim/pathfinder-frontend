@@ -5,6 +5,9 @@ import { Tab } from "@headlessui/react";
 import clsx from "clsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
+import { useGetUser } from "../../hooks/queries/getUser";
+import { useRouter } from "next/router";
+import { setDefaultResultOrder } from "dns/promises";
 
 interface RatingData {
   rating: number;
@@ -15,10 +18,13 @@ function Rating({
   venueId,
 }: {
   venueRating: number | undefined;
-  venueId: string | string[] | undefined;
+  venueId: string;
 }) {
+  //State, queries and mutations
   const [rating, setRating] = useState<number | undefined>(venueRating);
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: user } = useGetUser();
   const { data: ratingData } = useQuery<any, any, any>(
     ["rating", venueId],
     () => client.get(`venues/${venueId}/rating`),
@@ -31,21 +37,34 @@ function Rating({
       client.post(`venues/${venueId}/rate`, data),
     mutationKey: ["rate_venue"],
   });
+
+  //Component spcefic logic
   async function setRatingHandler(rating: number) {
-    setRating(rating);
-    const ratingData: RatingData = {
-      rating: rating + 1,
-    };
-    await mutateAsync(ratingData);
-    queryClient.invalidateQueries(["rating", venueId]);
+    try {
+      if (!user) {
+        router.push("/login");
+      }
+      setRating(rating);
+      const ratingData: RatingData = {
+        rating: rating + 1,
+      };
+      await mutateAsync(ratingData);
+      queryClient.invalidateQueries(["rating", venueId]);
+      queryClient.invalidateQueries(["venue", venueId]);
+    } catch (error) {
+      console.log(error);
+    }
   }
-  const userRatingObject = ratingData?.data?.data?.rating;
+  interface UserRatingInterface {
+    average_rating: number;
+    my_rating: string;
+  }
+  const userRatingObject: UserRatingInterface = ratingData?.data?.data?.rating;
 
   return (
-    <div>
+    <div className="flex flex-row justify-between">
       <h3 className="sr-only">Reviews</h3>
-      <div className="pb-2">
-        {/* {@TODO: This needs the concept of an actual user something that is to be done at a later date as a lot of the conditional logic requires a user} */}
+      <div className="pt-2 pb-6">
         <p>Rate this venue</p>
         <button className="flex items-center">
           {[0, 1, 2, 3, 4].map((rating) => (
@@ -53,7 +72,7 @@ function Rating({
               onClick={() => setRatingHandler(rating)}
               key={rating}
               className={clsx(
-                userRatingObject?.average_rating > rating
+                venueRating && Math.round(venueRating) > rating
                   ? "text-yellow-400"
                   : "text-gray-300",
                 "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
@@ -61,9 +80,10 @@ function Rating({
               aria-hidden="true"
             />
           ))}
+          <span className="pl-1">({venueRating})</span>
         </button>
       </div>
-      <div className="py-2">
+      <div className="pt-2 pb-6">
         {userRatingObject?.my_rating && (
           <>
             <p>Your score</p>
@@ -162,7 +182,6 @@ export default function Venue({ id }: { id: string }) {
                     Pub information
                   </h2>
                 </div>
-                <Rating {...{ venueRating, venueId }} />
               </div>
 
               <p className="mt-6 text-gray-500">
@@ -183,9 +202,13 @@ export default function Venue({ id }: { id: string }) {
                   Write a review
                 </button>
               </div>
-
-              <div className="mt-10 border-t border-gray-200 pt-10">
-                <h3 className="text-sm font-medium text-gray-900">Address</h3>
+              <div className="mt-10 border-t border-gray-200 py-4">
+                <div className="border-b border-gray-200 pt-2">
+                  <Rating {...{ venueRating, venueId }} />
+                </div>
+                <h3 className="text-sm font-medium text-gray-900 pt-4">
+                  Address
+                </h3>
                 <div className="prose prose-sm mt-4 text-gray-500">
                   <ul role="list">
                     {venueAddress?.map((addressLine) => (
