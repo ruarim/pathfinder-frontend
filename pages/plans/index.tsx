@@ -19,7 +19,7 @@ import {
   XMarkIcon,
   MapPinIcon,
   ChevronDoubleUpIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/20/solid";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -230,24 +230,26 @@ export function MapBox({
       <FullscreenControl position="top-right" />
       <NavigationControl position="top-right" />
 
-      {startPoint.place_name !== "" && (
-        <Marker
-          latitude={startPoint.center[1]}
-          longitude={startPoint.center[0]}
-          anchor="bottom"
-        >
-          <MapPinIcon />
-        </Marker>
-      )}
-      {endPoint.place_name !== "" && (
-        <Marker
-          latitude={endPoint.center[1]}
-          longitude={endPoint.center[0]}
-          anchor="bottom"
-        >
-          <MapPinIcon />
-        </Marker>
-      )}
+      <div className="text-black">
+        {startPoint.place_name !== "" && (
+          <Marker
+            latitude={startPoint.center[1]}
+            longitude={startPoint.center[0]}
+            anchor="bottom"
+          >
+            <MapPinIcon className="w-8" />
+          </Marker>
+        )}
+        {endPoint.place_name !== "" && (
+          <Marker
+            latitude={endPoint.center[1]}
+            longitude={endPoint.center[0]}
+            anchor="bottom"
+          >
+            <MapPinIcon className="w-8" />
+          </Marker>
+        )}
+      </div>
 
       {venues?.data?.data
         ?.sort(
