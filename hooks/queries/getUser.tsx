@@ -12,10 +12,11 @@ export const useGetUser = () => {
   return useQuery<UserDto, any, Error>({
     queryKey: ["user"],
     queryFn: (): Promise<UserDto> => client.get("user"),
-    retry(failureCount: number, error: AxiosError) {
-      if (error.code === "ERR_BAD_RESPONSE") {
-        failureCount = 2;
-      }
-    },
+    // retry(failureCount: number, error: AxiosError) { //@dev removing this for now
+    //   if (error.code === "ERR_BAD_RESPONSE") {
+    //     failureCount = 2;
+    //   }
+    // },
+    //should be retry: 2?
   });
 };
