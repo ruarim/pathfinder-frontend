@@ -68,7 +68,7 @@ export default function Header() {
   const { logout, isLoggedIn } = useAuthContext();
 
   function logoutHandler() {
-    client.post("logout");
+    client.post("logout"); //@dev what is this doing
     logout && logout();
   }
   return (
