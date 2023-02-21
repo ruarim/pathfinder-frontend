@@ -7,14 +7,14 @@ export default function Register() {
   const { mutateAsync: loginUser, data: user } = useLogin();
   const { handleSubmit, register } = useForm<LoginUserMutationData>();
   const { loginHandler } = useAuthContext();
-  const { data } = useGetXsrfHeaders();
+  const { data } = useGetXsrfHeaders(); //@dev put in client
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = async (data: LoginUserMutationData) => {
     const response = await loginUser(data);
     if (loginHandler) {
       loginHandler(response);
     }
-  });
+  };
 
   return (
     <>

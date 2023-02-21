@@ -384,7 +384,7 @@ export default function Venue({ id }: { id: string }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: { query: { id: number } }) {
   return {
     props: {
       id: context.query.id,
