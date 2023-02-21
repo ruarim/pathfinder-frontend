@@ -13,6 +13,7 @@ type RegisterUserMutationData = {
   email: string;
   password: string;
   email: string;
+  username: string;
   first_name: string;
   last_name: string;
 };

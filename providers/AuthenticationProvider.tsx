@@ -24,6 +24,7 @@ const AuthenticationContext = createContext<
 function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  
   async function loginHandler(data: LoginResponse) {
     localStorage.setItem("token", data.data.token ?? "");
     localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
