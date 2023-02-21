@@ -38,7 +38,7 @@ export default function MapSearch({
   const { data: locations } = useGetMapBoxLocations(query); //@dev useDebounce
   const { map } = useMap();
 
-  const onChange = (location: MapLocation) => {
+  const onChange = (location: any) => {
     setSelected(location);
     if (map) map.flyTo({ center: [location.center[0], location.center[1]] });
   };
