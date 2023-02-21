@@ -1,11 +1,6 @@
 import axios from "axios";
 
 const client = axios.create({
-  headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
@@ -16,6 +11,9 @@ client.interceptors.request.use(
     return {
       ...config,
       headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+        Accept: "application/json",
         Authentication: `Bearer ${localStorage.getItem("token")}`,
       },
     };
