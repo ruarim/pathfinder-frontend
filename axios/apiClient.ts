@@ -14,7 +14,7 @@ client.interceptors.request.use(
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authentication: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     };
   },
