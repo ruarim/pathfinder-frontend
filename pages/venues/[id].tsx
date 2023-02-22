@@ -80,13 +80,13 @@ function Rating({
               aria-hidden="true"
             />
           ))}
-          <span className="pl-1">({venueRating})</span>
+          {venueRating && <span className="pl-1">({venueRating})</span>}
         </button>
       </div>
       <div className="pt-2 pb-6">
         {userRatingObject?.my_rating && (
           <>
-            <p>Your score</p>
+            <p>Your rating</p>
             <div className="flex items-center">
               {Array.from(Array(userRatingObject.my_rating).keys()).map(
                 (rating) => (
