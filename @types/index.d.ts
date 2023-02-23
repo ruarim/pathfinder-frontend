@@ -85,3 +85,21 @@ type MapLocation = {
   place_name: string;
   center: number[];
 };
+
+type Plan = {
+  id?: number;
+  name: string;
+  startpoint_name: string;
+  startpoint_lat: number;
+  startpoint_long: number;
+  endpoint_name?: string;
+  endpoint_lat?: number;
+  endpoint_long?: number;
+  venues: number[];
+};
+
+type PlanResponse = {
+  data: {
+    data: Plan;
+  };
+};

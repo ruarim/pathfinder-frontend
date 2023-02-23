@@ -59,9 +59,9 @@ export default function Venues() {
               })
             : isLoading && <></>}
         </div>
-        <div className="py-4">
+        {/* <div className="py-4">
           <PaginatorScrollBar />
-        </div>{" "}
+        </div>{" "} */}
       </div>
     </div>
   );

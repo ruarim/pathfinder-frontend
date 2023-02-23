@@ -25,7 +25,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
             </a>
           </p>
           <a href={`venues/${venue.id}`} className="mt-2 block">
-            <p className="mt-3 text-primary text-lg">Address</p>
+            <h3 className="mt-3 text-primary text-lg">Address</h3>
             <p className="text-primary text-sm">{venue.address.address_1}</p>
             <p className="text-primary text-sm">{venue.address?.address_2}</p>
             <p className="text-primary text-sm">{venue.address.town_city}</p>

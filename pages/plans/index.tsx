@@ -1,4 +1,4 @@
-import { BaseSyntheticEvent, useEffect, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
 import {
   useGetAttributes,
   useGetVenuesByAttributes,
@@ -15,11 +15,15 @@ import Map, {
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapSearch from "../../components/MapSearch";
 import VenueMapCard from "../../components/VenueMapCard";
+import Modal from "../../components/Modal";
 import {
   XMarkIcon,
   MapPinIcon,
   ChevronDoubleUpIcon,
 } from "@heroicons/react/20/solid";
+import { useMutation } from "@tanstack/react-query";
+import client from "../../axios/apiClient";
+import { useRouter } from "next/router";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -29,8 +33,8 @@ const DEFAULT_CENTER_LOCATION = {
 
 export default function Plans() {
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
-  const [isPathModalOpen, setPathModalOpen] = useState(true);
-  const [venuesPath, setVenuesPath] = useState<string[]>([]); //@dev might need venue id for db ref
+  const [isPlanModalOpen, setPlanModalOpen] = useState(true);
+  const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]); //@dev might need venue id for db ref
   const [selectedStart, setSelectedStart] = useState<MapLocation>({
     place_name: "",
     center: [0, 0],
@@ -43,6 +47,10 @@ export default function Plans() {
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
 
+  const router = useRouter();
+
+  const addPlanNameModal = useRef<Modal>(null);
+
   const toggleVenueAttribute = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
     let params = attributesParams;
@@ -51,45 +59,74 @@ export default function Plans() {
       const index = params.indexOf(value);
       params.splice(index, 1);
     } else params?.push(value);
-    setAttributesSearchParams([...params]); //this could probably be refactored
+    setAttributesSearchParams([...params]);
   };
 
-  const toggleVenueInPath = (venue: string) => {
-    let path = venuesPath;
-    if (path.includes(venue)) {
-      const index = path.indexOf(venue);
-      path.splice(index, 1);
-    } else path.push(venue);
-    setVenuesPath([...path]); //this also
+  const toggleVenueInPlan = (venue: Venue) => {
+    let plan = venuesPlan;
+    if (plan.includes(venue)) {
+      const index = plan.indexOf(venue);
+      plan.splice(index, 1);
+    } else plan.push(venue);
+    setVenuesPlan([...plan]);
+  };
+
+  //plans mutation
+  const { mutateAsync: savePlan } = useMutation<PlanResponse, any, Plan>({
+    mutationFn: (data) => {
+      return client.post("paths", data);
+    },
+  });
+
+  const createPlan = async (
+    name: string,
+    venuesInPlan: Venue[],
+    start: MapLocation,
+    end: MapLocation
+  ) => {
+    const venues = venuesInPlan.map((venue) => venue.id);
+
+    const res = await savePlan({
+      name,
+      startpoint_name: start.place_name,
+      startpoint_lat: start.center[1],
+      startpoint_long: start.center[0],
+      endpoint_name: end.place_name,
+      endpoint_lat: end.center[1],
+      endpoint_long: end.center[0],
+      venues,
+    });
+
+    router.push({ pathname: "/plans/[id]", query: { id: res.data.data.id } });
   };
 
   return (
     <MapProvider>
       <div className="mx-auto">
-        {/* create path modal */}
+        {/* create plan modal */}
         {attributes?.data && (
           <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
             <div className="flex justify-between gap-3">
               <h2 className="text-xl font-medium text-gray-900">
-                Plan your path
+                Plan your route
               </h2>
-              {isPathModalOpen ? (
+              {isPlanModalOpen ? (
                 <div
-                  onClick={() => setPathModalOpen(false)}
+                  onClick={() => setPlanModalOpen(false)}
                   className="hover:animate-pulse"
                 >
                   <ChevronDoubleUpIcon className="w-6" />
                 </div>
               ) : (
                 <div
-                  onClick={() => setPathModalOpen(true)}
+                  onClick={() => setPlanModalOpen(true)}
                   className="hover:animate-pulse rotate-180"
                 >
                   <ChevronDoubleUpIcon className="w-6" />
                 </div>
               )}
             </div>
-            {isPathModalOpen && (
+            {isPlanModalOpen && (
               <div className="space-y-5">
                 <div className="space-y-2">
                   <MapSearch
@@ -135,29 +172,35 @@ export default function Plans() {
                     Clear attributes
                   </button>
                 </div>
-                {venuesPath.length > 0 && (
+                {venuesPlan.length > 0 && (
                   <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
                 )}
-                {venuesPath.length > 0 && (
+                {venuesPlan.length > 0 && (
                   <div className="space-y-3">
-                    <h3 className="text-lg">Path</h3>
+                    <h3 className="text-lg">Plan</h3>
                     <div className="space-y-2">
-                      {venuesPath?.map((name) => {
+                      {venuesPlan?.map((venue) => {
                         return (
                           <div
-                            key={name}
+                            key={venue.id}
                             className="flex justify-between bg-gray-200 p-2 rounded-md"
                           >
-                            {name}
-                            <button onClick={() => toggleVenueInPath(name)}>
+                            {venue.name}
+                            <button onClick={() => toggleVenueInPlan(venue)}>
                               <XMarkIcon className="w-6" />
                             </button>
                           </div>
                         );
                       })}
                     </div>
-                    <button className="p-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400">
-                      Save path
+                    <button
+                      className="p-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400"
+                      onClick={() =>
+                        //createPlan(venuesPlan, selectedStart, selectedEnd)
+                        addPlanNameModal.current?.open()
+                      }
+                    >
+                      Create plan
                     </button>
                   </div>
                 )}
@@ -165,34 +208,68 @@ export default function Plans() {
             )}
           </div>
         )}
+        <Modal ref={addPlanNameModal} title="Give the plan a name">
+          <NameModal
+            onSave={(name: string) => {
+              if (name === "") name = "Untitled Plan";
+              createPlan(name, venuesPlan, selectedStart, selectedEnd);
+            }}
+          />
+        </Modal>
 
         {/* map box */}
         <MapBox
           venues={venues}
-          venuesPath={venuesPath}
+          venuesPlan={venuesPlan}
           startPoint={selectedStart}
           endPoint={selectedEnd}
-          toggleVenueInPath={toggleVenueInPath}
+          toggleVenueInPlan={toggleVenueInPlan}
         />
       </div>
     </MapProvider>
   );
 }
 
+interface NameModalProps {
+  onSave: (name: string) => void;
+  onCancel?: () => void;
+}
+
+function NameModal({ onSave }: NameModalProps) {
+  const [planName, setPlanName] = useState<string>("");
+  return (
+    <div className="flex-wrap space-y-3 pt-2">
+      <input
+        className="w-full text-xl p-2"
+        type="text"
+        onChange={(e) => setPlanName(e.currentTarget.value)}
+      />
+      <div className="flex justify-center">
+        <button
+          className="bg-blue-400 w-full rounded-md p-2"
+          onClick={() => onSave(planName)}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface MapBoxProps {
   venues: VenueResponse;
-  venuesPath: string[];
+  venuesPlan: Venue[];
   startPoint: MapLocation;
   endPoint: MapLocation;
-  toggleVenueInPath: (venue: string) => void;
+  toggleVenueInPlan: (venue: Venue) => void;
 }
 
 export function MapBox({
   venues,
-  venuesPath,
+  venuesPlan,
   startPoint,
   endPoint,
-  toggleVenueInPath,
+  toggleVenueInPlan,
 }: MapBoxProps) {
   const { map } = useMap();
 
@@ -212,6 +289,7 @@ export function MapBox({
     }
   }, [map]);
 
+  //@dev create render geoPoints list and sort to fix overlap
   return (
     <Map
       id="map"
@@ -267,8 +345,8 @@ export function MapBox({
               <VenueMapCard
                 key={venue.id}
                 venue={venue}
-                venuesPath={venuesPath}
-                toggleVenueInPath={toggleVenueInPath}
+                venuesPlan={venuesPlan}
+                toggleVenueInPlan={toggleVenueInPlan}
                 latLong={{
                   lat: venue.address.latitude,
                   long: venue.address.longitude,
