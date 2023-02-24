@@ -1,5 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { forwardRef, Fragment, useImperativeHandle, useState } from "react";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface Modal {
   open: () => void;
@@ -55,12 +56,15 @@ const Modal = forwardRef<Modal, Props>(({ title, children }, ref) => {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-gray-200 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 {typeof title === "string" && (
-                  <Dialog.Title
-                    as="h3"
-                    className="text-2xl font-medium leading-6"
-                  >
-                    {title}
-                  </Dialog.Title>
+                  <div className="flex justify-between">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-xl font-medium leading-6"
+                    >
+                      {title}
+                    </Dialog.Title>
+                    <XMarkIcon className="w-7 pb-2" onClick={close} />
+                  </div>
                 )}
 
                 {children}
