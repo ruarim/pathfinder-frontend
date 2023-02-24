@@ -150,7 +150,7 @@ export default function Venue({ id }: { id: string }) {
   );
 
   const venue = venueData?.data?.data;
-  const venueAddress: Address = venue.address;
+  const venueAddress: Address = venue?.address;
   const venueRating: number = venue && venue.rating;
   const venueId = id;
 
