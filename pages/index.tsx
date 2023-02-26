@@ -1,6 +1,8 @@
+import { useRouter } from "next/router";
 import Button from "../components/Button";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <main>
       <div className="relative px-6 lg:px-8">
@@ -24,13 +26,13 @@ export default function Home() {
               <div className="mt-8 flex gap-x-4 sm:justify-center">
                 <Button
                   onClick={() => {
-                    window.location.href = "/plans";
+                    router.push("/plans");
                   }}
                   name="Create your route"
                 />
                 <Button
                   onClick={() => {
-                    window.location.href = "/venues";
+                    router.push("/venues");
                   }}
                   name="Find venues that you love"
                 />

@@ -3,8 +3,6 @@ import { useRouter } from "next/router";
 export default function PlanConfig() {
   const router = useRouter();
 
-  console.log(router.query.id);
-
   //getPlan
 
   //addParticipant mutaion

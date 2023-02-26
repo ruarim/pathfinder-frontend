@@ -1,36 +1,18 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { forwardRef, Fragment, useImperativeHandle, useState } from "react";
+import { Fragment, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
-interface Modal {
-  open: () => void;
-  close: () => void;
-}
-
-interface Props {
+interface ModalProps {
+  setOpen: (value: boolean) => void;
+  isOpen: boolean;
   title?: string;
   children: React.ReactNode;
 }
 
-const Modal = forwardRef<Modal, Props>(({ title, children }, ref) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  function open() {
-    setIsOpen(true);
-  }
-
-  function close() {
-    setIsOpen(false);
-  }
-
-  useImperativeHandle(ref, () => ({
-    open,
-    close,
-  }));
-
+const Modal = ({ setOpen, isOpen, title, children }: ModalProps) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={close}>
+      <Dialog as="div" className="relative z-10" onClose={() => setOpen(false)}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -63,7 +45,10 @@ const Modal = forwardRef<Modal, Props>(({ title, children }, ref) => {
                     >
                       {title}
                     </Dialog.Title>
-                    <XMarkIcon className="w-7 pb-2" onClick={close} />
+                    <XMarkIcon
+                      className="w-7 pb-2"
+                      onClick={() => setOpen(false)}
+                    />
                   </div>
                 )}
 
@@ -75,6 +60,6 @@ const Modal = forwardRef<Modal, Props>(({ title, children }, ref) => {
       </Dialog>
     </Transition.Root>
   );
-});
+};
 
 export default Modal;

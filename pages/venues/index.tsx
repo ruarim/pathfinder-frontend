@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useGetVenues } from "../../hooks/queries/getVenues";
-import dayjs from "dayjs";
 
 import VenueCard from "../../components/VenueCard";
 import PaginatorScrollBar from "../../components/PaginatorScrollBar";
 import SearchInput from "../../components/SearchInput";
-import { useGetVenuesByName } from "../../hooks/queries/getVenuesByName";
 import { useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useDebounce } from "../../hooks/utility/useDebounce";
-import { useGetUser } from "../../hooks/queries/getUser";
 
 export default function Venues() {
   const { data: venueData } = useGetVenues();
@@ -59,9 +56,6 @@ export default function Venues() {
               })
             : isLoading && <></>}
         </div>
-        {/* <div className="py-4">
-          <PaginatorScrollBar />
-        </div>{" "} */}
       </div>
     </div>
   );

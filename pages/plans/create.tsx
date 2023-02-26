@@ -49,7 +49,7 @@ export default function Create() {
 
   const router = useRouter();
 
-  const addPlanNameModal = useRef<Modal>(null);
+  const [isNameModalOpen, setNameModalOpen] = useState(false);
 
   const toggleVenueAttribute = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
@@ -194,10 +194,7 @@ export default function Create() {
                     </div>
                     <button
                       className="p-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400"
-                      onClick={() =>
-                        //createPlan(venuesPlan, selectedStart, selectedEnd)
-                        addPlanNameModal.current?.open()
-                      }
+                      onClick={() => setNameModalOpen(true)}
                     >
                       Create plan
                     </button>
@@ -207,14 +204,20 @@ export default function Create() {
             )}
           </div>
         )}
-        <Modal ref={addPlanNameModal} title="Give the plan a name">
-          <NameModal
-            onSave={(name: string) => {
-              if (name === "") name = "Untitled Plan";
-              createPlan(name, venuesPlan, selectedStart, selectedEnd);
-            }}
-          />
-        </Modal>
+        {isNameModalOpen && (
+          <Modal
+            isOpen={isNameModalOpen}
+            setOpen={setNameModalOpen}
+            title="Give the plan a name"
+          >
+            <NameModal
+              onSave={(name: string) => {
+                if (name === "") name = "Untitled Plan";
+                createPlan(name, venuesPlan, selectedStart, selectedEnd);
+              }}
+            />
+          </Modal>
+        )}
 
         {/* map box */}
         <MapBox
@@ -231,7 +234,6 @@ export default function Create() {
 
 interface NameModalProps {
   onSave: (name: string) => void;
-  onCancel?: () => void;
 }
 
 function NameModal({ onSave }: NameModalProps) {
@@ -283,12 +285,12 @@ function MapBox({
       });
     } else {
       /* geolocation IS NOT available, handle it */
-      //@TODO show modal
+      //@dev TODO show modal
       console.log("geolocation not available");
     }
   }, [map]);
 
-  //@dev create render geoPoints list and sort to fix overlap
+  //@dev create render geoPoints list and sort to fix venue map card overlap
   return (
     <Map
       id="map"

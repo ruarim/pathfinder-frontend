@@ -4,7 +4,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useRouter } from "next/router";
-import client from "../axios/apiClient";
+import Link from "next/link";
 
 const navigation = [
   {
@@ -25,10 +25,13 @@ const navigation = [
   },
 ];
 
+const avatarPhoto =
+  "https://pbs.twimg.com/profile_images/685821596561440768/3b0AFPSK_400x400.png";
+
 function DesktopNavLink({ name, href }: { name: string; href: string }) {
   const router = useRouter();
   return (
-    <a
+    <Link
       {...{ href }}
       className="relative mt-4 my-2 px-6 py-2 font-bold text-primary group"
     >
@@ -42,7 +45,7 @@ function DesktopNavLink({ name, href }: { name: string; href: string }) {
       ></span>
       <span className="absolute inset-0 border-2 border-primary"></span>
       <span className="relative">{name}</span>
-    </a>
+    </Link>
   );
 }
 
@@ -55,6 +58,7 @@ function MobileNavLink() {
             as="a"
             href={link.href}
             className="block w-full px-4 py-2 text-base font-medium text-primary/700 hover:bg-gray-100 hover:text-primary"
+            key={link.href}
           >
             {link.name}
           </Disclosure.Button>
@@ -75,11 +79,7 @@ function ProfileDropDown() {
       <div>
         <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
           <span className="sr-only">Open user menu</span>
-          <img
-            className="h-8 w-8 rounded-full"
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt=""
-          />
+          <img className="h-8 w-8 rounded-full" src={avatarPhoto} alt="" />
         </Menu.Button>
       </div>
       <Transition
@@ -97,7 +97,7 @@ function ProfileDropDown() {
               {" "}
               <Menu.Item>
                 {({ active }) => (
-                  <a
+                  <Link
                     href="/login"
                     className={clsx(
                       active ? "bg-gray-100" : "",
@@ -105,12 +105,12 @@ function ProfileDropDown() {
                     )}
                   >
                     Login
-                  </a>
+                  </Link>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <a
+                  <Link
                     href="/register"
                     className={clsx(
                       active ? "bg-gray-100" : "",
@@ -118,42 +118,16 @@ function ProfileDropDown() {
                     )}
                   >
                     Register
-                  </a>
+                  </Link>
                 )}
               </Menu.Item>
             </>
           )}
           {isLoggedIn && (
             <>
-              {/* <Menu.Item>
-                {({ active }) => (
-                  <a
-                    href="#"
-                    className={clsx(
-                      active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-primary/50"
-                    )}
-                  >
-                    Your Profile
-                  </a>
-                )}
-              </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <a
-                    href="#"
-                    className={clsx(
-                      active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-primary/50"
-                    )}
-                  >
-                    Settings
-                  </a>
-                )}
-              </Menu.Item> */}
-              <Menu.Item>
-                {({ active }) => (
-                  <a
+                  <div
                     onClick={logoutHandler}
                     className={clsx(
                       active
@@ -163,7 +137,7 @@ function ProfileDropDown() {
                     )}
                   >
                     Log Out
-                  </a>
+                  </div>
                 )}
               </Menu.Item>
             </>
@@ -182,9 +156,14 @@ export default function Header() {
             <div className="flex h-16 justify-between">
               <div className="flex px-2 lg:px-0">
                 <div className="flex flex-shrink-0 items-center">
-                  {/* Logo goes here */}
+                  <Link
+                    href={"/"}
+                    className="text-2xl font-bold  max-[800px]:hidden pt-4 p-3 px-"
+                  >
+                    Pathfinder
+                  </Link>
                 </div>
-                <div className="grid gap-3 max-[600px]:hidden grid-cols-4">
+                <div className="grid gap-3 max-[600px]:hidden grid-cols-4 px-4">
                   {navigation.map((link) => {
                     return (
                       <DesktopNavLink
