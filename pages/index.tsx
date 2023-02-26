@@ -10,7 +10,7 @@ export default function Home() {
           <div>
             <div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-center sm:text-6xl">
-                Welcome to pathfinder,
+                Welcome to Pathfinder,
               </h1>
               <h1 className="text-4xl font-bold tracking-tight sm:text-center sm:text-6xl">
                 a place where you can plan your perfect evening.
