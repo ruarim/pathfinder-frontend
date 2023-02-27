@@ -5,15 +5,25 @@ import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
 export default function Register() {
   const { mutateAsync: loginUser, data: user } = useLogin();
-  const { handleSubmit, register } = useForm<LoginUserMutationData>();
+  const {
+    handleSubmit,
+    register,
+    setError,
+    formState: { errors },
+  } = useForm<LoginUserMutationData>();
   const { loginHandler } = useAuthContext();
-  const { data } = useGetXsrfHeaders(); //@dev put in client
 
   const onSubmit = async (data: LoginUserMutationData) => {
-    const response = await loginUser(data);
-    if (loginHandler) {
-      loginHandler(response);
-    }
+    loginUser(data)
+      .then((res) => {
+        if (loginHandler) loginHandler(res);
+      })
+      .catch(() => {
+        setError("password", {
+          type: "server",
+          message: "Login failed, check your password.",
+        });
+      });
   };
 
   return (
@@ -43,6 +53,7 @@ export default function Register() {
                 <div className="mt-1">
                   <input
                     {...register("email")}
+                    placeholder="Email"
                     id="email"
                     name="email"
                     type="email"
@@ -63,6 +74,7 @@ export default function Register() {
                 <div className="mt-1">
                   <input
                     {...register("password")}
+                    placeholder="Password"
                     id="password"
                     name="password"
                     type="password"
@@ -80,6 +92,9 @@ export default function Register() {
                 >
                   Sign in
                 </button>
+              </div>
+              <div className="text-red-600">
+                {errors.password && <p>Login failed. Check your password</p>}
               </div>
             </form>
           </div>

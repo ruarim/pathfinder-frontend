@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Fragment } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Tab } from "@headlessui/react";
@@ -7,7 +7,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useGetUser } from "../../hooks/queries/getUser";
 import { useRouter } from "next/router";
-import { setDefaultResultOrder } from "dns/promises";
 
 interface RatingData {
   rating: number;
@@ -151,7 +150,7 @@ export default function Venue({ id }: { id: string }) {
   );
 
   const venue = venueData?.data?.data;
-  const venueAddress: string[] = venue && Object.values(venue.address);
+  const venueAddress: Address = venue?.address;
   const venueRating: number = venue && venue.rating;
   const venueId = id;
 
@@ -206,16 +205,14 @@ export default function Venue({ id }: { id: string }) {
                 <div className="border-b border-gray-200 pt-2">
                   <Rating {...{ venueRating, venueId }} />
                 </div>
-                <h3 className="text-sm font-medium text-gray-900 pt-4">
-                  Address
-                </h3>
-                <div className="prose prose-sm mt-4 text-gray-500">
-                  <ul role="list">
-                    {venueAddress?.map((addressLine) => (
-                      <li key={addressLine}>{addressLine}</li>
-                    ))}
-                  </ul>
-                </div>
+                <h2 className="mt-3 text-primary text-lg">Address</h2>
+                <p className="text-primary text-sm">{venueAddress.address_1}</p>
+                <p className="text-primary text-sm">
+                  {venueAddress?.address_2}
+                </p>
+                <p className="text-primary text-sm">{venueAddress.town_city}</p>
+                <p className="text-primary text-sm">{venueAddress.postcode}</p>
+                <p className="text-primary text-sm">{venueAddress.country}</p>
               </div>
 
               <div className="mt-10 border-t border-gray-200 pt-10">

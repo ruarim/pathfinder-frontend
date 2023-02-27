@@ -5,15 +5,25 @@ import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
 export default function Register() {
   const { mutateAsync: registerUser, data: user } = useRegistser();
-  const { handleSubmit, register } = useForm<RegisterUserMutationData>();
+  const {
+    handleSubmit,
+    register,
+    setError,
+    formState: { errors },
+  } = useForm<RegisterUserMutationData>();
   const { registerHandler } = useAuthContext();
-  const { data } = useGetXsrfHeaders(); //@dev put in client 
 
   const onSubmit = async (data: RegisterUserMutationData) => {
-    if (registerHandler) {
-      const response = await registerUser(data);
-      registerHandler(response);
-    }
+    registerUser(data)
+      .then((res) => {
+        if (registerHandler) registerHandler(res);
+      })
+      .catch((e) => {
+        setError("password", {
+          type: "server",
+          message: e.response.data.message,
+        });
+      });
   };
 
   return (
@@ -26,7 +36,7 @@ export default function Register() {
             alt="Your Company"
           />
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Sign in to your account
+            Create an account
           </h2>
         </div>
 
@@ -83,6 +93,7 @@ export default function Register() {
                 <div className="mt-1">
                   <input
                     {...register("email")}
+                    placeholder="Email"
                     id="email"
                     name="email"
                     type="email"
@@ -102,6 +113,7 @@ export default function Register() {
                 <div className="mt-1">
                   <input
                     {...register("username")}
+                    placeholder="Username"
                     id="username"
                     name="username"
                     type="username"
@@ -122,6 +134,7 @@ export default function Register() {
                 <div className="mt-1">
                   <input
                     {...register("password")}
+                    placeholder="Password"
                     id="password"
                     name="password"
                     type="password"
@@ -139,6 +152,9 @@ export default function Register() {
                 >
                   Sign in
                 </button>
+              </div>
+              <div className="text-red-600">
+                {errors.password && <p>{errors.password.message}</p>}
               </div>
             </form>
           </div>

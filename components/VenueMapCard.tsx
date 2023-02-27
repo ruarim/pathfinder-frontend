@@ -7,15 +7,15 @@ import { MapPinIcon } from "@heroicons/react/20/solid";
 
 interface VenueMapCardProps {
   venue: Venue;
-  venuesPath: string[];
-  toggleVenueInPath: (venue: string) => void;
+  venuesPlan: Venue[];
+  toggleVenueInPlan: (venue: Venue) => void;
   latLong: LatLong;
 }
 
 export default function VenueMapCard({
   venue,
-  venuesPath,
-  toggleVenueInPath,
+  venuesPlan: venuesPath,
+  toggleVenueInPlan: toggleVenueInPath,
   latLong,
 }: VenueMapCardProps) {
   const [isOpen, setOpen] = useState(false);
@@ -75,16 +75,16 @@ export default function VenueMapCard({
               </div>
             </div>
           </div>
-          {!venuesPath.includes(venue.name) ? (
+          {!venuesPath.includes(venue) ? (
             <button
-              onClick={() => toggleVenueInPath(venue.name)}
+              onClick={() => toggleVenueInPath(venue)}
               className="p-2 mt-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400 text-lg"
             >
               Add to path
             </button>
           ) : (
             <button
-              onClick={() => toggleVenueInPath(venue.name)}
+              onClick={() => toggleVenueInPath(venue)}
               className="p-2 mt-2 w-full rounded-lg bg-red-300 transition hover:bg-red-400 text-lg"
             >
               Remove
@@ -95,7 +95,7 @@ export default function VenueMapCard({
       <div
         className={clsx(
           "flex justify-center text-red-400",
-          venuesPath.includes(venue.name) && "text-blue-400"
+          venuesPath.includes(venue) && "text-blue-400"
         )}
         onClick={() => {
           isOpen ? setOpen(false) : setOpen(true);
