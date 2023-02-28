@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useLogin } from "../hooks/mutations/useLogin";
-import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
-export default function Register() {
+export default function Login({
+  setLoginOpen,
+}: {
+  setLoginOpen: (value: boolean) => void;
+}) {
   const { mutateAsync: loginUser, data: user } = useLogin();
   const {
     handleSubmit,
@@ -17,6 +20,7 @@ export default function Register() {
     loginUser(data)
       .then((res) => {
         if (loginHandler) loginHandler(res);
+        return setLoginOpen(false);
       })
       .catch(() => {
         setError("password", {
@@ -30,11 +34,11 @@ export default function Register() {
     <>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <img
+          {/* <img
             className="mx-auto h-12 w-auto"
             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
             alt="Your Company"
-          />
+          /> */}
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
             Sign in to your account
           </h2>

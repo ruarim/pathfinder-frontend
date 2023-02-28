@@ -62,6 +62,8 @@ export default function Create() {
     setAttributesSearchParams([...params]);
   };
 
+  console.log(attributesParams);
+
   const toggleVenueInPlan = (venue: Venue) => {
     let plan = venuesPlan;
     if (plan.includes(venue)) {

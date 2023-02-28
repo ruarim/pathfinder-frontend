@@ -1,9 +1,12 @@
 import { useForm } from "react-hook-form";
 import { useRegistser } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
-import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
-export default function Register() {
+export default function Register({
+  setRegisterOpen,
+}: {
+  setRegisterOpen: (value: boolean) => void;
+}) {
   const { mutateAsync: registerUser, data: user } = useRegistser();
   const {
     handleSubmit,
@@ -17,6 +20,7 @@ export default function Register() {
     registerUser(data)
       .then((res) => {
         if (registerHandler) registerHandler(res);
+        return setRegisterOpen(false);
       })
       .catch((e) => {
         setError("password", {
@@ -30,11 +34,11 @@ export default function Register() {
     <>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <img
+          {/* <img
             className="mx-auto h-12 w-auto"
             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
             alt="Your Company"
-          />
+          /> */}
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
             Create an account
           </h2>
@@ -150,7 +154,7 @@ export default function Register() {
                   type="submit"
                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  Sign in
+                  Register
                 </button>
               </div>
               <div className="text-red-600">
