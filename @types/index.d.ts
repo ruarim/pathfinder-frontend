@@ -5,6 +5,8 @@ type User = {
   lastName: string;
   isAdmin: number;
   email: string;
+  is_creator?: boolean;
+  has_completed?: boolean;
 };
 
 type RegistrationResponse = {};
@@ -86,6 +88,17 @@ type MapLocation = {
   center: number[];
 };
 
+type PlanDto = {
+  name: string;
+  startpoint_name: string;
+  startpoint_lat: number;
+  startpoint_long: number;
+  endpoint_name: string;
+  endpoint_lat: number;
+  endpoint_long: number;
+  venues: number[];
+};
+
 type Plan = {
   id?: number;
   name: string;
@@ -95,7 +108,8 @@ type Plan = {
   endpoint_name?: string;
   endpoint_lat?: number;
   endpoint_long?: number;
-  venues: number[];
+  venues: Venue[];
+  users: User[];
 };
 
 type PlanResponse = {
