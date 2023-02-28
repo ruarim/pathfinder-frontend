@@ -28,17 +28,20 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("token", data.data.token ?? "");
     localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
+    location.reload();
   }
 
   function registerHandler(data: RegisterResponse) {
     localStorage.setItem("token", data.data.token ?? "");
     setIsLoggedIn(true);
+    location.reload();
   }
 
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user_id");
     setIsLoggedIn(false);
+    location.reload();
   }
 
   function getToken() {

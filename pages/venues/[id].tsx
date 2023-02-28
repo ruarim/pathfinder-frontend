@@ -24,7 +24,7 @@ function Rating({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: user } = useGetUser();
-  const { data: ratingData } = useQuery<any, any, any>(
+  const { data: ratingData } = useQuery<RatingData, any, any>(
     ["rating", venueId],
     () => client.get(`venues/${venueId}/rating`),
     {
