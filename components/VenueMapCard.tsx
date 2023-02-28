@@ -21,8 +21,6 @@ export default function VenueMapCard({
   const [isOpen, setOpen] = useState(false);
   const { current: map } = useMap();
 
-  console.log(venuesPlan);
-
   return (
     <div>
       {isOpen && (
@@ -46,12 +44,12 @@ export default function VenueMapCard({
                   </a>
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 mt-2">
                 {venue?.attributes?.map((attribute) => {
                   return (
                     <div
                       key={attribute}
-                      className="bg-blue-100 p-2 rounded-md flex space-x-1 text-xs mt-2"
+                      className="bg-blue-100 p-2 rounded-md flex space-x-1 text-xs "
                     >
                       <TagIcon className="w-5" />
                       <div>{attribute}</div>
@@ -77,7 +75,7 @@ export default function VenueMapCard({
               </div>
             </div>
           </div>
-          {!venuesPlan.includes(venue) ? (
+          {!isVenueInPlan(venue, venuesPlan) ? (
             <button
               onClick={() => toggleVenueInPlan(venue)}
               className="p-2 mt-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400 text-lg"
@@ -95,10 +93,10 @@ export default function VenueMapCard({
         </div>
       )}
       <div
-        className={clsx({
-          ["flex justify-center text-red-400"]: true,
-          ["text-blue-400"]: venuesPlan.includes(venue),
-        })}
+        className={clsx(
+          "flex justify-center text-red-400",
+          isVenueInPlan(venue, venuesPlan) && "text-blue-400"
+        )}
         onClick={() => {
           isOpen ? setOpen(false) : setOpen(true);
           if (!isOpen && map)
@@ -109,4 +107,8 @@ export default function VenueMapCard({
       </div>
     </div>
   );
+}
+
+function isVenueInPlan(venue: Venue, venues: Venue[]) {
+  return venues.find((v) => v.id === venue.id);
 }
