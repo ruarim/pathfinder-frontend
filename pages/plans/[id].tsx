@@ -79,6 +79,10 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
           venues={plan.venues}
         />
       </div>
+      <div>RATING</div>
+      <div>CHALLANGES</div>
+      <div>SHARE</div>
+      <div>COMPLETED</div>
     </div>
   );
 }
