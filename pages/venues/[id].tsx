@@ -6,7 +6,6 @@ import clsx from "clsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useGetUser } from "../../hooks/queries/getUser";
-import { useRouter } from "next/router";
 
 interface RatingData {
   rating: number;
@@ -21,7 +20,6 @@ function Rating({
 }) {
   //State, queries and mutations
   const [rating, setRating] = useState<number | undefined>(venueRating);
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: user } = useGetUser();
   const { data: ratingData } = useQuery<RatingData, any, any>(
@@ -41,7 +39,7 @@ function Rating({
   async function setRatingHandler(rating: number) {
     try {
       if (!user) {
-        router.push("/login");
+        //open login modal
       }
       setRating(rating);
       const ratingData: RatingData = {
