@@ -39,6 +39,8 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan, avatarSrc }: PlanCardProps) {
+  const startName = plan.startpoint_name.split(",");
+  const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
   return (
     <div className="space-y-2">
       <div className="md:flex justify-between">
@@ -55,13 +57,13 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
           <div>
             <div className="flex">
               <MapPinIcon className="w-4 text-blue-400" />
-              {plan.startpoint_name}
+              {startName[0]}
             </div>
             <VenueList venues={plan.venues} />
             {plan.endpoint_name && (
               <div className="flex">
                 <MapPinIcon className="w-4 text-blue-400" />
-                {plan.endpoint_name}
+                {endName[0]}
               </div>
             )}
           </div>
@@ -104,7 +106,7 @@ function MapBox({
       initialViewState={{
         latitude: center.lat,
         longitude: center.long,
-        zoom: 14,
+        zoom: 12,
         bearing: 0,
         pitch: 0,
       }}
@@ -139,7 +141,8 @@ function VenueList({ venues }: { venues: Venue[] }) {
         return (
           <div className="flex">
             <MapPinIcon className="w-4" />
-            {venue.name}
+            {venue.name.substring(0, 29)}
+            {venue.name.length > 30 && "..."}
           </div>
         );
       })}
