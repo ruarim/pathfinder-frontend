@@ -9,6 +9,12 @@ type User = {
   has_completed?: boolean;
 };
 
+type UserResponse = {
+  data: {
+    data: User[];
+  };
+};
+
 type RegistrationResponse = {};
 
 type RegisterUserMutationData = {
@@ -88,7 +94,7 @@ type MapLocation = {
   center: number[];
 };
 
-type PlanDto = {
+type PlanMutationData = {
   name: string;
   startpoint_name: string;
   startpoint_lat: number;
@@ -99,8 +105,13 @@ type PlanDto = {
   venues: number[];
 };
 
+type PlanUserMutationData = {
+  email: string;
+  remove: boolean;
+};
+
 type Plan = {
-  id?: number;
+  id: number;
   name: string;
   startpoint_name: string;
   startpoint_lat: number;

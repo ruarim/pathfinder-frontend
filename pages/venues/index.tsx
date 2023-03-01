@@ -19,7 +19,7 @@ export default function Venues() {
     isLoading,
   } = useQuery<VenueResponse, any, any>(
     ["searchParam", debouncedSearchTerm],
-    () => client.get(`name_search?name=${debouncedSearchTerm}`),
+    () => client.get(`venue_name_search?name=${debouncedSearchTerm}`),
     {
       enabled: false,
     }

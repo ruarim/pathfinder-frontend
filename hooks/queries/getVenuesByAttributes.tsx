@@ -6,7 +6,7 @@ export const useGetVenuesByAttributes = (attributes: string[]) => {
 
   return useQuery<VenueResponse, any, any>({
     queryKey: ["attributes_venues", searchParam],
-    queryFn: () => client.get(`attributes_search?${searchParam}`),
+    queryFn: () => client.get(`venue_attributes_search?${searchParam}`),
   });
 };
 

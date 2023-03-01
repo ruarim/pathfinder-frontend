@@ -39,8 +39,8 @@ export default function Plans() {
               onClick={() => router.push(option.href)}
             >
               {/*@dev make boxes alternate between bg-contrast/50 bg-notice/50  */}
-              <span className="absolute rounded-md inset-0 transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-contrast/50 group-hover:translate-x-0 group-hover:translate-y-0"></span>
-              <span className="absolute rounded-md inset-0 border-2 border-primary"></span>
+              <span className="absolute inset-0 transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-contrast/50 group-hover:translate-x-0 group-hover:translate-y-0"></span>
+              <span className="absolute inset-0 border-2 border-primary"></span>
               <span className="relative text-3xl">{option.title}</span>
             </button>
           );

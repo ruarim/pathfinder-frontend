@@ -71,7 +71,11 @@ export default function Create() {
   };
 
   //plans mutation
-  const { mutateAsync: savePlan } = useMutation<PlanResponse, any, PlanDto>({
+  const { mutateAsync: savePlan } = useMutation<
+    PlanResponse,
+    any,
+    PlanMutationData
+  >({
     mutationFn: (data) => {
       return client.post("paths", data);
     },
