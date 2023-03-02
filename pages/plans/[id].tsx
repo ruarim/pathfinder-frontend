@@ -1,16 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
-import {
-  EnvelopeIcon,
-  MapPinIcon,
-  PlusCircleIcon,
-  UserIcon,
-} from "@heroicons/react/20/solid";
+import { EnvelopeIcon, MapPinIcon, UserIcon } from "@heroicons/react/20/solid";
 import { GeolocateControl, Map, Marker, NavigationControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/UserIcon";
-import { useForm } from "react-hook-form";
 import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
@@ -77,7 +71,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
         <MapBox
           center={{ lat: plan.startpoint_lat, long: plan.startpoint_long }}
           startpoint={{ lat: plan.startpoint_lat, long: plan.startpoint_long }}
-          //endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
+          endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
           venues={plan.venues}
         />
       </div>
@@ -98,12 +92,12 @@ function findCenterPoint() {}
 function MapBox({
   center,
   startpoint,
-  //endpoint,
+  endpoint,
   venues,
 }: {
   center: LatLong;
   startpoint: LatLong;
-  //endpoint?: LatLong;
+  endpoint?: { lat?: number; long?: number };
   venues: Venue[];
 }) {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
@@ -124,6 +118,20 @@ function MapBox({
     >
       <GeolocateControl position="top-right" />
       <NavigationControl position="top-right" />
+
+      {/* venues  */}
+      {venues.map((venue) => {
+        return (
+          <Marker
+            latitude={venue.address.latitude}
+            longitude={venue.address.longitude}
+            anchor="bottom"
+          >
+            <MapPinIcon className="w-8 text-red-400" />
+          </Marker>
+        );
+      })}
+
       {/* start */}
       {
         <Marker
@@ -135,9 +143,16 @@ function MapBox({
         </Marker>
       }
 
-      {/* venues  */}
-
       {/* end */}
+      {endpoint && (
+        <Marker
+          latitude={endpoint.lat}
+          longitude={endpoint.long}
+          anchor="bottom"
+        >
+          <MapPinIcon className="w-8" />
+        </Marker>
+      )}
     </Map>
   );
 }
@@ -182,7 +197,7 @@ function SetParticipants({ id }: { id: number }) {
   const queryClient = useQueryClient();
 
   //addUser mutaion
-  const { mutateAsync: addUser, data: mutationResult } = useMutation<
+  const { mutateAsync: addUser } = useMutation<
     PlanResponse,
     unknown,
     PlanUserMutationData
