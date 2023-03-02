@@ -94,7 +94,7 @@ export default function Login({
                 </button>
               </div>
               <div className="text-red-600">
-                {errors.password && <p>Login failed. Check your password</p>}
+                {errors.password && <p>Check your email and password</p>}
               </div>
             </form>
           </div>

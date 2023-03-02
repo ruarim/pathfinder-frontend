@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { createContext, useEffect, useState } from "react";
 
@@ -24,24 +25,26 @@ const AuthenticationContext = createContext<
 function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   async function loginHandler(data: LoginResponse) {
     localStorage.setItem("token", data.data.token ?? "");
     localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
-    location.reload();
+    queryClient.invalidateQueries();
   }
 
   function registerHandler(data: RegisterResponse) {
     localStorage.setItem("token", data.data.token ?? "");
     setIsLoggedIn(true);
-    location.reload();
+    queryClient.invalidateQueries();
   }
 
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user_id");
     setIsLoggedIn(false);
-    location.reload();
+    queryClient.invalidateQueries();
+    router.push("/");
   }
 
   function getToken() {
