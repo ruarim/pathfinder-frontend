@@ -14,8 +14,8 @@ interface VenueMapCardProps {
 
 export default function VenueMapCard({
   venue,
-  venuesPlan: venuesPath,
-  toggleVenueInPlan: toggleVenueInPath,
+  venuesPlan,
+  toggleVenueInPlan,
   latLong,
 }: VenueMapCardProps) {
   const [isOpen, setOpen] = useState(false);
@@ -24,19 +24,19 @@ export default function VenueMapCard({
   return (
     <div>
       {isOpen && (
-        <div onClick={() => setOpen(true)}>
+        <div onClick={() => setOpen(true)} className="w-64">
           <div
             key={venue.name}
             className="flex flex-col overflow-hidden rounded-lg shadow-lg"
           >
             <div className="flex-shrink-0">
               <img
-                className="h-48 w-full object-cover"
+                className="h-32 w-full object-cover"
                 src={"/pub-placeholder.jpg"}
                 alt=""
               />
             </div>
-            <div className="flex flex-1 flex-col justify-between bg-white p-6">
+            <div className="flex flex-1 flex-col justify-between bg-white p-3">
               <div className="flex-1">
                 <p className="text-xl font-medium text-primary">
                   <a href={`venues/${venue.id}`} className="hover:underline">
@@ -44,12 +44,12 @@ export default function VenueMapCard({
                   </a>
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 mt-2">
                 {venue?.attributes?.map((attribute) => {
                   return (
                     <div
                       key={attribute}
-                      className="bg-blue-100 p-2 rounded-md flex space-x-1"
+                      className="bg-blue-100 p-2 rounded-md flex space-x-1 text-xs "
                     >
                       <TagIcon className="w-5" />
                       <div>{attribute}</div>
@@ -75,16 +75,16 @@ export default function VenueMapCard({
               </div>
             </div>
           </div>
-          {!venuesPath.includes(venue) ? (
+          {!isVenueInPlan(venue, venuesPlan) ? (
             <button
-              onClick={() => toggleVenueInPath(venue)}
+              onClick={() => toggleVenueInPlan(venue)}
               className="p-2 mt-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400 text-lg"
             >
               Add to path
             </button>
           ) : (
             <button
-              onClick={() => toggleVenueInPath(venue)}
+              onClick={() => toggleVenueInPlan(venue)}
               className="p-2 mt-2 w-full rounded-lg bg-red-300 transition hover:bg-red-400 text-lg"
             >
               Remove
@@ -95,7 +95,7 @@ export default function VenueMapCard({
       <div
         className={clsx(
           "flex justify-center text-red-400",
-          venuesPath.includes(venue) && "text-blue-400"
+          isVenueInPlan(venue, venuesPlan) && "text-blue-400"
         )}
         onClick={() => {
           isOpen ? setOpen(false) : setOpen(true);
@@ -108,3 +108,8 @@ export default function VenueMapCard({
     </div>
   );
 }
+
+function isVenueInPlan(venue: Venue, venues: Venue[]) {
+  return venues.find((v) => v.id === venue.id);
+}
+

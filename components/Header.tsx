@@ -28,8 +28,7 @@ const navigation = [
   },
 ];
 
-const avatarPhoto =
-  "https://pbs.twimg.com/profile_images/685821596561440768/3b0AFPSK_400x400.png";
+const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
 function DesktopNavLink({ name, href }: { name: string; href: string }) {
   const router = useRouter();
@@ -175,9 +174,6 @@ function ProfileDropDown() {
       )}
     </div>
   );
-}
-function LoginModal() {
-  return <></>;
 }
 
 export default function Header() {

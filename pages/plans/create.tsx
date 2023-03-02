@@ -43,10 +43,8 @@ export default function Create() {
     place_name: "",
     center: [0, 0],
   });
-
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
-
   const router = useRouter();
 
   const [isNameModalOpen, setNameModalOpen] = useState(false);
@@ -65,7 +63,8 @@ export default function Create() {
 
   const toggleVenueInPlan = (venue: Venue) => {
     let plan = venuesPlan;
-    if (plan.includes(venue)) {
+
+    if (plan.find((e) => e.id === venue.id)) {
       const index = plan.indexOf(venue);
       plan.splice(index, 1);
     } else plan.push(venue);
@@ -73,7 +72,11 @@ export default function Create() {
   };
 
   //plans mutation
-  const { mutateAsync: savePlan } = useMutation<PlanResponse, any, Plan>({
+  const { mutateAsync: savePlan } = useMutation<
+    PlanResponse,
+    any,
+    PlanMutationData
+  >({
     mutationFn: (data) => {
       return client.post("paths", data);
     },

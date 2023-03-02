@@ -5,6 +5,14 @@ type User = {
   lastName: string;
   isAdmin: number;
   email: string;
+  is_creator?: boolean;
+  has_completed?: boolean;
+};
+
+type UserResponse = {
+  data: {
+    data: User[];
+  };
 };
 
 type RegistrationResponse = {};
@@ -86,8 +94,24 @@ type MapLocation = {
   center: number[];
 };
 
+type PlanMutationData = {
+  name: string;
+  startpoint_name: string;
+  startpoint_lat: number;
+  startpoint_long: number;
+  endpoint_name: string;
+  endpoint_lat: number;
+  endpoint_long: number;
+  venues: number[];
+};
+
+type PlanUserMutationData = {
+  email: string;
+  remove: boolean;
+};
+
 type Plan = {
-  id?: number;
+  id: number;
   name: string;
   startpoint_name: string;
   startpoint_lat: number;
@@ -95,7 +119,8 @@ type Plan = {
   endpoint_name?: string;
   endpoint_lat?: number;
   endpoint_long?: number;
-  venues: number[];
+  venues: Venue[];
+  users: User[];
 };
 
 type PlanResponse = {
