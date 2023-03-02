@@ -112,3 +112,4 @@ export default function VenueMapCard({
 function isVenueInPlan(venue: Venue, venues: Venue[]) {
   return venues.find((v) => v.id === venue.id);
 }
+
