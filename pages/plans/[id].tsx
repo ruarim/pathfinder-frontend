@@ -8,6 +8,7 @@ import AvatarIcon from "../../components/UserIcon";
 import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
+import Link from "next/link";
 
 const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
@@ -39,7 +40,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
 
   return (
     <div className="space-y-2 bg-slate-200 shadow-md p-5 rounded-md">
-      <div className="md:flex justify-between">
+      <div className="md:flex justify-between space-y-1">
         <h1 className="text-3xl font-bold">{plan.name}</h1>
         <h2 className="text-2xl flex gap-2">
           {plan.users.map((user) => {
@@ -89,84 +90,16 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
 //or find a way to make the zoom fit all showing points
 function findCenterPoint() {}
 
-function MapBox({
-  center,
-  startpoint,
-  endpoint,
-  venues,
-}: {
-  center: LatLong;
-  startpoint: LatLong;
-  endpoint?: { lat?: number; long?: number };
-  venues: Venue[];
-}) {
-  const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
-
-  return (
-    <Map
-      id="map"
-      initialViewState={{
-        latitude: center.lat,
-        longitude: center.long,
-        zoom: 12,
-        bearing: 0,
-        pitch: 0,
-      }}
-      style={{ height: "300px", width: "300px", borderRadius: "0.375rem" }}
-      mapStyle="mapbox://styles/mapbox/streets-v12"
-      mapboxAccessToken={mapboxToken}
-    >
-      <GeolocateControl position="top-right" />
-      <NavigationControl position="top-right" />
-
-      {/* venues  */}
-      {venues.map((venue) => {
-        return (
-          <Marker
-            latitude={venue.address.latitude}
-            longitude={venue.address.longitude}
-            anchor="bottom"
-          >
-            <MapPinIcon className="w-8 text-red-400" />
-          </Marker>
-        );
-      })}
-
-      {/* start */}
-      {
-        <Marker
-          latitude={startpoint.lat}
-          longitude={startpoint.long}
-          anchor="bottom"
-        >
-          <MapPinIcon className="w-8" />
-        </Marker>
-      }
-
-      {/* end */}
-      {endpoint && (
-        <Marker
-          latitude={endpoint.lat}
-          longitude={endpoint.long}
-          anchor="bottom"
-        >
-          <MapPinIcon className="w-8" />
-        </Marker>
-      )}
-    </Map>
-  );
-}
-
 function VenueList({ venues }: { venues: Venue[] }) {
   return (
     <div>
       {venues.map((venue) => {
         return (
-          <div className="flex">
+          <Link href={`/venues/${venue.id}`} className="flex hover:underline">
             <MapPinIcon className="w-4" />
             {venue.name.substring(0, 29)}
             {venue.name.length > 30 && "..."}
-          </div>
+          </Link>
         );
       })}
     </div>
@@ -192,7 +125,6 @@ function UserList({ users }: { users: User[] }) {
 
 function SetParticipants({ id }: { id: number }) {
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 500);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
 
@@ -217,10 +149,14 @@ function SetParticipants({ id }: { id: number }) {
     UserResponse,
     any,
     UserResponse
-  >({
-    queryKey: ["email_search", query],
-    queryFn: () => client.get(`user_email_search?email=${debouncedQuery}`),
-  });
+  >(
+    ["email_search", query],
+    () => client.get(`user_email_search?email=${debouncedQuery}`),
+    {
+      enabled: false,
+    }
+  );
+  const debouncedQuery = useDebounce(query, 500);
 
   useEffect(() => {
     if (debouncedQuery.length > 0) {
@@ -314,6 +250,74 @@ function SetParticipants({ id }: { id: number }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function MapBox({
+  center,
+  startpoint,
+  endpoint,
+  venues,
+}: {
+  center: LatLong;
+  startpoint: LatLong;
+  endpoint?: { lat?: number; long?: number };
+  venues: Venue[];
+}) {
+  const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
+
+  return (
+    <Map
+      id="map"
+      initialViewState={{
+        latitude: center.lat,
+        longitude: center.long,
+        zoom: 12,
+        bearing: 0,
+        pitch: 0,
+      }}
+      style={{ height: "300px", width: "300px", borderRadius: "0.375rem" }}
+      mapStyle="mapbox://styles/mapbox/streets-v12"
+      mapboxAccessToken={mapboxToken}
+    >
+      <GeolocateControl position="top-right" />
+      <NavigationControl position="top-right" />
+
+      {/* venues  */}
+      {venues.map((venue) => {
+        return (
+          <Marker
+            latitude={venue.address.latitude}
+            longitude={venue.address.longitude}
+            anchor="bottom"
+          >
+            <MapPinIcon className="w-8 text-red-400" />
+          </Marker>
+        );
+      })}
+
+      {/* start */}
+      {
+        <Marker
+          latitude={startpoint.lat}
+          longitude={startpoint.long}
+          anchor="bottom"
+        >
+          <MapPinIcon className="w-8" />
+        </Marker>
+      }
+
+      {/* end */}
+      {endpoint && (
+        <Marker
+          latitude={endpoint.lat}
+          longitude={endpoint.long}
+          anchor="bottom"
+        >
+          <MapPinIcon className="w-8" />
+        </Marker>
+      )}
+    </Map>
   );
 }
 

@@ -115,7 +115,9 @@ const reviews = {
       id: 1,
       rating: 5,
       content: `
-        <p>This icon pack is just what I need for my latest project. There's an icon for just about anything I could ever need. Love the playful look!</p>
+        <p>Fantastic live music, superb range of beers and ciders, amazing quality food and a great smoking area to the rear.
+
+        The pub seems to have recently improved in leaps and bounds! The staff seem happier, it’s always very clean and well laid out and stocked too!</p>
       `,
       date: "July 16, 2021",
       datetime: "2021-07-16",
@@ -127,7 +129,7 @@ const reviews = {
       id: 2,
       rating: 5,
       content: `
-        <p>Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so it's a steal at this price.</p>
+        <p>Always have a lovely time at this pub, love the quiz and all the games they have you can play. Visited this weekend and Alex who served me was super friendly and helpful. Will definitely be back soon!</p>
       `,
       date: "July 12, 2021",
       datetime: "2021-07-12",
@@ -294,18 +296,6 @@ export default function Venue({ id }: { id: string }) {
                     >
                       Customer Reviews
                     </Tab>
-                    <Tab
-                      className={({ selected }) =>
-                        clsx(
-                          selected
-                            ? "border-indigo-600 text-indigo-600"
-                            : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-                          "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
-                        )
-                      }
-                    >
-                      Some other content
-                    </Tab>
                   </Tab.List>
                 </div>
                 <Tab.Panels as={Fragment}>
@@ -364,12 +354,6 @@ export default function Venue({ id }: { id: string }) {
                         </div>
                       </div>
                     ))}
-                  </Tab.Panel>
-
-                  <Tab.Panel className="pt-10">
-                    <h3 className="sr-only">Some content</h3>
-
-                    <div>Hello world</div>
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
