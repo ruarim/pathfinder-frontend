@@ -28,7 +28,7 @@ export default function Plan({ id }: { id: string }) {
 
   //display plan
   return (
-    <div className="flex justify-center items-center p-6 ">
+    <div className="flex justify-center items-center p-6">
       {plan && <PlanCard plan={plan} avatarSrc={avatarPhoto} />}
     </div>
   );
@@ -44,7 +44,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
 
   return (
-    <div className="space-y-2 bg-slate-200 shadow-md p-5">
+    <div className="space-y-2 bg-slate-200 shadow-md p-5 rounded-md">
       <div className="md:flex justify-between">
         <h1 className="text-3xl font-bold">{plan.name}</h1>
         <h2 className="text-2xl flex gap-2">
