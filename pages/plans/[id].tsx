@@ -35,7 +35,7 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan, avatarSrc }: PlanCardProps) {
-  const startName = plan.startpoint_name.split(",");
+  const startName = plan?.endpoint_name ? plan?.startpoint_name.split(",") : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
 
   return (
@@ -52,10 +52,12 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
       <div className="grid md:grid-cols-2 space-y-3">
         <div className="space-y-3">
           <div>
-            <div className="flex">
-              <MapPinIcon className="w-4 text-blue-400" />
-              {startName[0]}
-            </div>
+            {plan.endpoint_name && (
+              <div className="flex">
+                <MapPinIcon className="w-4 text-blue-400" />
+                {startName[0]}
+              </div>
+            )}
             <VenueList venues={plan.venues} />
             {plan.endpoint_name && (
               <div className="flex">
@@ -70,7 +72,10 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
           </div>
         </div>
         <MapBox
-          center={{ lat: plan.startpoint_lat, long: plan.startpoint_long }}
+          center={{
+            lat: plan.venues[0].address.latitude,
+            long: plan.venues[0].address.longitude,
+          }}
           startpoint={{ lat: plan.startpoint_lat, long: plan.startpoint_long }}
           endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
           venues={plan.venues}
@@ -248,7 +253,7 @@ function MapBox({
   venues,
 }: {
   center: LatLong;
-  startpoint: LatLong;
+  startpoint?: { lat?: number; long?: number };
   endpoint?: { lat?: number; long?: number };
   venues: Venue[];
 }) {
@@ -285,7 +290,7 @@ function MapBox({
       })}
 
       {/* start */}
-      {
+      {startpoint && (
         <Marker
           latitude={startpoint.lat}
           longitude={startpoint.long}
@@ -293,7 +298,7 @@ function MapBox({
         >
           <MapPinIcon className="w-8 text-green-500" />
         </Marker>
-      }
+      )}
 
       {/* end */}
       {endpoint && (
