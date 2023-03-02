@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import AvatarIcon from "./UserIcon";
 
 const navigation = [
   {
@@ -25,8 +26,7 @@ const navigation = [
   },
 ];
 
-const avatarPhoto =
-  "https://pbs.twimg.com/profile_images/685821596561440768/3b0AFPSK_400x400.png";
+const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
 function DesktopNavLink({ name, href }: { name: string; href: string }) {
   const router = useRouter();
@@ -79,7 +79,7 @@ function ProfileDropDown() {
       <div>
         <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
           <span className="sr-only">Open user menu</span>
-          <img className="h-8 w-8 rounded-full" src={avatarPhoto} alt="" />
+          <AvatarIcon imageUrl={avatarPhoto} />
         </Menu.Button>
       </div>
       <Transition
