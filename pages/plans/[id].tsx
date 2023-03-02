@@ -303,7 +303,7 @@ function MapBox({
           longitude={startpoint.long}
           anchor="bottom"
         >
-          <MapPinIcon className="w-8" />
+          <MapPinIcon className="w-8 text-green-500" />
         </Marker>
       }
 
