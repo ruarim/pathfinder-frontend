@@ -93,10 +93,9 @@ export default function VenueMapCard({
         </div>
       )}
       <div
-        className={clsx(
-          "flex justify-center text-red-400",
-          isVenueInPlan(venue, venuesPlan) && "text-blue-400"
-        )}
+        className={`flex justify-center ${clsx(
+          isVenueInPlan(venue, venuesPlan) ? "text-blue-400" : "text-red-400"
+        )}`}
         onClick={() => {
           isOpen ? setOpen(false) : setOpen(true);
           if (!isOpen && map)
@@ -112,4 +111,3 @@ export default function VenueMapCard({
 function isVenueInPlan(venue: Venue, venues: Venue[]) {
   return venues.find((v) => v.id === venue.id);
 }
-
