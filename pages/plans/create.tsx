@@ -45,6 +45,7 @@ export default function Create() {
   });
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
+  const [isPlanLoading, setPlanLoading] = useState(false);
   const router = useRouter();
 
   const [isNameModalOpen, setNameModalOpen] = useState(false);
@@ -216,8 +217,12 @@ export default function Create() {
             <NameModal
               onSave={(name: string) => {
                 if (name === "") name = "Untitled Plan";
-                createPlan(name, venuesPlan, selectedStart, selectedEnd);
+                setPlanLoading(true);
+                createPlan(name, venuesPlan, selectedStart, selectedEnd).catch(
+                  () => setPlanLoading(false)
+                );
               }}
+              isLoading={isPlanLoading}
             />
           </Modal>
         )}
@@ -237,10 +242,12 @@ export default function Create() {
 
 interface NameModalProps {
   onSave: (name: string) => void;
+  isLoading: boolean;
 }
 
-function NameModal({ onSave }: NameModalProps) {
+function NameModal({ onSave, isLoading }: NameModalProps) {
   const [planName, setPlanName] = useState<string>("");
+
   return (
     <div className="flex-wrap space-y-3 pt-2">
       <input
@@ -250,9 +257,32 @@ function NameModal({ onSave }: NameModalProps) {
       />
       <div className="flex justify-center">
         <button
-          className="bg-blue-400 w-full rounded-md p-2"
           onClick={() => onSave(planName)}
+          disabled={isLoading}
+          className="bg-blue-500 hover:bg-blue-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
         >
+          {isLoading && (
+            <svg
+              className="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          )}
           Save
         </button>
       </div>
@@ -293,7 +323,7 @@ function MapBox({
     }
   }, [map]);
 
-  //@dev create render geoPoints list and sort to fix venue map card overlap
+  //@dev create render geoPoints list and sort to fix venueMapCard overlap
   return (
     <Map
       id="map"
