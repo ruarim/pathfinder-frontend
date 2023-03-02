@@ -11,25 +11,25 @@ import { useDebounce } from "../../hooks/utility/useDebounce";
 export default function Venues() {
   const { data: venueData } = useGetVenues();
   const [searchParam, setSearchParam] = useState("");
-  const debouncedSearchTerm = useDebounce(searchParam, 500);
+  const debouncedSearchParam = useDebounce(searchParam, 500);
 
   const {
     data: venueSearchData,
     refetch,
     isLoading,
   } = useQuery<VenueResponse, any, any>(
-    ["searchParam", debouncedSearchTerm],
-    () => client.get(`venue_name_search?name=${debouncedSearchTerm}`),
+    ["searchParam", debouncedSearchParam],
+    () => client.get(`venue_name_search?name=${debouncedSearchParam}`),
     {
       enabled: false,
     }
   );
 
   useEffect(() => {
-    if (debouncedSearchTerm.length > 0) {
+    if (debouncedSearchParam.length > 0) {
       refetch();
     }
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchParam]);
 
   return (
     <div className="relative px-4 pt-16 pb-20 sm:px-6 lg:px-8 lg:pt-24 lg:pb-28">

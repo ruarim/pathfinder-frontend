@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
 import {
@@ -12,7 +12,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/UserIcon";
 import { useForm } from "react-hook-form";
 import { Combobox, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
 
 const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
@@ -21,7 +21,7 @@ export default function Plan({ id }: { id: string }) {
   const router = useRouter();
 
   const { data: planData } = useQuery<PlanResponse, any, any>(
-    ["plan_id", id],
+    ["plan", id],
     () => client.get(`paths/${router.query.id}`)
   );
   const plan = planData?.data?.data;
@@ -42,7 +42,6 @@ interface PlanCardProps {
 function PlanCard({ plan, avatarSrc }: PlanCardProps) {
   const startName = plan.startpoint_name.split(",");
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
-  const [selectedUser, setSelectedUser] = useState<string>("");
 
   return (
     <div className="space-y-2 bg-slate-200 shadow-md p-5">
@@ -71,11 +70,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
             )}
           </div>
           <div className="space-y-2">
-            <SetParticipants
-              id={plan.id}
-              selectedUser={selectedUser}
-              setSelectedUser={setSelectedUser}
-            />
+            <SetParticipants id={plan.id} />
             <UserList users={plan.users} />
           </div>
         </div>
@@ -180,20 +175,14 @@ function UserList({ users }: { users: User[] }) {
   );
 }
 
-function SetParticipants({
-  id,
-  selectedUser,
-  setSelectedUser,
-}: {
-  id: number;
-  selectedUser: string;
-  setSelectedUser: (value: string) => void;
-}) {
+function SetParticipants({ id }: { id: number }) {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 500);
+  const [selectedUser, setSelectedUser] = useState<string>("");
+  const queryClient = useQueryClient();
 
   //addUser mutaion
-  const { mutateAsync: addUser, data } = useMutation<
+  const { mutateAsync: addUser, data: mutationResult } = useMutation<
     PlanResponse,
     unknown,
     PlanUserMutationData
@@ -203,10 +192,26 @@ function SetParticipants({
     },
   });
 
-  const { data: usersResults } = useQuery<UserResponse, any, UserResponse>({
+  const addUserHandler = async (user: { email: string; remove: boolean }) => {
+    await addUser(user);
+    queryClient.invalidateQueries({ queryKey: ["plan"] });
+    setSelectedUser("");
+  };
+
+  const { data: usersResults, refetch } = useQuery<
+    UserResponse,
+    any,
+    UserResponse
+  >({
     queryKey: ["email_search", query],
     queryFn: () => client.get(`user_email_search?email=${debouncedQuery}`),
   });
+
+  useEffect(() => {
+    if (debouncedQuery.length > 0) {
+      refetch();
+    }
+  }, [debouncedQuery]);
 
   const users = usersResults?.data?.data;
 
@@ -237,6 +242,10 @@ function SetParticipants({
                     </div>
                   ) : (
                     users?.map((user) => {
+                      //@dev
+                      //check if user = plan.users.is_creator
+                      //check if email is already participant
+                      //create is creator function
                       return (
                         <Combobox.Option
                           key={user.email}
@@ -277,7 +286,9 @@ function SetParticipants({
             </div>
           </Combobox>
           <button
-            onClick={() => addUser({ email: selectedUser, remove: false })}
+            onClick={() =>
+              addUserHandler({ email: selectedUser, remove: false })
+            }
             disabled={selectedUser === "" ? true : false}
             type="submit"
             className="inline-flex items-center rounded-md border border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-indigo-600 px-3 py-2 text-sm font-medium leading-4 text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
