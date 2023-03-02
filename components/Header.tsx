@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -71,10 +71,14 @@ function MobileNavLink() {
 }
 
 function ProfileDropDown() {
-  const { logout, isLoggedIn } = useAuthContext();
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [registerModalOpen, setRegisterModalOpen] = useState(false);
-
+  const {
+    logout,
+    isLoggedIn,
+    loginModalOpen,
+    registerModalOpen,
+    setLoginModalOpen,
+    setRegisterModalOpen,
+  } = useAuthContext();
   function logoutHandler() {
     logout && logout();
   }
@@ -104,7 +108,9 @@ function ProfileDropDown() {
                   {({ active }) => (
                     <div className="w-full">
                       <button
-                        onClick={() => setLoginModalOpen(true)}
+                        onClick={() => {
+                          if (setLoginModalOpen) setLoginModalOpen(true);
+                        }}
                         className={clsx(
                           active ? "bg-gray-100 w-full text-left" : "",
                           "block px-4 py-2 text-sm text-primary/50"
@@ -119,7 +125,9 @@ function ProfileDropDown() {
                   {({ active }) => (
                     <div className="w-full">
                       <button
-                        onClick={() => setRegisterModalOpen(true)}
+                        onClick={() => {
+                          if (setRegisterModalOpen) setRegisterModalOpen(true);
+                        }}
                         className={clsx(
                           active ? "bg-gray-100 w-full text-left" : "",
                           "block px-4 py-2 text-sm text-primary/50"
@@ -154,7 +162,7 @@ function ProfileDropDown() {
           </Menu.Items>
         </Transition>
       </Menu>
-      {loginModalOpen && (
+      {loginModalOpen && setLoginModalOpen && (
         <Modal
           setOpen={setLoginModalOpen}
           isOpen={loginModalOpen}
@@ -163,7 +171,7 @@ function ProfileDropDown() {
           <Login setLoginOpen={setLoginModalOpen} />
         </Modal>
       )}
-      {registerModalOpen && (
+      {registerModalOpen && setRegisterModalOpen && (
         <Modal
           setOpen={setRegisterModalOpen}
           isOpen={registerModalOpen}

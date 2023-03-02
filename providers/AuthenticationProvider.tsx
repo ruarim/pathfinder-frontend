@@ -5,12 +5,18 @@ import React, { createContext, useEffect, useState } from "react";
 type RegisterFunction = (data: RegisterResponse) => void;
 type LogoutFunction = () => void;
 type LoginFunction = (data: LoginResponse) => void;
+type setLoginModalOpen = (value: boolean) => void;
+type setRegisterModalOpen = (value: boolean) => void;
 
 interface AuthenticationContextInterface {
   registerHandler: RegisterFunction;
   logout: LogoutFunction;
   loginHandler: LoginFunction;
   isLoggedIn: boolean;
+  loginModalOpen: boolean;
+  registerModalOpen: boolean;
+  setRegisterModalOpen: setRegisterModalOpen;
+  setLoginModalOpen: setLoginModalOpen;
 }
 
 const AuthenticationContext = createContext<
@@ -20,22 +26,31 @@ const AuthenticationContext = createContext<
   loginHandler: (data) => undefined,
   logout: () => undefined,
   isLoggedIn: undefined,
+  loginModalOpen: undefined,
+  registerModalOpen: undefined,
+  setRegisterModalOpen: (value) => undefined,
+  setLoginModalOpen: (value) => undefined,
 });
 
 function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
+
   async function loginHandler(data: LoginResponse) {
     localStorage.setItem("token", data.data.token ?? "");
     localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
+    setLoginModalOpen(false);
     queryClient.invalidateQueries();
   }
 
   function registerHandler(data: RegisterResponse) {
     localStorage.setItem("token", data.data.token ?? "");
     setIsLoggedIn(true);
+    setRegisterModalOpen(false);
     queryClient.invalidateQueries();
   }
 
@@ -67,6 +82,10 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
         logout,
         loginHandler,
         isLoggedIn,
+        loginModalOpen,
+        registerModalOpen,
+        setRegisterModalOpen,
+        setLoginModalOpen,
       }}
     >
       {children}

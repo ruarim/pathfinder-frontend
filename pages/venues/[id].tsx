@@ -20,7 +20,7 @@ function Rating({
   venueId: string;
 }) {
   //State, queries and mutations
-  const { isLoggedIn } = useAuthContext();
+  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
   const [rating, setRating] = useState<number | undefined>(venueRating);
   const queryClient = useQueryClient();
   const { data: user } = useGetUser();
@@ -41,7 +41,7 @@ function Rating({
   async function setRatingHandler(rating: number) {
     try {
       if (!user) {
-        //open login modal
+        if (setLoginModalOpen) setLoginModalOpen(true);
       }
       setRating(rating);
       const ratingData: RatingData = {
