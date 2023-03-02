@@ -76,18 +76,10 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
           venues={plan.venues}
         />
       </div>
-      {/* <div>RATING</div>
-      <div>CHALLANGES</div>
-      <div>SHARE</div>
-      <div>COMPLETED</div>
-      <div>PRIVATE PUBLIC TOGGLE</div> 
-      <div>START</div>*/}
     </div>
   );
 }
 
-//find the center point of all venues and start/endpoint
-//or find a way to make the zoom fit all showing points
 function findCenterPoint() {}
 
 function VenueList({ venues }: { venues: Venue[] }) {
@@ -193,10 +185,6 @@ function SetParticipants({ id }: { id: number }) {
                     </div>
                   ) : (
                     users?.map((user) => {
-                      //@dev
-                      //check if user = plan.users.is_creator
-                      //check if email is already participant
-                      //create is creator function
                       return (
                         <Combobox.Option
                           key={user.email}
