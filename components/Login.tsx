@@ -2,11 +2,7 @@ import { useForm } from "react-hook-form";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useLogin } from "../hooks/mutations/useLogin";
 
-export default function Login({
-  setLoginOpen,
-}: {
-  setLoginOpen: (value: boolean) => void;
-}) {
+export default function Login() {
   const { mutateAsync: loginUser, data: user } = useLogin();
   const {
     handleSubmit,
@@ -14,13 +10,16 @@ export default function Login({
     setError,
     formState: { errors },
   } = useForm<LoginUserMutationData>();
-  const { loginHandler } = useAuthContext();
+  const { loginHandler, setRegisterModalOpen, setLoginModalOpen } =
+    useAuthContext();
 
   const onSubmit = async (data: LoginUserMutationData) => {
     loginUser(data)
       .then((res) => {
-        if (loginHandler) loginHandler(res);
-        return setLoginOpen(false);
+        if (loginHandler && setLoginModalOpen) {
+          loginHandler(res);
+          return setLoginModalOpen(false);
+        }
       })
       .catch(() => {
         setError("password", {
@@ -28,6 +27,13 @@ export default function Login({
           message: "Login failed, check your password.",
         });
       });
+  };
+
+  const handleRegister = () => {
+    if (setRegisterModalOpen && setLoginModalOpen) {
+      setLoginModalOpen(false);
+      setRegisterModalOpen(true);
+    }
   };
 
   return (
@@ -85,12 +91,18 @@ export default function Login({
                 </div>
               </div>
 
-              <div>
+              <div className="flex space-x-2">
                 <button
                   type="submit"
                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                   Sign in
+                </button>
+                <button
+                  onClick={handleRegister}
+                  className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Register
                 </button>
               </div>
               <div className="text-red-600">

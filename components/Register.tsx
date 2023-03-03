@@ -2,11 +2,7 @@ import { useForm } from "react-hook-form";
 import { useRegistser } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 
-export default function Register({
-  setRegisterOpen,
-}: {
-  setRegisterOpen: (value: boolean) => void;
-}) {
+export default function Register() {
   const { mutateAsync: registerUser, data: user } = useRegistser();
   const {
     handleSubmit,
@@ -14,13 +10,15 @@ export default function Register({
     setError,
     formState: { errors },
   } = useForm<RegisterUserMutationData>();
-  const { registerHandler } = useAuthContext();
+  const { registerHandler, setRegisterModalOpen } = useAuthContext();
 
   const onSubmit = async (data: RegisterUserMutationData) => {
     registerUser(data)
       .then((res) => {
-        if (registerHandler) registerHandler(res);
-        return setRegisterOpen(false);
+        if (registerHandler && setRegisterModalOpen) {
+          registerHandler(res);
+          return setRegisterModalOpen(false);
+        }
       })
       .catch((e) => {
         setError("password", {

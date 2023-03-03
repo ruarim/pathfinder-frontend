@@ -168,7 +168,7 @@ function ProfileDropDown() {
           isOpen={loginModalOpen}
           title={"Login"}
         >
-          <Login setLoginOpen={setLoginModalOpen} />
+          <Login />
         </Modal>
       )}
       {registerModalOpen && setRegisterModalOpen && (
@@ -177,7 +177,7 @@ function ProfileDropDown() {
           isOpen={registerModalOpen}
           title={"Register"}
         >
-          <Register setRegisterOpen={setRegisterModalOpen} />
+          <Register />
         </Modal>
       )}
     </div>
