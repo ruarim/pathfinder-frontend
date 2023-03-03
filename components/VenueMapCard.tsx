@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { useMap } from "react-map-gl";
 import { TagIcon } from "@heroicons/react/24/outline";
 import { MapPinIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
 
 interface VenueMapCardProps {
   venue: Venue;
@@ -39,9 +40,12 @@ export default function VenueMapCard({
             <div className="flex flex-1 flex-col justify-between bg-white p-3">
               <div className="flex-1">
                 <p className="text-xl font-medium text-primary">
-                  <a href={`venues/${venue.id}`} className="hover:underline">
+                  <Link
+                    href={`/venues/${venue.id}`}
+                    className="hover:underline"
+                  >
                     {venue.name}
-                  </a>
+                  </Link>
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 mt-2">
