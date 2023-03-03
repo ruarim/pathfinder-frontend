@@ -5,7 +5,9 @@ import clsx from "clsx";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import AvatarIcon from "./UserIcon";
+import Modal from "./Modal";
+import Login from "./Login";
+import Register from "./Register";
 
 const navigation = [
   {
@@ -69,84 +71,119 @@ function MobileNavLink() {
 }
 
 function ProfileDropDown() {
-  const { logout, isLoggedIn } = useAuthContext();
-
+  const {
+    logout,
+    isLoggedIn,
+    loginModalOpen,
+    registerModalOpen,
+    setLoginModalOpen,
+    setRegisterModalOpen,
+  } = useAuthContext();
   function logoutHandler() {
     logout && logout();
   }
   return (
-    <Menu as="div" className="relative ml-4 flex-shrink-0">
-      <div>
-        <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          <span className="sr-only">Open user menu</span>
-          <AvatarIcon imageUrl={avatarPhoto} />
-        </Menu.Button>
-      </div>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {!isLoggedIn && (
-            <>
-              {" "}
-              <Menu.Item>
-                {({ active }) => (
-                  <Link
-                    href="/login"
-                    className={clsx(
-                      active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-primary/50"
-                    )}
-                  >
-                    Login
-                  </Link>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <Link
-                    href="/register"
-                    className={clsx(
-                      active ? "bg-gray-100" : "",
-                      "block px-4 py-2 text-sm text-primary/50"
-                    )}
-                  >
-                    Register
-                  </Link>
-                )}
-              </Menu.Item>
-            </>
-          )}
-          {isLoggedIn && (
-            <>
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    onClick={logoutHandler}
-                    className={clsx(
-                      active
-                        ? "bg-green-400/50  cursor-pointer"
-                        : "bg-blue-400/50",
-                      "block px-4 py-2 text-sm text-primary/50"
-                    )}
-                  >
-                    Log Out
-                  </div>
-                )}
-              </Menu.Item>
-            </>
-          )}
-        </Menu.Items>
-      </Transition>
-    </Menu>
+    <div>
+      <Menu as="div" className="relative ml-4 flex-shrink-0">
+        <div>
+          <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <span className="sr-only">Open user menu</span>
+            <img className="h-8 w-8 rounded-full" src={avatarPhoto} alt="" />
+          </Menu.Button>
+        </div>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            {!isLoggedIn && (
+              <>
+                {" "}
+                <Menu.Item>
+                  {({ active }) => (
+                    <div className="w-full">
+                      <button
+                        onClick={() => {
+                          if (setLoginModalOpen) setLoginModalOpen(true);
+                        }}
+                        className={clsx(
+                          active ? "bg-gray-100 w-full text-left" : "",
+                          "block px-4 py-2 text-sm text-primary/50"
+                        )}
+                      >
+                        Login
+                      </button>
+                    </div>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <div className="w-full">
+                      <button
+                        onClick={() => {
+                          if (setRegisterModalOpen) setRegisterModalOpen(true);
+                        }}
+                        className={clsx(
+                          active ? "bg-gray-100 w-full text-left" : "",
+                          "block px-4 py-2 text-sm text-primary/50"
+                        )}
+                      >
+                        Register
+                      </button>
+                    </div>
+                  )}
+                </Menu.Item>
+              </>
+            )}
+            {isLoggedIn && (
+              <>
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onClick={logoutHandler}
+                      className={clsx(
+                        active
+                          ? "bg-green-400/50  cursor-pointer"
+                          : "bg-blue-400/50",
+                        "block px-4 py-2 text-sm text-primary/50"
+                      )}
+                    >
+                      Log Out
+                    </div>
+                  )}
+                </Menu.Item>
+              </>
+            )}
+          </Menu.Items>
+        </Transition>
+      </Menu>
+      {loginModalOpen && setLoginModalOpen && (
+        <Modal
+          setOpen={setLoginModalOpen}
+          isOpen={loginModalOpen}
+          title={"Login"}
+        >
+          <Login />
+        </Modal>
+      )}
+      {registerModalOpen && setRegisterModalOpen && (
+        <Modal
+          setOpen={setRegisterModalOpen}
+          isOpen={registerModalOpen}
+          title={"Register"}
+        >
+          <Register />
+        </Modal>
+      )}
+    </div>
   );
 }
+
 export default function Header() {
   return (
     <Disclosure as="nav" className="bg-white shadow">

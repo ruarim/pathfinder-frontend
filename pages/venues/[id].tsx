@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useGetUser } from "../../hooks/queries/getUser";
-import { useRouter } from "next/router";
+import { useAuthContext } from "../../hooks/context/useAuthContext";
 
 interface RatingData {
   rating: number;
@@ -20,15 +20,15 @@ function Rating({
   venueId: string;
 }) {
   //State, queries and mutations
+  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
   const [rating, setRating] = useState<number | undefined>(venueRating);
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: user } = useGetUser();
   const { data: ratingData } = useQuery<RatingData, any, any>(
     ["rating", venueId],
     () => client.get(`venues/${venueId}/rating`),
     {
-      enabled: localStorage.getItem("token") !== null,
+      enabled: isLoggedIn,
     }
   );
   const { mutateAsync } = useMutation<void, any, RatingData>({
@@ -41,7 +41,7 @@ function Rating({
   async function setRatingHandler(rating: number) {
     try {
       if (!user) {
-        router.push("/login");
+        if (setLoginModalOpen) setLoginModalOpen(true);
       }
       setRating(rating);
       const ratingData: RatingData = {
@@ -83,7 +83,7 @@ function Rating({
         </button>
       </div>
       <div className="pt-2 pb-6">
-        {userRatingObject?.my_rating && (
+        {userRatingObject?.my_rating && isLoggedIn && (
           <>
             <p>Your rating</p>
             <div className="flex items-center">

@@ -24,6 +24,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
+import { useAuthContext } from "../../hooks/context/useAuthContext";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -49,6 +50,8 @@ export default function Create() {
   const router = useRouter();
 
   const [isNameModalOpen, setNameModalOpen] = useState(false);
+
+  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
 
   const toggleVenueAttribute = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
@@ -216,6 +219,9 @@ export default function Create() {
           >
             <NameModal
               onSave={(name: string) => {
+                if (!isLoggedIn) {
+                  if (setLoginModalOpen) return setLoginModalOpen(true);
+                }
                 if (name === "") name = "Untitled Plan";
                 setPlanLoading(true);
                 createPlan(name, venuesPlan, selectedStart, selectedEnd).catch(
@@ -283,7 +289,7 @@ function NameModal({ onSave, isLoading }: NameModalProps) {
               ></path>
             </svg>
           )}
-          Save
+          Create
         </button>
       </div>
     </div>

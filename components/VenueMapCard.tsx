@@ -80,7 +80,7 @@ export default function VenueMapCard({
               onClick={() => toggleVenueInPlan(venue)}
               className="p-2 mt-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400 text-lg"
             >
-              Add to path
+              Add to plan
             </button>
           ) : (
             <button

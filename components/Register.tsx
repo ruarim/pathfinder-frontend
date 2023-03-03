@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useRegistser } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
-import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
 export default function Register() {
   const { mutateAsync: registerUser, data: user } = useRegistser();
@@ -11,12 +10,15 @@ export default function Register() {
     setError,
     formState: { errors },
   } = useForm<RegisterUserMutationData>();
-  const { registerHandler } = useAuthContext();
+  const { registerHandler, setRegisterModalOpen } = useAuthContext();
 
   const onSubmit = async (data: RegisterUserMutationData) => {
     registerUser(data)
       .then((res) => {
-        if (registerHandler) registerHandler(res);
+        if (registerHandler && setRegisterModalOpen) {
+          registerHandler(res);
+          return setRegisterModalOpen(false);
+        }
       })
       .catch((e) => {
         setError("password", {
@@ -28,20 +30,16 @@ export default function Register() {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-full flex-col justify-center px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <img
-            className="mx-auto h-12 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-            alt="Your Company"
-          />
+          {/* logo here */}
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
             Create an account
           </h2>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="py-8 px-4 sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label
@@ -150,7 +148,7 @@ export default function Register() {
                   type="submit"
                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  Sign in
+                  Register
                 </button>
               </div>
               <div className="text-red-600">

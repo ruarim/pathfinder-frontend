@@ -45,10 +45,12 @@ const Modal = ({ setOpen, isOpen, title, children }: ModalProps) => {
                     >
                       {title}
                     </Dialog.Title>
-                    <XMarkIcon
-                      className="w-7 pb-2"
-                      onClick={() => setOpen(false)}
-                    />
+                    <button>
+                      <XMarkIcon
+                        className="w-7 pb-2"
+                        onClick={() => setOpen(false)}
+                      />
+                    </button>
                   </div>
                 )}
 

@@ -35,7 +35,9 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan, avatarSrc }: PlanCardProps) {
-  const startName = plan?.endpoint_name ? plan?.startpoint_name.split(",") : [];
+  const startName = plan?.startpoint_name
+    ? plan?.startpoint_name.split(",")
+    : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
 
   return (
@@ -52,9 +54,9 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
       <div className="grid md:grid-cols-2 space-y-3">
         <div className="space-y-3">
           <div>
-            {plan.endpoint_name && (
+            {plan.startpoint_name && (
               <div className="flex">
-                <MapPinIcon className="w-4 text-blue-400" />
+                <MapPinIcon className="w-4 text-green-600" />
                 {startName[0]}
               </div>
             )}
@@ -296,7 +298,7 @@ function MapBox({
           longitude={startpoint.long}
           anchor="bottom"
         >
-          <MapPinIcon className="w-8 text-green-500" />
+          <MapPinIcon className="w-8 text-green-600" />
         </Marker>
       )}
 

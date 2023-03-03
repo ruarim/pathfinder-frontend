@@ -6,20 +6,23 @@ export default function Plans() {
 
   const planOptions = [
     {
-      title: "Plan🍻",
+      title: "Create",
+      icon: "🍻",
       href: "plans/create",
-      icon: MapIcon,
     },
     {
-      title: "Collection📚",
-      href: "plans/collection",
+      title: "Plans",
+      icon: "📚",
+      href: "plans/plans",
     },
     {
-      title: "Explore🌍",
+      title: "Explore",
+      icon: "🌍",
       href: "plans/explore",
     },
     {
-      title: "Random🎲",
+      title: "Random",
+      icon: "🎲",
       href: "plans/random",
     },
   ];
@@ -41,7 +44,10 @@ export default function Plans() {
               {/*@dev make boxes alternate between bg-contrast/50 bg-notice/50  */}
               <span className="absolute inset-0 transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-contrast/50 group-hover:translate-x-0 group-hover:translate-y-0"></span>
               <span className="absolute inset-0 border-2 border-primary"></span>
-              <span className="relative text-3xl">{option.title}</span>
+              <div className="space-x-2">
+                <span className="relative text-3xl">{option.title}</span>
+                <span className="relative text-3xl">{option.icon}</span>
+              </div>
             </button>
           );
         })}

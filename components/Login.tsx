@@ -1,9 +1,8 @@
 import { useForm } from "react-hook-form";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 import { useLogin } from "../hooks/mutations/useLogin";
-import { useGetXsrfHeaders } from "../hooks/queries/useGetXsrf";
 
-export default function Register() {
+export default function Login() {
   const { mutateAsync: loginUser, data: user } = useLogin();
   const {
     handleSubmit,
@@ -11,12 +10,16 @@ export default function Register() {
     setError,
     formState: { errors },
   } = useForm<LoginUserMutationData>();
-  const { loginHandler } = useAuthContext();
+  const { loginHandler, setRegisterModalOpen, setLoginModalOpen } =
+    useAuthContext();
 
   const onSubmit = async (data: LoginUserMutationData) => {
     loginUser(data)
       .then((res) => {
-        if (loginHandler) loginHandler(res);
+        if (loginHandler && setLoginModalOpen) {
+          loginHandler(res);
+          return setLoginModalOpen(false);
+        }
       })
       .catch(() => {
         setError("password", {
@@ -26,22 +29,25 @@ export default function Register() {
       });
   };
 
+  const handleRegister = () => {
+    if (setRegisterModalOpen && setLoginModalOpen) {
+      setLoginModalOpen(false);
+      setRegisterModalOpen(true);
+    }
+  };
+
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-full flex-col justify-center px-7 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <img
-            className="mx-auto h-12 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-            alt="Your Company"
-          />
+          {/* logo here */}
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Sign in to your account
+            Sign in
           </h2>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="py-8 px-4 sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div>
                 <label
@@ -85,16 +91,22 @@ export default function Register() {
                 </div>
               </div>
 
-              <div>
+              <div className="flex space-x-2">
                 <button
                   type="submit"
                   className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                   Sign in
                 </button>
+                <button
+                  onClick={handleRegister}
+                  className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Register
+                </button>
               </div>
               <div className="text-red-600">
-                {errors.password && <p>Login failed. Check your password</p>}
+                {errors.password && <p>Check your email and password</p>}
               </div>
             </form>
           </div>
