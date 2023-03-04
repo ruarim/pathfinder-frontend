@@ -11,6 +11,7 @@ import { useDebounce } from "../../hooks/utility/useDebounce";
 import Link from "next/link";
 import { useGetUser } from "../../hooks/queries/getUser";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
@@ -139,6 +140,56 @@ function VenueList({ venues }: { venues: Venue[] }) {
   );
 }
 
+function InviteCard({ plan }: { plan: Plan }) {
+  const { setLoginModalOpen, setRegisterModalOpen, isLoggedIn } =
+    useAuthContext();
+  const { data: userData } = useGetUser();
+  const user = userData?.data.user;
+
+  return (
+    <div className="space-y-2">
+      {isLoggedIn ? (
+        user && isInvited(plan.users, user) ? (
+          <>
+            {user?.id == getCreator(plan.users)?.id && (
+              <SetParticipants id={plan.id} plan={plan} />
+            )}
+            <UserList users={plan.users} />
+          </>
+        ) : (
+          <div className="flex items-center justify-center pb-1">
+            <button className="flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+              Use this plan
+            </button>
+          </div>
+        )
+      ) : (
+        <div className="font-bold text-xl">
+          Login to invite your friends
+          <div className="flex space-x-2 py-2">
+            <button
+              onClick={() => {
+                if (setLoginModalOpen) setLoginModalOpen(true);
+              }}
+              className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => {
+                if (setRegisterModalOpen) setRegisterModalOpen(true);
+              }}
+              className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Register
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserList({ users }: { users: User[] }) {
   return (
     <div>
@@ -156,7 +207,7 @@ function UserList({ users }: { users: User[] }) {
   );
 }
 
-function SetParticipants({ id }: { id: number }) {
+function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
@@ -250,7 +301,12 @@ function SetParticipants({ id }: { id: number }) {
                              selected ? "font-medium" : "font-normal"
                            }`}
                               >
-                                {user.email}
+                                <div className="flex">
+                                  {user.email}
+                                  {isInvited(plan.users, user) && (
+                                    <CheckIcon className="w-4" />
+                                  )}
+                                </div>
                               </span>
                               {selected ? (
                                 <span
@@ -286,55 +342,6 @@ function SetParticipants({ id }: { id: number }) {
   );
 }
 
-function InviteCard({ plan }: { plan: Plan }) {
-  const { setLoginModalOpen, setRegisterModalOpen, isLoggedIn } =
-    useAuthContext();
-  const { data: userData } = useGetUser();
-  const user = userData?.data.user;
-
-  return (
-    <div className="space-y-2">
-      {isLoggedIn ? (
-        user && isInvited(plan.users, user) ? (
-          <>
-            {user?.id == getCreator(plan.users)?.id && (
-              <SetParticipants id={plan.id} />
-            )}
-            <UserList users={plan.users} />
-          </>
-        ) : (
-          <div className="flex items-center justify-center pb-1">
-            <button className="flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-              Use this plan
-            </button>
-          </div>
-        )
-      ) : (
-        <div className="font-bold text-xl">
-          Login to invite your friends
-          <div className="flex space-x-2 py-2">
-            <button
-              onClick={() => {
-                if (setLoginModalOpen) setLoginModalOpen(true);
-              }}
-              className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Sign in
-            </button>
-            <button
-              onClick={() => {
-                if (setRegisterModalOpen) setRegisterModalOpen(true);
-              }}
-              className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Register
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 function MapBox({
   center,
   startpoint,
