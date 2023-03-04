@@ -81,15 +81,20 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
           <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
           <InviteCard plan={plan} />
         </div>
-        <MapBox
-          center={{
-            lat: plan.venues[0].address.latitude,
-            long: plan.venues[0].address.longitude,
-          }}
-          startpoint={{ lat: plan.startpoint_lat, long: plan.startpoint_long }}
-          endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
-          venues={plan.venues}
-        />
+        <div className="flex justify-center">
+          <MapBox
+            center={{
+              lat: plan.venues[0].address.latitude,
+              long: plan.venues[0].address.longitude,
+            }}
+            startpoint={{
+              lat: plan.startpoint_lat,
+              long: plan.startpoint_long,
+            }}
+            endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
+            venues={plan.venues}
+          />
+        </div>
       </div>
     </div>
   );
