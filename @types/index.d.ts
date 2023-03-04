@@ -9,9 +9,15 @@ type User = {
   has_completed?: boolean;
 };
 
-type UserResponse = {
+type UsersResponse = {
   data: {
     data: User[];
+  };
+};
+
+type UserResponse = {
+  data: {
+    user: User;
   };
 };
 
@@ -71,7 +77,7 @@ type Address = {
   country: string;
   postcode: string;
   town_city: string;
-  latitude: number; //@dev could use latLong type here
+  latitude: number;
   longitude: number;
 };
 

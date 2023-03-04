@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 interface ModalProps {

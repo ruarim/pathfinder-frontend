@@ -9,6 +9,8 @@ import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
 import Link from "next/link";
+import { useGetUser } from "../../hooks/queries/getUser";
+import { useAuthContext } from "../../hooks/context/useAuthContext";
 
 const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
@@ -39,20 +41,23 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
     ? plan?.startpoint_name.split(",")
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
+  const { isLoggedIn, setLoginModalOpen, setRegisterModalOpen } =
+    useAuthContext();
 
   return (
-    <div className="space-y-2 bg-slate-200 shadow-md p-5 rounded-md">
+    <div className="space-y-2 bg-slate-200 shadow-md p-5 md:p-7 rounded-md">
       <div className="md:flex justify-between space-y-1">
         <h1 className="text-3xl font-bold">{plan.name}</h1>
-        <h2 className="text-2xl flex gap-2">
+        <h2 className="text-2xl flex gap-2 md:pr-2">
           {plan.users.map((user) => {
             if (user.is_creator) return user.username;
           })}
           <AvatarIcon imageUrl={avatarSrc} />
         </h2>
       </div>
-      <div className="grid md:grid-cols-2 space-y-3">
-        <div className="space-y-3">
+      <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
+      <div className="md:flex justify-between space-y-3 md:px-2">
+        <div className="space-y-3 md:pr-2">
           <div>
             {plan.startpoint_name && (
               <div className="flex">
@@ -69,8 +74,34 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
             )}
           </div>
           <div className="space-y-2">
-            <SetParticipants id={plan.id} />
-            <UserList users={plan.users} />
+            {isLoggedIn ? (
+              <>
+                <SetParticipants id={plan.id} />
+                <UserList users={plan.users} />
+              </>
+            ) : (
+              <div className="font-bold text-xl">
+                Login to invite your friends
+                <div className="flex space-x-2 py-2">
+                  <button
+                    onClick={() => {
+                      if (setLoginModalOpen) setLoginModalOpen(true);
+                    }}
+                    className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (setRegisterModalOpen) setRegisterModalOpen(true);
+                    }}
+                    className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Register
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <MapBox
@@ -83,6 +114,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
           venues={plan.venues}
         />
       </div>
+      <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
     </div>
   );
 }
@@ -94,10 +126,37 @@ function VenueList({ venues }: { venues: Venue[] }) {
     <div>
       {venues.map((venue) => {
         return (
-          <Link href={`/venues/${venue.id}`} className="flex hover:underline">
-            <MapPinIcon className="w-4" />
-            {venue.name.substring(0, 29)}
-            {venue.name.length > 30 && "..."}
+          <Link href={`/venues/${venue.id}`} className="space-y-2">
+            <div className="flex ">
+              <MapPinIcon className="w-4" />
+              <div className="hover:underline ">
+                {venue.name.substring(0, 29)}
+                {venue.name.length > 30 && "..."}
+              </div>
+            </div>
+            <div className="flex px-2 space-x-1 pb-2">
+              {venue?.attributes?.map((attribute, i) => {
+                //dont show more then 4
+                if (i > 4) return <></>;
+                if (i === 4)
+                  return (
+                    <div
+                      key={attribute}
+                      className="bg-teal-400 text-white p-2 pr-2 rounded-md space-x-1 text-xs inline-flex items-center font-medium hover:underline"
+                    >
+                      ...
+                    </div>
+                  );
+                return (
+                  <div
+                    key={attribute}
+                    className="bg-teal-400 text-white p-2 pr-2 rounded-md space-x-1 text-xs inline-flex items-center font-medium"
+                  >
+                    <div>{attribute}</div>
+                  </div>
+                );
+              })}
+            </div>
           </Link>
         );
       })}
@@ -126,6 +185,7 @@ function SetParticipants({ id }: { id: number }) {
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
+  const { data: loggedInUser } = useGetUser();
 
   //addUser mutaion
   const { mutateAsync: addUser } = useMutation<
@@ -145,9 +205,9 @@ function SetParticipants({ id }: { id: number }) {
   };
 
   const { data: usersResults, refetch } = useQuery<
-    UserResponse,
+    UsersResponse,
     any,
-    UserResponse
+    UsersResponse
   >(
     ["email_search", query],
     () => client.get(`user_email_search?email=${debouncedQuery}`),
@@ -164,6 +224,7 @@ function SetParticipants({ id }: { id: number }) {
   }, [debouncedQuery]);
 
   const users = usersResults?.data?.data;
+  const loggedIn = loggedInUser?.data?.user;
 
   return (
     <div className="md:pr-2">
@@ -192,6 +253,8 @@ function SetParticipants({ id }: { id: number }) {
                     </div>
                   ) : (
                     users?.map((user) => {
+                      if (loggedIn && user.email == loggedIn.email)
+                        return <></>;
                       return (
                         <Combobox.Option
                           key={user.email}
@@ -309,7 +372,7 @@ function MapBox({
           longitude={endpoint.long}
           anchor="bottom"
         >
-          <MapPinIcon className="w-8" />
+          <MapPinIcon className="w-8 text-blue-400" />
         </Marker>
       )}
     </Map>

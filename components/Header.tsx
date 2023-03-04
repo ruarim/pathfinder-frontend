@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -163,13 +163,15 @@ function ProfileDropDown() {
         </Transition>
       </Menu>
       {loginModalOpen && setLoginModalOpen && (
-        <Modal
-          setOpen={setLoginModalOpen}
-          isOpen={loginModalOpen}
-          title={"Login"}
-        >
-          <Login />
-        </Modal>
+        <div>
+          <Modal
+            setOpen={setLoginModalOpen}
+            isOpen={loginModalOpen}
+            title={"Login"}
+          >
+            <Login />
+          </Modal>
+        </div>
       )}
       {registerModalOpen && setRegisterModalOpen && (
         <Modal
@@ -185,6 +187,13 @@ function ProfileDropDown() {
 }
 
 export default function Header() {
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+  }, []);
+
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -229,19 +238,25 @@ export default function Header() {
                   )}
                 </Disclosure.Button>
               </div>
-              <div className="hidden lg:ml-4 lg:flex lg:items-center">
-                <ProfileDropDown />
-              </div>
+              {windowWidth > 1023 && (
+                <div className="hidden lg:ml-4 lg:flex lg:items-center">
+                  <ProfileDropDown />
+                </div>
+              )}
             </div>
           </div>
 
           <Disclosure.Panel className="lg:hidden">
-            <div className="space-y-1 pt-2 pb-3">
-              <MobileNavLink />
-            </div>
-            <div className="border-t border-gray-200 pt-4 pb-3">
-              <ProfileDropDown />
-            </div>
+            {windowWidth <= 1023 && (
+              <>
+                <div className="space-y-1 pt-2 pb-3">
+                  <MobileNavLink />
+                </div>
+                <div className="border-t border-gray-200 pt-4 pb-3">
+                  <ProfileDropDown />
+                </div>
+              </>
+            )}
           </Disclosure.Panel>
         </>
       )}

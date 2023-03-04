@@ -9,7 +9,7 @@ interface UserDto {
 }
 
 export const useGetUser = () => {
-  return useQuery<UserDto, any, Error>({
+  return useQuery<UserDto, any, UserResponse>({
     queryKey: ["user"],
     queryFn: (): Promise<UserDto> => client.get("user"),
     // retry(failureCount: number, error: AxiosError) { //@dev removing this for now

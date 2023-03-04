@@ -114,7 +114,7 @@ export default function Create() {
         {attributes?.data && (
           <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
             <div className="flex justify-between gap-3">
-              <h2 className="text-xl font-medium text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900">
                 Plan your route
               </h2>
               {isPlanModalOpen ? (
@@ -173,7 +173,7 @@ export default function Create() {
                   </div>
                   <button
                     onClick={() => setAttributesSearchParams([])}
-                    className="p-2 mt-2 w-full rounded-lg bg-red-300 transition hover:bg-red-400"
+                    className="p-2 mt-2 w-full rounded-lg bg-red-500 transition hover:bg-red-600 text-white"
                   >
                     Clear attributes
                   </button>
@@ -199,18 +199,21 @@ export default function Create() {
                         );
                       })}
                     </div>
-                    <button
-                      className="p-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400"
-                      onClick={() => setNameModalOpen(true)}
-                    >
-                      Create plan
-                    </button>
                   </div>
                 )}
               </div>
             )}
+            {venuesPlan.length > 0 && (
+              <button
+                className="p-2 w-full rounded-lg bg-blue-500 transition hover:bg-blue-700 text-white"
+                onClick={() => setNameModalOpen(true)}
+              >
+                Create plan ({venuesPlan.length})
+              </button>
+            )}
           </div>
         )}
+
         {isNameModalOpen && (
           <Modal
             isOpen={isNameModalOpen}

@@ -48,20 +48,19 @@ export default function VenueMapCard({
                   </Link>
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {venue?.attributes?.map((attribute) => {
+              <div className="space-y-1 mt-1">
+                {venue?.attributes?.map((attribute, i) => {
                   return (
                     <div
                       key={attribute}
-                      className="bg-blue-100 p-2 rounded-md flex space-x-1 text-xs "
+                      className="bg-teal-400 text-white p-2 rounded-md space-x-1 text-xs font-medium inline-flex mr-1"
                     >
-                      <TagIcon className="w-5" />
                       <div>{attribute}</div>
                     </div>
                   );
                 })}
               </div>
-              <div className="mt-6 flex items-center">
+              <div className="mt-3 flex items-center">
                 <p className="text-sm font-medium text-gray-900">
                   <a
                     href={`venues/${venue.id}`}
@@ -82,14 +81,14 @@ export default function VenueMapCard({
           {!isVenueInPlan(venue, venuesPlan) ? (
             <button
               onClick={() => toggleVenueInPlan(venue)}
-              className="p-2 mt-2 w-full rounded-lg bg-blue-300 transition hover:bg-blue-400 text-lg"
+              className="p-2 mt-2 w-full rounded-lg bg-blue-500 transition hover:bg-blue-600 text-lg text-gray-100"
             >
               Add to plan
             </button>
           ) : (
             <button
               onClick={() => toggleVenueInPlan(venue)}
-              className="p-2 mt-2 w-full rounded-lg bg-red-300 transition hover:bg-red-400 text-lg"
+              className="p-2 mt-2 w-full rounded-lg bg-red-500 transition hover:bg-red-600 text-lg text-gray-100"
             >
               Remove
             </button>
