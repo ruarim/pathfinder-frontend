@@ -5,8 +5,8 @@ type User = {
   lastName: string;
   isAdmin: number;
   email: string;
-  is_creator?: boolean;
-  has_completed?: boolean;
+  is_creator?: number;
+  has_completed?: number;
 };
 
 type UsersResponse = {
