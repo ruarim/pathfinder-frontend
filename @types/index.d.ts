@@ -58,11 +58,13 @@ type Venue = {
   capacity: number;
   closing_time: string;
   name: string;
+  description: string;
   opening_time: string;
   venue_type: "Pub" | "Bar" | "Restaurant";
   address: Address;
   attributes: string[];
   beverages: Beverage[];
+  rating: number;
 };
 
 type VenueResponse = {

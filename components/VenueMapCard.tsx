@@ -49,7 +49,7 @@ export default function VenueMapCard({
                 </p>
               </div>
               <div className="space-y-1 mt-1">
-                {venue?.attributes?.map((attribute, i) => {
+                {venue?.attributes?.map((attribute) => {
                   return (
                     <div
                       key={attribute}
