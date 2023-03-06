@@ -107,9 +107,9 @@ type PlanMutationData = {
   startpoint_name: string;
   startpoint_lat: number;
   startpoint_long: number;
-  endpoint_name: string;
-  endpoint_lat: number;
-  endpoint_long: number;
+  endpoint_name?: string;
+  endpoint_lat?: number;
+  endpoint_long?: number;
   venues: number[];
 };
 

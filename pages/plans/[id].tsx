@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useGetUser } from "../../hooks/queries/getUser";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import LoadingButton from "../../components/LoadingButton";
 
 const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
@@ -73,7 +74,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
             <VenueList venues={plan.venues} />
             {plan.endpoint_name && (
               <div className="flex">
-                <MapPinIcon className="w-4 text-blue-400" />
+                <MapPinIcon className="w-4 text-blue-500" />
                 {endName[0]}
               </div>
             )}
@@ -150,6 +151,37 @@ function InviteCard({ plan }: { plan: Plan }) {
     useAuthContext();
   const { data: userData } = useGetUser();
   const user = userData?.data.user;
+  const [isLoading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const { mutateAsync } = useMutation<PlanResponse, any, PlanMutationData>(
+    (data) => {
+      return client.post(`paths`, data);
+    }
+  );
+
+  const handleUsePlan = async (data: Plan) => {
+    setLoading(true);
+    const venues = data.venues.map((venue) => venue.id);
+    await mutateAsync({
+      name: data.name,
+      startpoint_name: data.startpoint_name,
+      startpoint_lat: data.startpoint_lat,
+      startpoint_long: data.startpoint_long,
+      endpoint_name: data?.endpoint_name,
+      endpoint_lat: data?.startpoint_lat,
+      endpoint_long: data?.startpoint_long,
+      venues,
+    })
+      .then((res) => {
+        setLoading(false);
+        router.push(`${res.data.data.id}`);
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.log(e);
+      });
+  };
 
   return (
     <div className="space-y-2">
@@ -163,9 +195,12 @@ function InviteCard({ plan }: { plan: Plan }) {
           </>
         ) : (
           <div className="flex items-center justify-center pb-1">
-            <button className="flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            <LoadingButton
+              onClick={() => handleUsePlan(plan)}
+              isLoading={isLoading}
+            >
               Use this plan
-            </button>
+            </LoadingButton>
           </div>
         )
       ) : (
