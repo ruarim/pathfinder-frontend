@@ -23,7 +23,6 @@ function Rating({
   const { isLoggedIn, setLoginModalOpen } = useAuthContext();
   const [rating, setRating] = useState<number | undefined>(venueRating);
   const queryClient = useQueryClient();
-  const { data: user } = useGetUser();
   const { data: ratingData } = useQuery<RatingData, any, any>(
     ["rating", venueId],
     () => client.get(`venues/${venueId}/rating`),
@@ -40,7 +39,7 @@ function Rating({
   //Component spcefic logic
   async function setRatingHandler(rating: number) {
     try {
-      if (!user) {
+      if (!isLoggedIn) {
         if (setLoginModalOpen) setLoginModalOpen(true);
       }
       setRating(rating);
@@ -151,7 +150,7 @@ export default function Venue({ id }: { id: string }) {
     }
   );
 
-  const venue = venueData?.data?.data;
+  const venue: Venue = venueData?.data?.data;
   const venueAddress: Address = venue?.address;
   const venueRating: number = venue && venue.rating;
   const venueId = id;
@@ -183,6 +182,19 @@ export default function Venue({ id }: { id: string }) {
                     Pub information
                   </h2>
                 </div>
+              </div>
+
+              <div className="space-y-1 mt-1">
+                {venue?.attributes?.map((attribute) => {
+                  return (
+                    <div
+                      key={attribute}
+                      className="bg-teal-400 text-white p-2 rounded-md space-x-1 text-xs font-medium inline-flex mr-1"
+                    >
+                      <div>{attribute}</div>
+                    </div>
+                  );
+                })}
               </div>
 
               <p className="mt-6 text-gray-500">

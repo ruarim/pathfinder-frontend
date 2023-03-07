@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -71,14 +71,8 @@ function MobileNavLink() {
 }
 
 function ProfileDropDown() {
-  const {
-    logout,
-    isLoggedIn,
-    loginModalOpen,
-    registerModalOpen,
-    setLoginModalOpen,
-    setRegisterModalOpen,
-  } = useAuthContext();
+  const { logout, isLoggedIn, setLoginModalOpen, setRegisterModalOpen } =
+    useAuthContext();
   function logoutHandler() {
     logout && logout();
   }
@@ -162,14 +156,103 @@ function ProfileDropDown() {
           </Menu.Items>
         </Transition>
       </Menu>
+    </div>
+  );
+}
+
+export default function Header() {
+  const {
+    loginModalOpen,
+    registerModalOpen,
+    setLoginModalOpen,
+    setRegisterModalOpen,
+  } = useAuthContext();
+
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", () => setWindowWidth(window.innerWidth));
+  }, []);
+
+  return (
+    <div>
+      <Disclosure as="nav" className="bg-white shadow">
+        {({ open }) => (
+          <>
+            <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
+              <div className="flex h-16 justify-between">
+                <div className="flex px-2 lg:px-0">
+                  <div className="flex flex-shrink-0 items-center">
+                    <Link
+                      href={"/"}
+                      className="text-2xl font-bold  max-[800px]:hidden pt-4 p-3 px-"
+                    >
+                      Pathfinder
+                    </Link>
+                  </div>
+                  <div className="grid gap-3 max-[600px]:hidden grid-cols-4 px-4">
+                    {navigation.map((link) => {
+                      return (
+                        <DesktopNavLink
+                          key={link.name}
+                          href={link.href}
+                          name={link.name}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+                <Link
+                  href="/"
+                  className="text-2xl font-bold absolute min-[601px]:hidden pt-4"
+                >
+                  Pathfinder
+                </Link>
+                <div className="flex items-center lg:hidden">
+                  {/* Mobile menu button */}
+                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-primary/50 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                    <span className="sr-only">Open main menu</span>
+                    {open ? (
+                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                    ) : (
+                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                    )}
+                  </Disclosure.Button>
+                </div>
+                {windowWidth > 1023 && (
+                  <div className="hidden lg:ml-4 lg:flex lg:items-center">
+                    <ProfileDropDown />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Disclosure.Panel className="lg:hidden">
+              {windowWidth <= 1023 && (
+                <>
+                  <div className="space-y-1 pt-2 pb-3">
+                    <MobileNavLink />
+                  </div>
+                  <div className="border-t border-gray-200 pt-4 pb-3">
+                    <ProfileDropDown />
+                  </div>
+                </>
+              )}
+            </Disclosure.Panel>
+          </>
+        )}
+      </Disclosure>
       {loginModalOpen && setLoginModalOpen && (
-        <Modal
-          setOpen={setLoginModalOpen}
-          isOpen={loginModalOpen}
-          title={"Login"}
-        >
-          <Login />
-        </Modal>
+        <div>
+          <Modal
+            setOpen={setLoginModalOpen}
+            isOpen={loginModalOpen}
+            title={"Login"}
+          >
+            <Login />
+          </Modal>
+        </div>
       )}
       {registerModalOpen && setRegisterModalOpen && (
         <Modal
@@ -181,70 +264,5 @@ function ProfileDropDown() {
         </Modal>
       )}
     </div>
-  );
-}
-
-export default function Header() {
-  return (
-    <Disclosure as="nav" className="bg-white shadow">
-      {({ open }) => (
-        <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
-            <div className="flex h-16 justify-between">
-              <div className="flex px-2 lg:px-0">
-                <div className="flex flex-shrink-0 items-center">
-                  <Link
-                    href={"/"}
-                    className="text-2xl font-bold  max-[800px]:hidden pt-4 p-3 px-"
-                  >
-                    Pathfinder
-                  </Link>
-                </div>
-                <div className="grid gap-3 max-[600px]:hidden grid-cols-4 px-4">
-                  {navigation.map((link) => {
-                    return (
-                      <DesktopNavLink
-                        key={link.name}
-                        href={link.href}
-                        name={link.name}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-              <Link
-                href="/"
-                className="text-2xl font-bold absolute min-[601px]:hidden pt-4"
-              >
-                Pathfinder
-              </Link>
-              <div className="flex items-center lg:hidden">
-                {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-primary/50 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </Disclosure.Button>
-              </div>
-              <div className="hidden lg:ml-4 lg:flex lg:items-center">
-                <ProfileDropDown />
-              </div>
-            </div>
-          </div>
-
-          <Disclosure.Panel className="lg:hidden">
-            <div className="space-y-1 pt-2 pb-3">
-              <MobileNavLink />
-            </div>
-            <div className="border-t border-gray-200 pt-4 pb-3">
-              <ProfileDropDown />
-            </div>
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
   );
 }

@@ -9,8 +9,20 @@ import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
 import Link from "next/link";
+import { useGetUser } from "../../hooks/queries/getUser";
+import { useAuthContext } from "../../hooks/context/useAuthContext";
+import { CheckIcon } from "@heroicons/react/24/outline";
+import LoadingButton from "../../components/LoadingButton";
 
 const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
+
+const getCreator = (users: User[]) => {
+  return users.find((user) => user.is_creator === 1);
+};
+
+const isInvited = (users: User[], loggedInUser: User) => {
+  return users.find((user) => user.id === loggedInUser.id) ? true : false;
+};
 
 export default function Plan({ id }: { id: string }) {
   const router = useRouter();
@@ -41,18 +53,17 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
 
   return (
-    <div className="space-y-2 bg-slate-200 shadow-md p-5 rounded-md">
+    <div className="space-y-2 bg-slate-200 shadow-md p-5 md:p-7 rounded-md">
       <div className="md:flex justify-between space-y-1">
         <h1 className="text-3xl font-bold">{plan.name}</h1>
-        <h2 className="text-2xl flex gap-2">
-          {plan.users.map((user) => {
-            if (user.is_creator) return user.username;
-          })}
+        <h2 className="text-2xl flex gap-2 md:pr-2">
+          {getCreator(plan.users)?.username}
           <AvatarIcon imageUrl={avatarSrc} />
         </h2>
       </div>
-      <div className="grid md:grid-cols-2 space-y-3">
-        <div className="space-y-3">
+      <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
+      <div className="md:flex justify-between space-y-3 md:px-2">
+        <div className="space-y-3 md:pr-2">
           <div>
             {plan.startpoint_name && (
               <div className="flex">
@@ -63,25 +74,28 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
             <VenueList venues={plan.venues} />
             {plan.endpoint_name && (
               <div className="flex">
-                <MapPinIcon className="w-4 text-blue-400" />
+                <MapPinIcon className="w-4 text-blue-500" />
                 {endName[0]}
               </div>
             )}
           </div>
-          <div className="space-y-2">
-            <SetParticipants id={plan.id} />
-            <UserList users={plan.users} />
-          </div>
+          <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
+          <InviteCard plan={plan} />
         </div>
-        <MapBox
-          center={{
-            lat: plan.venues[0].address.latitude,
-            long: plan.venues[0].address.longitude,
-          }}
-          startpoint={{ lat: plan.startpoint_lat, long: plan.startpoint_long }}
-          endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
-          venues={plan.venues}
-        />
+        <div className="flex justify-center">
+          <MapBox
+            center={{
+              lat: plan.venues[0].address.latitude,
+              long: plan.venues[0].address.longitude,
+            }}
+            startpoint={{
+              lat: plan.startpoint_lat,
+              long: plan.startpoint_long,
+            }}
+            endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
+            venues={plan.venues}
+          />
+        </div>
       </div>
     </div>
   );
@@ -94,13 +108,124 @@ function VenueList({ venues }: { venues: Venue[] }) {
     <div>
       {venues.map((venue) => {
         return (
-          <Link href={`/venues/${venue.id}`} className="flex hover:underline">
-            <MapPinIcon className="w-4" />
-            {venue.name.substring(0, 29)}
-            {venue.name.length > 30 && "..."}
+          <Link href={`/venues/${venue.id}`} className="space-y-2">
+            <div className="flex ">
+              <MapPinIcon className="w-4" />
+              <div className="hover:underline ">
+                {venue.name.substring(0, 29)}
+                {venue.name.length > 30 && "..."}
+              </div>
+            </div>
+            <div className="flex px-2 space-x-1 pb-2">
+              {venue?.attributes?.map((attribute, i) => {
+                //dont show more then 4
+                if (i > 4) return <></>;
+                if (i === 4)
+                  return (
+                    <div
+                      key={attribute}
+                      className="bg-teal-400 text-white p-2 pr-2 rounded-md space-x-1 text-xs inline-flex items-center font-medium hover:underline"
+                    >
+                      ...
+                    </div>
+                  );
+                return (
+                  <div
+                    key={attribute}
+                    className="bg-teal-400 text-white p-2 pr-2 rounded-md space-x-1 text-xs inline-flex items-center font-medium"
+                  >
+                    <div>{attribute}</div>
+                  </div>
+                );
+              })}
+            </div>
           </Link>
         );
       })}
+    </div>
+  );
+}
+
+function InviteCard({ plan }: { plan: Plan }) {
+  const { setLoginModalOpen, setRegisterModalOpen, isLoggedIn } =
+    useAuthContext();
+  const { data: userData } = useGetUser();
+  const user = userData?.data.user;
+  const [isLoading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const { mutateAsync } = useMutation<PlanResponse, any, PlanMutationData>(
+    (data) => {
+      return client.post(`paths`, data);
+    }
+  );
+
+  const handleUsePlan = async (data: Plan) => {
+    setLoading(true);
+    const venues = data.venues.map((venue) => venue.id);
+    await mutateAsync({
+      name: data.name,
+      startpoint_name: data.startpoint_name,
+      startpoint_lat: data.startpoint_lat,
+      startpoint_long: data.startpoint_long,
+      endpoint_name: data?.endpoint_name,
+      endpoint_lat: data?.startpoint_lat,
+      endpoint_long: data?.startpoint_long,
+      venues,
+    })
+      .then((res) => {
+        setLoading(false);
+        router.push(`${res.data.data.id}`);
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.log(e);
+      });
+  };
+
+  return (
+    <div className="space-y-2">
+      {isLoggedIn ? (
+        user && isInvited(plan.users, user) ? (
+          <>
+            {user?.id == getCreator(plan.users)?.id && (
+              <SetParticipants id={plan.id} plan={plan} />
+            )}
+            <UserList users={plan.users} />
+          </>
+        ) : (
+          <div className="flex items-center justify-center pb-1">
+            <LoadingButton
+              onClick={() => handleUsePlan(plan)}
+              isLoading={isLoading}
+            >
+              Use this plan
+            </LoadingButton>
+          </div>
+        )
+      ) : (
+        <div className="font-bold text-xl">
+          Login to invite your friends
+          <div className="flex space-x-2 py-2">
+            <button
+              onClick={() => {
+                if (setLoginModalOpen) setLoginModalOpen(true);
+              }}
+              className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => {
+                if (setRegisterModalOpen) setRegisterModalOpen(true);
+              }}
+              className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Register
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -122,10 +247,11 @@ function UserList({ users }: { users: User[] }) {
   );
 }
 
-function SetParticipants({ id }: { id: number }) {
+function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
+  const { data: loggedInUser } = useGetUser();
 
   //addUser mutaion
   const { mutateAsync: addUser } = useMutation<
@@ -145,9 +271,9 @@ function SetParticipants({ id }: { id: number }) {
   };
 
   const { data: usersResults, refetch } = useQuery<
-    UserResponse,
+    UsersResponse,
     any,
-    UserResponse
+    UsersResponse
   >(
     ["email_search", query],
     () => client.get(`user_email_search?email=${debouncedQuery}`),
@@ -164,6 +290,7 @@ function SetParticipants({ id }: { id: number }) {
   }, [debouncedQuery]);
 
   const users = usersResults?.data?.data;
+  const loggedIn = loggedInUser?.data?.user;
 
   return (
     <div className="md:pr-2">
@@ -192,6 +319,8 @@ function SetParticipants({ id }: { id: number }) {
                     </div>
                   ) : (
                     users?.map((user) => {
+                      if (loggedIn && user.email == loggedIn.email)
+                        return <></>;
                       return (
                         <Combobox.Option
                           key={user.email}
@@ -212,7 +341,12 @@ function SetParticipants({ id }: { id: number }) {
                              selected ? "font-medium" : "font-normal"
                            }`}
                               >
-                                {user.email}
+                                <div className="flex">
+                                  {user.email}
+                                  {isInvited(plan.users, user) && (
+                                    <CheckIcon className="w-4" />
+                                  )}
+                                </div>
                               </span>
                               {selected ? (
                                 <span
@@ -309,7 +443,7 @@ function MapBox({
           longitude={endpoint.long}
           anchor="bottom"
         >
-          <MapPinIcon className="w-8" />
+          <MapPinIcon className="w-8 text-blue-400" />
         </Marker>
       )}
     </Map>

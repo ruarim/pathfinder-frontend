@@ -5,13 +5,19 @@ type User = {
   lastName: string;
   isAdmin: number;
   email: string;
-  is_creator?: boolean;
-  has_completed?: boolean;
+  is_creator?: number;
+  has_completed?: number;
+};
+
+type UsersResponse = {
+  data: {
+    data: User[];
+  };
 };
 
 type UserResponse = {
   data: {
-    data: User[];
+    user: User;
   };
 };
 
@@ -52,11 +58,13 @@ type Venue = {
   capacity: number;
   closing_time: string;
   name: string;
+  description: string;
   opening_time: string;
   venue_type: "Pub" | "Bar" | "Restaurant";
   address: Address;
   attributes: string[];
   beverages: Beverage[];
+  rating: number;
 };
 
 type VenueResponse = {
@@ -71,7 +79,7 @@ type Address = {
   country: string;
   postcode: string;
   town_city: string;
-  latitude: number; //@dev could use latLong type here
+  latitude: number;
   longitude: number;
 };
 
@@ -99,9 +107,9 @@ type PlanMutationData = {
   startpoint_name: string;
   startpoint_lat: number;
   startpoint_long: number;
-  endpoint_name: string;
-  endpoint_lat: number;
-  endpoint_long: number;
+  endpoint_name?: string;
+  endpoint_lat?: number;
+  endpoint_long?: number;
   venues: number[];
 };
 
