@@ -25,6 +25,18 @@ export default function VenueCard({ venue }: VenueCardProps) {
               {venue.name}
             </Link>
           </p>
+          <div className="space-y-1 mt-1">
+            {venue?.attributes?.map((attribute) => {
+              return (
+                <div
+                  key={attribute}
+                  className="bg-teal-400 text-white p-2 rounded-md space-x-1 text-xs font-medium inline-flex mr-1"
+                >
+                  <div>{attribute}</div>
+                </div>
+              );
+            })}
+          </div>
           <Link href={`venues/${venue.id}`} className="mt-2 block">
             <h3 className="mt-3 text-primary text-lg">Address</h3>
             <p className="text-primary text-sm">{venue.address.address_1}</p>

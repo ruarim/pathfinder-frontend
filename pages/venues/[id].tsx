@@ -5,107 +5,7 @@ import { Tab } from "@headlessui/react";
 import clsx from "clsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
-import { useGetUser } from "../../hooks/queries/getUser";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
-
-interface RatingData {
-  rating: number;
-}
-
-function Rating({
-  venueRating,
-  venueId,
-}: {
-  venueRating: number | undefined;
-  venueId: string;
-}) {
-  //State, queries and mutations
-  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
-  const [rating, setRating] = useState<number | undefined>(venueRating);
-  const queryClient = useQueryClient();
-  const { data: ratingData } = useQuery<RatingData, any, any>(
-    ["rating", venueId],
-    () => client.get(`venues/${venueId}/rating`),
-    {
-      enabled: isLoggedIn,
-    }
-  );
-  const { mutateAsync } = useMutation<void, any, RatingData>({
-    mutationFn: (data: RatingData) =>
-      client.post(`venues/${venueId}/rate`, data),
-    mutationKey: ["rate_venue"],
-  });
-
-  //Component spcefic logic
-  async function setRatingHandler(rating: number) {
-    try {
-      if (!isLoggedIn) {
-        if (setLoginModalOpen) setLoginModalOpen(true);
-      }
-      setRating(rating);
-      const ratingData: RatingData = {
-        rating: rating + 1,
-      };
-      await mutateAsync(ratingData);
-      queryClient.invalidateQueries(["rating", venueId]);
-      queryClient.invalidateQueries(["venue", venueId]);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  interface UserRatingInterface {
-    average_rating: number;
-    my_rating: string;
-  }
-  const userRatingObject: UserRatingInterface = ratingData?.data?.data?.rating;
-
-  return (
-    <div className="flex flex-row justify-between">
-      <h3 className="sr-only">Reviews</h3>
-      <div className="pt-2 pb-6">
-        <p>Rate this venue</p>
-        <button className="flex items-center">
-          {[0, 1, 2, 3, 4].map((rating) => (
-            <StarIcon
-              onClick={() => setRatingHandler(rating)}
-              key={rating}
-              className={clsx(
-                venueRating && Math.round(venueRating) > rating
-                  ? "text-yellow-400"
-                  : "text-gray-300",
-                "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
-              )}
-              aria-hidden="true"
-            />
-          ))}
-          {venueRating && <span className="pl-1">({venueRating})</span>}
-        </button>
-      </div>
-      <div className="pt-2 pb-6">
-        {userRatingObject?.my_rating && isLoggedIn && (
-          <>
-            <p>Your rating</p>
-            <div className="flex items-center">
-              {Array.from(Array(userRatingObject.my_rating).keys()).map(
-                (rating) => (
-                  <StarIcon
-                    key={rating}
-                    className={clsx(
-                      userRatingObject.my_rating ? "text-yellow-400" : "",
-                      "h-5 w-5 flex-shrink-0"
-                    )}
-                    aria-hidden="true"
-                  />
-                )
-              )}
-            </div>
-          </>
-        )}
-      </div>
-      <p className="sr-only">{reviews.average} out of 5 stars</p>
-    </div>
-  );
-}
 
 const reviews = {
   average: 4,
@@ -142,6 +42,8 @@ const reviews = {
 
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
+  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
+
   const { data: venueData } = useQuery<VenueResponse, any, any>(
     ["venue", id],
     () => client.get(`venues/${id}`),
@@ -149,6 +51,29 @@ export default function Venue({ id }: { id: string }) {
       onSuccess: () => queryClient.invalidateQueries(["rating", id]),
     }
   );
+
+  const { mutateAsync: favourite } = useMutation<any, any, { remove: boolean }>(
+    (data) => {
+      return client.post(`venues/${id}/favourite`, data);
+    },
+    { onSuccess: () => queryClient.invalidateQueries(["favourite"]) }
+  );
+
+  const { data: favouritedData } = useQuery<{ data: { favourited: boolean } }>(
+    ["favourite"],
+    (data) => {
+      return client.get(`venues/${id}/favourited`, data);
+    }
+  );
+
+  const favourited = favouritedData?.data?.favourited;
+
+  const handleFavourite = async (remove: boolean) => {
+    if (!isLoggedIn) {
+      if (setLoginModalOpen) setLoginModalOpen(true);
+    }
+    await favourite({ remove });
+  };
 
   const venue: Venue = venueData?.data?.data;
   const venueAddress: Address = venue?.address;
@@ -202,12 +127,23 @@ export default function Venue({ id }: { id: string }) {
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                >
-                  Add to favourites
-                </button>
+                {favourited ? (
+                  <button
+                    onClick={() => handleFavourite(true)}
+                    type="button"
+                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-amber-100 hover:bg-amber-200 py-3 px-8 text-base font-medium text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  >
+                    Remove favourite
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleFavourite(true)}
+                    type="button"
+                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-amber-500 py-3 px-8 text-base font-medium text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                  >
+                    Add to favourites
+                  </button>
+                )}
                 <button
                   type="button"
                   className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-50 py-3 px-8 text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
@@ -373,6 +309,105 @@ export default function Venue({ id }: { id: string }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+interface RatingData {
+  rating: number;
+}
+
+function Rating({
+  venueRating,
+  venueId,
+}: {
+  venueRating: number | undefined;
+  venueId: string;
+}) {
+  //State, queries and mutations
+  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
+  const [rating, setRating] = useState<number | undefined>(venueRating);
+  const queryClient = useQueryClient();
+  const { data: ratingData } = useQuery<RatingData, any, any>(
+    ["rating", venueId],
+    () => client.get(`venues/${venueId}/rating`),
+    {
+      enabled: isLoggedIn,
+    }
+  );
+  const { mutateAsync } = useMutation<void, any, RatingData>({
+    mutationFn: (data: RatingData) =>
+      client.post(`venues/${venueId}/rate`, data),
+    mutationKey: ["rate_venue"],
+  });
+
+  //Component spcefic logic
+  async function setRatingHandler(rating: number) {
+    try {
+      if (!isLoggedIn) {
+        if (setLoginModalOpen) setLoginModalOpen(true);
+      }
+      setRating(rating);
+      const ratingData: RatingData = {
+        rating: rating + 1,
+      };
+      await mutateAsync(ratingData);
+      queryClient.invalidateQueries(["rating", venueId]);
+      queryClient.invalidateQueries(["venue", venueId]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  interface UserRatingInterface {
+    average_rating: number;
+    my_rating: string;
+  }
+  const userRatingObject: UserRatingInterface = ratingData?.data?.data?.rating;
+
+  return (
+    <div className="flex flex-row justify-between">
+      <h3 className="sr-only">Reviews</h3>
+      <div className="pt-2 pb-6">
+        <p>Rate this venue</p>
+        <button className="flex items-center">
+          {[0, 1, 2, 3, 4].map((rating) => (
+            <StarIcon
+              onClick={() => setRatingHandler(rating)}
+              key={rating}
+              className={clsx(
+                venueRating && Math.round(venueRating) > rating
+                  ? "text-yellow-400"
+                  : "text-gray-300",
+                "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
+              )}
+              aria-hidden="true"
+            />
+          ))}
+          {venueRating && <span className="pl-1">({venueRating})</span>}
+        </button>
+      </div>
+      <div className="pt-2 pb-6">
+        {userRatingObject?.my_rating && isLoggedIn && (
+          <>
+            <p>Your rating</p>
+            <div className="flex items-center">
+              {Array.from(Array(userRatingObject.my_rating).keys()).map(
+                (rating) => (
+                  <StarIcon
+                    key={rating}
+                    className={clsx(
+                      userRatingObject.my_rating ? "text-yellow-400" : "",
+                      "h-5 w-5 flex-shrink-0"
+                    )}
+                    aria-hidden="true"
+                  />
+                )
+              )}
+            </div>
+          </>
+        )}
+      </div>
+      <p className="sr-only">{reviews.average} out of 5 stars</p>
     </div>
   );
 }
