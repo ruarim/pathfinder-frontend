@@ -38,6 +38,7 @@ export default function Plans() {
         {planOptions.map((option) => {
           return (
             <button
+              key={option.href}
               className="relative mt-4 my-2 px-6 py-2 font-bold text-primary group w-full h-full hover:animate-pulse"
               onClick={() => router.push(option.href)}
             >
