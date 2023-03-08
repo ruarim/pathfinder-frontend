@@ -56,7 +56,9 @@ export default function Venue({ id }: { id: string }) {
     (data) => {
       return client.post(`venues/${id}/favourite`, data);
     },
-    { onSuccess: () => queryClient.invalidateQueries(["favourite"]) }
+    {
+      onSuccess: () => queryClient.invalidateQueries(["favourite"]),
+    }
   );
 
   const { data: favouritedData } = useQuery<{ data: { favourited: boolean } }>(
@@ -66,13 +68,18 @@ export default function Venue({ id }: { id: string }) {
     }
   );
 
-  const favourited = favouritedData?.data?.favourited;
+  const favourited = favouritedData?.data?.favourited || false;
 
   const handleFavourite = async (remove: boolean) => {
-    if (!isLoggedIn) {
-      if (setLoginModalOpen) setLoginModalOpen(true);
+    try {
+      if (!isLoggedIn) {
+        if (setLoginModalOpen) setLoginModalOpen(true);
+      }
+      await favourite({ remove });
+      queryClient.invalidateQueries(["venue_favourites"]);
+    } catch (e) {
+      console.log(e);
     }
-    await favourite({ remove });
   };
 
   const venue: Venue = venueData?.data?.data;
@@ -127,21 +134,21 @@ export default function Venue({ id }: { id: string }) {
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
-                {favourited ? (
+                {!favourited || !isLoggedIn ? (
                   <button
                     onClick={() => handleFavourite(true)}
                     type="button"
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-amber-100 hover:bg-amber-200 py-3 px-8 text-base font-medium text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-500 py-3 px-8 text-base font-medium text-white hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 focus:ring-offset-gray-50"
                   >
-                    Remove favourite
+                    Add to favourites
                   </button>
                 ) : (
                   <button
                     onClick={() => handleFavourite(true)}
                     type="button"
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-amber-500 py-3 px-8 text-base font-medium text-white hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-100 hover:bg-purple-200 py-3 px-8 text-base font-medium text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                   >
-                    Add to favourites
+                    Remove favourite
                   </button>
                 )}
                 <button
@@ -165,7 +172,7 @@ export default function Venue({ id }: { id: string }) {
                 <p className="text-primary text-sm">{venueAddress.country}</p>
               </div>
 
-              <div className="mt-10 border-t border-gray-200 pt-10">
+              <div className="mt-1 border-t border-gray-200 pt-10">
                 <h3 className="text-sm font-medium text-gray-900">Share</h3>
                 <ul role="list" className="mt-4 flex items-center space-x-6">
                   <li>
@@ -228,7 +235,7 @@ export default function Venue({ id }: { id: string }) {
               </div>
             </div>
 
-            <div className="mx-auto mt-16 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
+            <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
               <Tab.Group as="div">
                 <div className="border-b border-gray-200">
                   <Tab.List className="-mb-px flex space-x-8">

@@ -16,14 +16,20 @@ export default function Favourites() {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Favourites
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-            Venues you enjoyed the most.
-          </p>
+          {venueData?.data && venueData?.data?.data.length > 0 ? (
+            <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
+              Venues you enjoyed the most.
+            </p>
+          ) : (
+            <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
+              You haven't added any venues to your favorites.
+            </p>
+          )}
         </div>
         <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
           {venueData?.data &&
             venueData.data.data.map((venue: Venue, key: number) => {
-              return <VenueCard venue={venue} />;
+              return <VenueCard venue={venue} key={key} />;
             })}
         </div>
       </div>

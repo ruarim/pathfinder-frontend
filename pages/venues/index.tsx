@@ -48,11 +48,11 @@ export default function Venues() {
         <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
           {venueSearchData && searchParam != ""
             ? venueSearchData.data.data.map((venue: Venue, key: number) => {
-                return <VenueCard venue={venue} />;
+                return <VenueCard venue={venue} key={key} />;
               })
             : venueData
             ? venueData.data.data.map((venue: Venue, key: number) => {
-                return <VenueCard venue={venue} />;
+                return <VenueCard venue={venue} key={key} />;
               })
             : isLoading && <></>}
         </div>
