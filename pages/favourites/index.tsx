@@ -22,7 +22,7 @@ export default function Favourites() {
             </p>
           ) : (
             <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-              You haven't added any venues to your favorites.
+              You haven't added any venues to your favourites.
             </p>
           )}
         </div>
