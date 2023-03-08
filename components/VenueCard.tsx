@@ -1,3 +1,4 @@
+import { StarIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import timeFormatter from "../helpers/timeFormatter";
 
@@ -6,6 +7,8 @@ interface VenueCardProps {
 }
 
 export default function VenueCard({ venue }: VenueCardProps) {
+  const rating = venue?.rating;
+
   return (
     <div
       key={venue.name}
@@ -20,10 +23,20 @@ export default function VenueCard({ venue }: VenueCardProps) {
       </div>
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
-          <p className="text-xl font-medium text-primary">
+          <p className="flex justify-between text-xl font-medium text-primary">
             <Link href={`venues/${venue.id}`} className="hover:underline">
               {venue.name}
             </Link>
+            <div className="pt-1 pl-2 flex">
+              {rating &&
+                Array.from(Array(Math.round(rating)).keys()).map((rating) => (
+                  <StarIcon
+                    key={rating}
+                    className={"text-yellow-400 h-5 w-5 flex-shrink-0"}
+                    aria-hidden="true"
+                  />
+                ))}
+            </div>
           </p>
           <div className="space-y-1 mt-1">
             {venue?.attributes?.map((attribute) => {
