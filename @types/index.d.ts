@@ -65,6 +65,7 @@ type Venue = {
   attributes: string[];
   beverages: Beverage[];
   rating: number;
+  images: string[];
 };
 
 type VenueResponse = {

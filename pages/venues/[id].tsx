@@ -97,8 +97,8 @@ export default function Venue({ id }: { id: string }) {
             <div className="lg:col-span-4 lg:row-end-1">
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100">
                 <img
-                  src={"/pub-placeholder.jpg"}
-                  className="object-cover object-center"
+                  src={venue.images[0]}
+                  className="object-fill w-full object-center"
                 />
               </div>
             </div>
