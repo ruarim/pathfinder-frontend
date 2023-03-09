@@ -33,7 +33,7 @@ export default function VenueMapCard({
             <div className="flex-shrink-0">
               <img
                 className="h-32 w-full object-cover"
-                src={"/pub-placeholder.jpg"}
+                src={venue.images[0]}
                 alt=""
               />
             </div>
