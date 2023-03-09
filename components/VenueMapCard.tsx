@@ -2,8 +2,7 @@ import { useState } from "react";
 import timeFormatter from "../helpers/timeFormatter";
 import clsx from "clsx";
 import { useMap } from "react-map-gl";
-import { TagIcon } from "@heroicons/react/24/outline";
-import { MapPinIcon } from "@heroicons/react/20/solid";
+import { MapPinIcon, StarIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 
 interface VenueMapCardProps {
@@ -21,6 +20,7 @@ export default function VenueMapCard({
 }: VenueMapCardProps) {
   const [isOpen, setOpen] = useState(false);
   const { current: map } = useMap();
+  const rating = venue?.rating;
 
   return (
     <div>
@@ -39,13 +39,26 @@ export default function VenueMapCard({
             </div>
             <div className="flex flex-1 flex-col justify-between bg-white p-3">
               <div className="flex-1">
-                <p className="text-xl font-medium text-primary">
+                <p className="text-xl font-medium text-primary flex justify-between">
                   <Link
+                    target="_blank"
                     href={`/venues/${venue.id}`}
                     className="hover:underline"
                   >
                     {venue.name}
                   </Link>
+                  <div className="pt-1 pl-2 flex">
+                    {rating &&
+                      Array.from(Array(Math.round(rating)).keys()).map(
+                        (rating) => (
+                          <StarIcon
+                            key={rating}
+                            className={"text-yellow-400 h-5 w-5 flex-shrink-0"}
+                            aria-hidden="true"
+                          />
+                        )
+                      )}
+                  </div>
                 </p>
               </div>
               <div className="space-y-1 mt-1">

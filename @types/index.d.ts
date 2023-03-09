@@ -136,3 +136,7 @@ type PlanResponse = {
     data: Plan;
   };
 };
+
+type VenueFavouriteMutation = {
+  remove: boolean;
+};
