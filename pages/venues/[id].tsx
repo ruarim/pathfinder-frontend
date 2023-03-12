@@ -235,84 +235,7 @@ export default function Venue({ id }: { id: string }) {
               </div>
             </div>
 
-            <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
-              <Tab.Group as="div">
-                <div className="border-b border-gray-200">
-                  <Tab.List className="-mb-px flex space-x-8">
-                    <Tab
-                      className={({ selected }) =>
-                        clsx(
-                          selected
-                            ? "border-indigo-600 text-indigo-600"
-                            : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-                          "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
-                        )
-                      }
-                    >
-                      Customer Reviews
-                    </Tab>
-                  </Tab.List>
-                </div>
-                <Tab.Panels as={Fragment}>
-                  <Tab.Panel className="-mb-10">
-                    <h3 className="sr-only">Customer Reviews</h3>
-
-                    {reviews.featured.map((review, reviewIdx) => (
-                      <div
-                        key={review.id}
-                        className="flex space-x-4 text-sm text-gray-500"
-                      >
-                        <div className="flex-none py-10">
-                          <img
-                            src={review.avatarSrc}
-                            alt=""
-                            className="h-10 w-10 rounded-full bg-gray-100"
-                          />
-                        </div>
-                        <div
-                          className={clsx(
-                            reviewIdx === 0 ? "" : "border-t border-gray-200",
-                            "py-10"
-                          )}
-                        >
-                          <h3 className="font-medium text-gray-900">
-                            {review.author}
-                          </h3>
-                          <p>
-                            <time dateTime={review.datetime}>
-                              {review.date}
-                            </time>
-                          </p>
-
-                          <div className="mt-4 flex items-center">
-                            {[0, 1, 2, 3, 4].map((rating) => (
-                              <StarIcon
-                                key={rating}
-                                className={clsx(
-                                  review.rating > rating
-                                    ? "text-yellow-400"
-                                    : "text-gray-300",
-                                  "h-5 w-5 flex-shrink-0"
-                                )}
-                                aria-hidden="true"
-                              />
-                            ))}
-                          </div>
-                          <p className="sr-only">
-                            {review.rating} out of 5 stars
-                          </p>
-
-                          <div
-                            className="prose prose-sm mt-4 max-w-none text-gray-500"
-                            dangerouslySetInnerHTML={{ __html: review.content }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
+            <Reviews id={id} />
           </div>
         </div>
       )}
@@ -415,6 +338,93 @@ function Rating({
         )}
       </div>
       <p className="sr-only">{reviews.average} out of 5 stars</p>
+    </div>
+  );
+}
+
+function Reviews({ id }: { id: string }) {
+  //get venue reviews
+  const { data } = useQuery<ReviewsData>(["reviews", id], () =>
+    client.get(`venues/${id}/reviews`)
+  );
+
+  console.log(data);
+  const reviews = data?.data.data;
+
+  return (
+    <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
+      <Tab.Group as="div">
+        <div className="border-b border-gray-200">
+          <Tab.List className="-mb-px flex space-x-8">
+            <Tab
+              className={({ selected }) =>
+                clsx(
+                  selected
+                    ? "border-indigo-600 text-indigo-600"
+                    : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
+                  "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
+                )
+              }
+            >
+              Customer Reviews
+            </Tab>
+          </Tab.List>
+        </div>
+        <Tab.Panels as={Fragment}>
+          <Tab.Panel className="-mb-10">
+            <h3 className="sr-only">Customer Reviews</h3>
+
+            {reviews?.map((review, reviewIdx) => (
+              <div
+                key={review.id}
+                className="flex space-x-4 text-sm text-gray-500"
+              >
+                <div className="flex-none py-10">
+                  {/* <img
+                    src={review.avatarSrc}
+                    alt=""
+                    className="h-10 w-10 rounded-full bg-gray-100"
+                  /> */}
+                </div>
+                <div
+                  className={clsx(
+                    reviewIdx === 0 ? "" : "w-full border-t border-gray-200",
+                    "py-10"
+                  )}
+                >
+                  <h3 className="font-medium text-gray-900">
+                    {review.user.username}
+                  </h3>
+                  {/* <p>
+                    <time dateTime={review.datetime}>{review.date}</time>
+                  </p> */}
+
+                  <div className="mt-4 flex items-center">
+                    {[0, 1, 2, 3, 4].map((rating) => (
+                      <StarIcon
+                        key={rating}
+                        className={clsx(
+                          review.rating.rating.my_rating > rating
+                            ? "text-yellow-400"
+                            : "text-gray-300",
+                          "h-5 w-5 flex-shrink-0"
+                        )}
+                        aria-hidden="true"
+                      />
+                    ))}
+                  </div>
+                  {/* <p className="sr-only">{review.rating} out of 5 stars</p> */}
+
+                  <div
+                    className="prose prose-sm mt-4 max-w-none text-gray-500"
+                    dangerouslySetInnerHTML={{ __html: review.content }}
+                  />
+                </div>
+              </div>
+            ))}
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
     </div>
   );
 }
