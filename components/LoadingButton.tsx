@@ -1,17 +1,20 @@
 import React from "react";
 
 interface LoadingButtonProps {
-  isLoading: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
+  isLoading?: boolean;
+  onClick?: () => void;
+  children?: React.ReactNode;
+  type?: "button" | "submit" | "reset" | undefined;
 }
 export default function LoadingButton({
   onClick,
   isLoading,
   children,
+  type,
 }: LoadingButtonProps) {
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={isLoading}
       className="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"

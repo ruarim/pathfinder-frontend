@@ -52,7 +52,7 @@ export default function Create() {
 
   const [isNameModalOpen, setNameModalOpen] = useState(false);
 
-  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
+  const { handleLoggedIn } = useAuthContext();
 
   const toggleVenueAttribute = (e: BaseSyntheticEvent) => {
     let value = e.target.innerText;
@@ -223,8 +223,8 @@ export default function Create() {
           >
             <NameModal
               onSave={(name: string) => {
-                if (!isLoggedIn) {
-                  if (setLoginModalOpen) return setLoginModalOpen(true);
+                if (handleLoggedIn) {
+                  handleLoggedIn();
                 }
                 if (name === "") name = "Untitled Plan";
                 setPlanLoading(true);
@@ -300,10 +300,6 @@ function MapBox({
             center: [position.coords.longitude, position.coords.latitude],
           });
       });
-    } else {
-      /* geolocation IS NOT available, handle it */
-      //@dev TODO show modal
-      console.log("geolocation not available");
     }
   }, [map]);
 

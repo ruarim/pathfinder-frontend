@@ -20,7 +20,7 @@ export default function VenueMapCard({
 }: VenueMapCardProps) {
   const [isOpen, setOpen] = useState(false);
   const { current: map } = useMap();
-  const rating = venue?.rating;
+  const avg_rating = venue?.rating;
 
   return (
     <div>
@@ -48,16 +48,20 @@ export default function VenueMapCard({
                     {venue.name}
                   </Link>
                   <div className="pt-1 pl-2 flex">
-                    {rating &&
-                      Array.from(Array(Math.round(rating)).keys()).map(
-                        (rating) => (
-                          <StarIcon
-                            key={rating}
-                            className={"text-yellow-400 h-5 w-5 flex-shrink-0"}
-                            aria-hidden="true"
-                          />
-                        )
-                      )}
+                    <div className="pt-1 pl-2 flex">
+                      {[0, 1, 2, 3, 4].map((rating) => (
+                        <StarIcon
+                          key={rating}
+                          className={clsx(
+                            avg_rating > rating
+                              ? "text-yellow-400"
+                              : "text-gray-300",
+                            "h-5 w-5 flex-shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                      ))}
+                    </div>
                   </div>
                 </p>
               </div>

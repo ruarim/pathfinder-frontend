@@ -1,4 +1,5 @@
 import { StarIcon } from "@heroicons/react/20/solid";
+import clsx from "clsx";
 import Link from "next/link";
 import timeFormatter from "../helpers/timeFormatter";
 
@@ -7,7 +8,7 @@ interface VenueCardProps {
 }
 
 export default function VenueCard({ venue }: VenueCardProps) {
-  const rating = venue?.rating;
+  const avg_rating = venue?.rating;
 
   return (
     <div
@@ -17,7 +18,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
       <div className="flex-shrink-0">
         <img
           className="h-48 w-full object-cover"
-          src={venue.images[0]}
+          src={venue.images[0] ?? "/pub-placeholder.jpg"}
           alt=""
         />
       </div>
@@ -28,14 +29,16 @@ export default function VenueCard({ venue }: VenueCardProps) {
               {venue.name}
             </Link>
             <div className="pt-1 pl-2 flex">
-              {rating &&
-                Array.from(Array(Math.round(rating)).keys()).map((rating) => (
-                  <StarIcon
-                    key={rating}
-                    className={"text-yellow-400 h-5 w-5 flex-shrink-0"}
-                    aria-hidden="true"
-                  />
-                ))}
+              {[0, 1, 2, 3, 4].map((rating) => (
+                <StarIcon
+                  key={rating}
+                  className={clsx(
+                    avg_rating > rating ? "text-yellow-400" : "text-gray-300",
+                    "h-5 w-5 flex-shrink-0"
+                  )}
+                  aria-hidden="true"
+                />
+              ))}
             </div>
           </p>
           <div className="space-y-1 mt-1">
