@@ -189,8 +189,10 @@ function InviteCard({ plan }: { plan: Plan }) {
       {isLoggedIn ? (
         user && isInvited(plan.users, user) ? (
           <>
-            {user?.id == getCreator(plan.users)?.id && (
+            {user?.id == getCreator(plan.users)?.id ? (
               <SetParticipants id={plan.id} plan={plan} />
+            ) : (
+              <h2 className="text-xl font-bold pb-1">Invited Users</h2>
             )}
             <UserList users={plan.users} />
           </>
