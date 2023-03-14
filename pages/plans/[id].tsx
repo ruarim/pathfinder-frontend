@@ -52,8 +52,8 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
   return (
-    <div className="bg-gradient-to-r from-green-200 to-blue-400 shadow-md rounded-md">
-      <div className="space-y-2 bg-white p-7 md:p-12 rounded-md m-1.5">
+    <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
+      <div className="space-y-2 bg-white p-7 md:p-12 rounded-lg m-2">
         <div className="md:flex justify-between space-y-1">
           <h1 className="text-3xl font-bold">{plan.name}</h1>
           <h2 className="text-2xl flex gap-2 md:pr-2">
