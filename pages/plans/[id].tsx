@@ -111,7 +111,7 @@ function VenueList({ venues }: { venues: Venue[] }) {
         return (
           <Link href={`/venues/${venue.id}`} className="space-y-2">
             <div className="flex ">
-              <MapPinIcon className="w-4" />
+              <MapPinIcon className="w-4 text-red-400" />
               <div className="hover:underline ">
                 {venue.name.substring(0, 29)}
                 {venue.name.length > 30 && "..."}
