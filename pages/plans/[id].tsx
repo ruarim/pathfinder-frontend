@@ -192,7 +192,7 @@ function InviteCard({ plan }: { plan: Plan }) {
             {user?.id == getCreator(plan.users)?.id ? (
               <SetParticipants id={plan.id} plan={plan} />
             ) : (
-              <h2 className="text-xl font-bold pb-1">Invited Users</h2>
+              <h2 className="text-xl font-bold">Invited Users</h2>
             )}
             <UserList users={plan.users} />
           </>
