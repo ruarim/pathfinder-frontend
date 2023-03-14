@@ -61,7 +61,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
             <AvatarIcon imageUrl={avatarSrc} />
           </h2>
         </div>
-        <Border />
+        <Separator />
         <div className="md:flex justify-between space-y-3 ">
           <div className="space-y-3 md:pr-2">
             <div>
@@ -79,7 +79,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
                 </div>
               )}
             </div>
-            <Border />
+            <Separator />
             <InviteCard plan={plan} />
           </div>
           <div className="flex justify-center">
@@ -453,7 +453,7 @@ function MapBox({
   );
 }
 
-function Border() {
+function Separator() {
   return <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>;
 }
 
