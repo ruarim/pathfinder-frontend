@@ -141,3 +141,26 @@ type PlanResponse = {
 type VenueFavouriteMutation = {
   remove: boolean;
 };
+
+type Rating = {
+  id: number;
+  user_id: number;
+  rating: {
+    average_rating: number;
+    my_rating: number;
+  };
+};
+
+type Review = {
+  id: number;
+  created_at: string;
+  content: string;
+  user: User;
+  rating: Rating;
+};
+
+type ReviewsData = {
+  data: {
+    data: Review[];
+  };
+};

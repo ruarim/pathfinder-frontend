@@ -51,50 +51,51 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
     ? plan?.startpoint_name.split(",")
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
-
   return (
-    <div className="space-y-2 bg-slate-200 shadow-md p-5 md:p-7 rounded-md">
-      <div className="md:flex justify-between space-y-1">
-        <h1 className="text-3xl font-bold">{plan.name}</h1>
-        <h2 className="text-2xl flex gap-2 md:pr-2">
-          {getCreator(plan.users)?.username}
-          <AvatarIcon imageUrl={avatarSrc} />
-        </h2>
-      </div>
-      <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
-      <div className="md:flex justify-between space-y-3 md:px-2">
-        <div className="space-y-3 md:pr-2">
-          <div>
-            {plan.startpoint_name && (
-              <div className="flex">
-                <MapPinIcon className="w-4 text-green-600" />
-                {startName[0]}
-              </div>
-            )}
-            <VenueList venues={plan.venues} />
-            {plan.endpoint_name && (
-              <div className="flex">
-                <MapPinIcon className="w-4 text-blue-500" />
-                {endName[0]}
-              </div>
-            )}
-          </div>
-          <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>
-          <InviteCard plan={plan} />
+    <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
+      <div className="space-y-2 bg-white p-7 md:p-12 rounded-lg m-2">
+        <div className="md:flex justify-between space-y-1">
+          <h1 className="text-3xl font-bold">{plan.name}</h1>
+          <h2 className="text-2xl flex gap-2 md:pr-2">
+            {getCreator(plan.users)?.username}
+            <AvatarIcon imageUrl={avatarSrc} />
+          </h2>
         </div>
-        <div className="flex justify-center">
-          <MapBox
-            center={{
-              lat: plan.venues[0].address.latitude,
-              long: plan.venues[0].address.longitude,
-            }}
-            startpoint={{
-              lat: plan.startpoint_lat,
-              long: plan.startpoint_long,
-            }}
-            endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
-            venues={plan.venues}
-          />
+        <Separator />
+        <div className="md:flex justify-between space-y-3 ">
+          <div className="space-y-3 md:pr-2">
+            <div>
+              {plan.startpoint_name && (
+                <div className="flex">
+                  <MapPinIcon className="w-4 text-green-600" />
+                  {startName[0]}
+                </div>
+              )}
+              <VenueList venues={plan.venues} />
+              {plan.endpoint_name && (
+                <div className="flex">
+                  <MapPinIcon className="w-4 text-blue-500" />
+                  {endName[0]}
+                </div>
+              )}
+            </div>
+            <Separator />
+            <InviteCard plan={plan} />
+          </div>
+          <div className="flex justify-center">
+            <MapBox
+              center={{
+                lat: plan.venues[0].address.latitude,
+                long: plan.venues[0].address.longitude,
+              }}
+              startpoint={{
+                lat: plan.startpoint_lat,
+                long: plan.startpoint_long,
+              }}
+              endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
+              venues={plan.venues}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +111,7 @@ function VenueList({ venues }: { venues: Venue[] }) {
         return (
           <Link href={`/venues/${venue.id}`} className="space-y-2">
             <div className="flex ">
-              <MapPinIcon className="w-4" />
+              <MapPinIcon className="w-4 text-red-400" />
               <div className="hover:underline ">
                 {venue.name.substring(0, 29)}
                 {venue.name.length > 30 && "..."}
@@ -188,8 +189,10 @@ function InviteCard({ plan }: { plan: Plan }) {
       {isLoggedIn ? (
         user && isInvited(plan.users, user) ? (
           <>
-            {user?.id == getCreator(plan.users)?.id && (
+            {user?.id == getCreator(plan.users)?.id ? (
               <SetParticipants id={plan.id} plan={plan} />
+            ) : (
+              <h2 className="text-xl font-bold">Invited Users</h2>
             )}
             <UserList users={plan.users} />
           </>
@@ -301,7 +304,7 @@ function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
             <div className="mt-1">
               <Combobox.Input
                 id="input"
-                className="block w-full rounded-full p-3 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="block w-full rounded-full p-3 bg-gray-200 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 placeholder={"Enter users email"}
                 onChange={(event) => setQuery(event.target.value)}
               />
@@ -318,7 +321,7 @@ function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
                       Nothing found.
                     </div>
                   ) : (
-                    users?.map((user) => {
+                    users?.slice(0, 5)?.map((user) => {
                       if (loggedIn && user.email == loggedIn.email)
                         return <></>;
                       return (
@@ -344,7 +347,7 @@ function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
                                 <div className="flex">
                                   {user.email}
                                   {isInvited(plan.users, user) && (
-                                    <CheckIcon className="w-4" />
+                                    <CheckIcon className="w-4 text-green-500" />
                                   )}
                                 </div>
                               </span>
@@ -396,58 +399,64 @@ function MapBox({
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 
   return (
-    <Map
-      id="map"
-      initialViewState={{
-        latitude: center.lat,
-        longitude: center.long,
-        zoom: 12,
-        bearing: 0,
-        pitch: 0,
-      }}
-      style={{ height: "300px", width: "300px", borderRadius: "0.375rem" }}
-      mapStyle="mapbox://styles/mapbox/streets-v12"
-      mapboxAccessToken={mapboxToken}
-    >
-      <GeolocateControl position="top-right" />
-      <NavigationControl position="top-right" />
+    <div className="rounded-md">
+      <Map
+        id="map"
+        initialViewState={{
+          latitude: center.lat,
+          longitude: center.long,
+          zoom: 12,
+          bearing: 0,
+          pitch: 0,
+        }}
+        style={{ height: "300px", width: "300px", borderRadius: "0.375rem" }}
+        mapStyle="mapbox://styles/mapbox/streets-v12"
+        mapboxAccessToken={mapboxToken}
+      >
+        <GeolocateControl position="top-right" />
+        <NavigationControl position="top-right" />
 
-      {/* venues  */}
-      {venues.map((venue) => {
-        return (
+        {/* venues  */}
+        {venues.map((venue) => {
+          return (
+            <Marker
+              latitude={venue.address.latitude}
+              longitude={venue.address.longitude}
+              anchor="bottom"
+            >
+              <MapPinIcon className="w-8 text-red-400" />
+            </Marker>
+          );
+        })}
+
+        {/* start */}
+        {startpoint && (
           <Marker
-            latitude={venue.address.latitude}
-            longitude={venue.address.longitude}
+            latitude={startpoint.lat}
+            longitude={startpoint.long}
             anchor="bottom"
           >
-            <MapPinIcon className="w-8 text-red-400" />
+            <MapPinIcon className="w-8 text-green-600" />
           </Marker>
-        );
-      })}
+        )}
 
-      {/* start */}
-      {startpoint && (
-        <Marker
-          latitude={startpoint.lat}
-          longitude={startpoint.long}
-          anchor="bottom"
-        >
-          <MapPinIcon className="w-8 text-green-600" />
-        </Marker>
-      )}
-
-      {/* end */}
-      {endpoint && (
-        <Marker
-          latitude={endpoint.lat}
-          longitude={endpoint.long}
-          anchor="bottom"
-        >
-          <MapPinIcon className="w-8 text-blue-400" />
-        </Marker>
-      )}
-    </Map>
+        {/* end */}
+        {endpoint && (
+          <Marker
+            latitude={endpoint.lat}
+            longitude={endpoint.long}
+            anchor="bottom"
+          >
+            <MapPinIcon className="w-8 text-blue-400" />
+          </Marker>
+        )}
+      </Map>
+    </div>
   );
+}
+
+function Separator() {
+  return <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>;
 }
 
 export async function getServerSideProps(context: { query: { id: number } }) {

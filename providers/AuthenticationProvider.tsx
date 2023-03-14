@@ -7,6 +7,7 @@ type LogoutFunction = () => void;
 type LoginFunction = (data: LoginResponse) => void;
 type setLoginModalOpen = (value: boolean) => void;
 type setRegisterModalOpen = (value: boolean) => void;
+type handleLoggedIn = () => void;
 
 interface AuthenticationContextInterface {
   registerHandler: RegisterFunction;
@@ -17,6 +18,7 @@ interface AuthenticationContextInterface {
   registerModalOpen: boolean;
   setRegisterModalOpen: setRegisterModalOpen;
   setLoginModalOpen: setLoginModalOpen;
+  handleLoggedIn: handleLoggedIn;
 }
 
 const AuthenticationContext = createContext<
@@ -30,6 +32,7 @@ const AuthenticationContext = createContext<
   registerModalOpen: undefined,
   setRegisterModalOpen: (value) => undefined,
   setLoginModalOpen: (value) => undefined,
+  handleLoggedIn: () => undefined,
 });
 
 function AuthenticationProvider({ children }: { children: React.ReactNode }) {
@@ -66,6 +69,12 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
     return localStorage.getItem("token");
   }
 
+  function handleLoggedIn() {
+    if (!isLoggedIn) {
+      if (setLoginModalOpen) setLoginModalOpen(true);
+    }
+  }
+
   useEffect(() => {
     const token = getToken();
     if (!token) {
@@ -86,6 +95,7 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
         registerModalOpen,
         setRegisterModalOpen,
         setLoginModalOpen,
+        handleLoggedIn,
       }}
     >
       {children}

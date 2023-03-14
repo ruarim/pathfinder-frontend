@@ -6,6 +6,9 @@ import clsx from "clsx";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
+import Modal from "../../components/Modal";
+import LoadingButton from "../../components/LoadingButton";
+import { useForm } from "react-hook-form";
 
 const reviews = {
   average: 4,
@@ -42,7 +45,7 @@ const reviews = {
 
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
-  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
+  const { isLoggedIn, handleLoggedIn } = useAuthContext();
 
   const { data: venueData } = useQuery<VenueResponse, any, any>(
     ["venue", id],
@@ -72,9 +75,7 @@ export default function Venue({ id }: { id: string }) {
 
   const handleFavourite = async (remove: boolean) => {
     try {
-      if (!isLoggedIn) {
-        if (setLoginModalOpen) setLoginModalOpen(true);
-      }
+      if (handleLoggedIn) handleLoggedIn();
       await favourite({ remove });
       queryClient.invalidateQueries(["venue_favourites"]);
     } catch (e) {
@@ -136,7 +137,7 @@ export default function Venue({ id }: { id: string }) {
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
                 {!favourited || !isLoggedIn ? (
                   <button
-                    onClick={() => handleFavourite(true)}
+                    onClick={() => handleFavourite(false)}
                     type="button"
                     className="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-500 py-3 px-8 text-base font-medium text-white hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 focus:ring-offset-gray-50"
                   >
@@ -151,12 +152,7 @@ export default function Venue({ id }: { id: string }) {
                     Remove favourite
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-50 py-3 px-8 text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                >
-                  Write a review
-                </button>
+                <Review id={id} />
               </div>
               <div className="mt-10 border-t border-gray-200 py-4">
                 <div className="border-b border-gray-200 pt-2">
@@ -235,88 +231,88 @@ export default function Venue({ id }: { id: string }) {
               </div>
             </div>
 
-            <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
-              <Tab.Group as="div">
-                <div className="border-b border-gray-200">
-                  <Tab.List className="-mb-px flex space-x-8">
-                    <Tab
-                      className={({ selected }) =>
-                        clsx(
-                          selected
-                            ? "border-indigo-600 text-indigo-600"
-                            : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
-                          "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
-                        )
-                      }
-                    >
-                      Customer Reviews
-                    </Tab>
-                  </Tab.List>
-                </div>
-                <Tab.Panels as={Fragment}>
-                  <Tab.Panel className="-mb-10">
-                    <h3 className="sr-only">Customer Reviews</h3>
-
-                    {reviews.featured.map((review, reviewIdx) => (
-                      <div
-                        key={review.id}
-                        className="flex space-x-4 text-sm text-gray-500"
-                      >
-                        <div className="flex-none py-10">
-                          <img
-                            src={review.avatarSrc}
-                            alt=""
-                            className="h-10 w-10 rounded-full bg-gray-100"
-                          />
-                        </div>
-                        <div
-                          className={clsx(
-                            reviewIdx === 0 ? "" : "border-t border-gray-200",
-                            "py-10"
-                          )}
-                        >
-                          <h3 className="font-medium text-gray-900">
-                            {review.author}
-                          </h3>
-                          <p>
-                            <time dateTime={review.datetime}>
-                              {review.date}
-                            </time>
-                          </p>
-
-                          <div className="mt-4 flex items-center">
-                            {[0, 1, 2, 3, 4].map((rating) => (
-                              <StarIcon
-                                key={rating}
-                                className={clsx(
-                                  review.rating > rating
-                                    ? "text-yellow-400"
-                                    : "text-gray-300",
-                                  "h-5 w-5 flex-shrink-0"
-                                )}
-                                aria-hidden="true"
-                              />
-                            ))}
-                          </div>
-                          <p className="sr-only">
-                            {review.rating} out of 5 stars
-                          </p>
-
-                          <div
-                            className="prose prose-sm mt-4 max-w-none text-gray-500"
-                            dangerouslySetInnerHTML={{ __html: review.content }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-            </div>
+            <Reviews id={id} />
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function Review({ id }: { id: string }) {
+  const { isLoggedIn, handleLoggedIn } = useAuthContext();
+  const [isReviewModalOpen, setReviewModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const {
+    handleSubmit,
+    register,
+    setError,
+    formState: { errors },
+    resetField,
+  } = useForm<{ content: string }>();
+
+  const { mutateAsync: addReview } = useMutation<any, any, { content: string }>(
+    (data) => {
+      return client.post(`venues/${id}/review`, data);
+    }
+  );
+
+  const handleReviewClick = async () => {
+    if (handleLoggedIn) handleLoggedIn();
+    if (isLoggedIn) setReviewModalOpen(true);
+  };
+
+  const handleAddReview = async (data: { content: string }) => {
+    if (!data.content)
+      return setError("content", {
+        message: "Add some content to your review.",
+      });
+    await addReview(data)
+      .then(() => {
+        setReviewModalOpen(false);
+        queryClient.invalidateQueries(["reviews", id]);
+        resetField("content");
+      })
+      .catch(() =>
+        setError("content", {
+          message: "Review failed.",
+        })
+      );
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => handleReviewClick()}
+        type="button"
+        className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-50 py-3 px-8 text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+      >
+        Write a review
+      </button>
+
+      <Modal
+        setOpen={setReviewModalOpen}
+        isOpen={isReviewModalOpen}
+        title={"Review"}
+      >
+        <form onSubmit={handleSubmit(handleAddReview)}>
+          <div className="space-y-3">
+            <textarea
+              {...register("content")}
+              className="w-full resize-none p-2"
+              rows={10}
+            ></textarea>
+            <div className="flex justify-center">
+              <LoadingButton type={"submit"}>Add Review</LoadingButton>
+            </div>
+            <div className="text-red-600 flex justify-center">
+              {errors.content && <p>{errors.content.message}</p>}
+            </div>
+          </div>
+        </form>
+      </Modal>
+    </>
   );
 }
 
@@ -332,7 +328,7 @@ function Rating({
   venueId: string;
 }) {
   //State, queries and mutations
-  const { isLoggedIn, setLoginModalOpen } = useAuthContext();
+  const { isLoggedIn, handleLoggedIn } = useAuthContext();
   const [rating, setRating] = useState<number | undefined>(venueRating);
   const queryClient = useQueryClient();
   const { data: ratingData } = useQuery<RatingData, any, any>(
@@ -351,9 +347,7 @@ function Rating({
   //Component spcefic logic
   async function setRatingHandler(rating: number) {
     try {
-      if (!isLoggedIn) {
-        if (setLoginModalOpen) setLoginModalOpen(true);
-      }
+      if (handleLoggedIn) handleLoggedIn();
       setRating(rating);
       const ratingData: RatingData = {
         rating: rating + 1,
@@ -361,6 +355,7 @@ function Rating({
       await mutateAsync(ratingData);
       queryClient.invalidateQueries(["rating", venueId]);
       queryClient.invalidateQueries(["venue", venueId]);
+      queryClient.invalidateQueries(["reviews", venueId]);
     } catch (error) {
       console.log(error);
     }
@@ -415,6 +410,92 @@ function Rating({
         )}
       </div>
       <p className="sr-only">{reviews.average} out of 5 stars</p>
+    </div>
+  );
+}
+
+function Reviews({ id }: { id: string }) {
+  //get venue reviews
+  const { data } = useQuery<ReviewsData>(["reviews", id], () =>
+    client.get(`venues/${id}/reviews`)
+  );
+  const reviews = data?.data.data;
+
+  return (
+    <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
+      <Tab.Group as="div">
+        <div className="border-b border-gray-200">
+          <Tab.List className="-mb-px flex space-x-8">
+            <Tab
+              className={({ selected }) =>
+                clsx(
+                  selected
+                    ? "border-indigo-600 text-indigo-600"
+                    : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
+                  "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
+                )
+              }
+            >
+              Customer Reviews
+            </Tab>
+          </Tab.List>
+        </div>
+        <Tab.Panels as={Fragment}>
+          <Tab.Panel className="-mb-10">
+            <h3 className="sr-only">Customer Reviews</h3>
+
+            {reviews && reviews?.length > 0 ? (
+              reviews?.map((review, reviewIdx) => (
+                <div key={review.id} className="flex  text-sm text-gray-500">
+                  <div className="flex-none py-10">
+                    {/* <img
+                    src={review.avatarSrc}
+                    alt=""
+                    className="h-10 w-10 rounded-full bg-gray-100"
+                  /> */}
+                  </div>
+                  <div
+                    className={clsx(
+                      reviewIdx === 0 ? "" : "w-full border-t border-gray-200",
+                      "py-10"
+                    )}
+                  >
+                    <h3 className="font-medium text-gray-900">
+                      {review.user.username}
+                    </h3>
+                    {/* <p>
+                    <time dateTime={review.datetime}>{review.date}</time>
+                  </p> */}
+
+                    <div className="mt-4 flex items-center">
+                      {[0, 1, 2, 3, 4].map((rating) => (
+                        <StarIcon
+                          key={rating}
+                          className={clsx(
+                            review?.rating?.rating?.my_rating > rating
+                              ? "text-yellow-400"
+                              : "text-gray-300",
+                            "h-5 w-5 flex-shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                      ))}
+                    </div>
+                    <div
+                      className="prose prose-sm mt-4 max-w-none text-gray-500"
+                      dangerouslySetInnerHTML={{ __html: review.content }}
+                    />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="font-bold flex justify-center p-10 text-gray-500">
+                There are no reviews for this venue yet.
+              </div>
+            )}
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
     </div>
   );
 }
