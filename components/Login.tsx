@@ -36,6 +36,9 @@ export default function Login() {
     }
   };
 
+  const inputStyle =
+    "block w-full appearance-none rounded-lg border border-gray-300 p-3 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm bg-gray-100";
+
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-7 lg:px-8">
@@ -65,7 +68,7 @@ export default function Login() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    className={inputStyle}
                   />
                 </div>
               </div>
@@ -86,7 +89,7 @@ export default function Login() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    className={inputStyle}
                   />
                 </div>
               </div>
@@ -94,15 +97,9 @@ export default function Login() {
               <div className="flex space-x-2">
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  className="flex w-full justify-center rounded-full border border-transparent bg-notice/75 hover:bg-notice p-3 text-md font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
                 >
                   Sign in
-                </button>
-                <button
-                  onClick={handleRegister}
-                  className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  Register
                 </button>
               </div>
               <div className="text-red-600">

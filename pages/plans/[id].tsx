@@ -4,7 +4,7 @@ import client from "../../axios/apiClient";
 import { EnvelopeIcon, MapPinIcon, UserIcon } from "@heroicons/react/20/solid";
 import { GeolocateControl, Map, Marker, NavigationControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import AvatarIcon from "../../components/UserIcon";
+import AvatarIcon from "../../components/AvatarIcon";
 import { Combobox, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
@@ -14,7 +14,7 @@ import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import LoadingButton from "../../components/LoadingButton";
 
-const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
+const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR ?? "";
 
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
@@ -51,14 +51,16 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
     ? plan?.startpoint_name.split(",")
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
+  const creator = getCreator(plan.users);
+
   return (
     <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
       <div className="space-y-2 bg-white p-7 md:p-12 rounded-lg m-2">
         <div className="md:flex justify-between space-y-1">
           <h1 className="text-3xl font-bold">{plan.name}</h1>
           <h2 className="text-2xl flex gap-2 md:pr-2">
-            {getCreator(plan.users)?.username}
-            <AvatarIcon imageUrl={avatarSrc} />
+            {creator?.username}
+            <AvatarIcon imageUrl={creator?.avatar_url ?? avatarSrc} />
           </h2>
         </div>
         <Separator />
@@ -102,7 +104,6 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
   );
 }
 
-function findCenterPoint() {}
 
 function VenueList({ venues }: { venues: Venue[] }) {
   return (
@@ -201,6 +202,7 @@ function InviteCard({ plan }: { plan: Plan }) {
             <LoadingButton
               onClick={() => handleUsePlan(plan)}
               isLoading={isLoading}
+              styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center  justify-center px-5 py-2 rounded-md shadow-md text-white w-full"
             >
               Use this plan
             </LoadingButton>

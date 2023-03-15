@@ -5,6 +5,7 @@ type User = {
   lastName: string;
   isAdmin: number;
   email: string;
+  avatar_url: string;
   is_creator?: number;
   has_completed?: number;
 };

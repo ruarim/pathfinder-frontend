@@ -9,6 +9,7 @@ import { useAuthContext } from "../../hooks/context/useAuthContext";
 import Modal from "../../components/Modal";
 import LoadingButton from "../../components/LoadingButton";
 import { useForm } from "react-hook-form";
+import AvatarIcon from "../../components/AvatarIcon";
 
 const reviews = {
   average: 4,
@@ -46,6 +47,7 @@ const reviews = {
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
   const { isLoggedIn, handleLoggedIn } = useAuthContext();
+  const [isFavouriteLoading, setFavouriteLoading] = useState(false);
 
   const { data: venueData } = useQuery<VenueResponse, any, any>(
     ["venue", id],
@@ -74,6 +76,7 @@ export default function Venue({ id }: { id: string }) {
   const favourited = favouritedData?.data?.favourited || false;
 
   const handleFavourite = async (remove: boolean) => {
+    setFavouriteLoading(true);
     try {
       if (handleLoggedIn) handleLoggedIn();
       await favourite({ remove });
@@ -81,6 +84,7 @@ export default function Venue({ id }: { id: string }) {
     } catch (e) {
       console.log(e);
     }
+    setFavouriteLoading(false);
   };
 
   const venue: Venue = venueData?.data?.data;
@@ -136,21 +140,25 @@ export default function Venue({ id }: { id: string }) {
 
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
                 {!favourited || !isLoggedIn ? (
-                  <button
+                  <LoadingButton
+                    isLoading={isFavouriteLoading}
                     onClick={() => handleFavourite(false)}
                     type="button"
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-500 py-3 px-8 text-base font-medium text-white hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 focus:ring-offset-gray-50"
+                    styles={
+                      '"flex w-full items-center justify-center rounded-md border border-transparent bg-purple-500 py-3 px-8 text-base font-medium text-white hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2 focus:ring-offset-gray-50"'
+                    }
                   >
                     Add to favourites
-                  </button>
+                  </LoadingButton>
                 ) : (
-                  <button
+                  <LoadingButton
+                    isLoading={isFavouriteLoading}
                     onClick={() => handleFavourite(true)}
                     type="button"
-                    className="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-100 hover:bg-purple-200 py-3 px-8 text-base font-medium text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                    styles="flex w-full items-center justify-center rounded-md border border-transparent bg-purple-100 hover:bg-purple-200 py-3 px-8 text-base font-medium text-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                   >
                     Remove favourite
-                  </button>
+                  </LoadingButton>
                 )}
                 <Review id={id} />
               </div>
@@ -242,6 +250,7 @@ export default function Venue({ id }: { id: string }) {
 function Review({ id }: { id: string }) {
   const { isLoggedIn, handleLoggedIn } = useAuthContext();
   const [isReviewModalOpen, setReviewModalOpen] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const queryClient = useQueryClient();
 
   const {
@@ -268,17 +277,19 @@ function Review({ id }: { id: string }) {
       return setError("content", {
         message: "Add some content to your review.",
       });
+    setLoading(true);
     await addReview(data)
       .then(() => {
         setReviewModalOpen(false);
         queryClient.invalidateQueries(["reviews", id]);
         resetField("content");
       })
-      .catch(() =>
+      .catch(() => {
         setError("content", {
           message: "Review failed.",
-        })
-      );
+        });
+        setLoading(false);
+      });
   };
 
   return (
@@ -300,11 +311,18 @@ function Review({ id }: { id: string }) {
           <div className="space-y-3">
             <textarea
               {...register("content")}
-              className="w-full resize-none p-2"
+              className="w-full resize-none p-2 border border-gray-300 rounded-md focus:border-black  focus:ring-black"
               rows={10}
+              placeholder="Write a review.."
             ></textarea>
             <div className="flex justify-center">
-              <LoadingButton type={"submit"}>Add Review</LoadingButton>
+              <LoadingButton
+                isLoading={isLoading}
+                type={"submit"}
+                styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
+              >
+                Add Review
+              </LoadingButton>
             </div>
             <div className="text-red-600 flex justify-center">
               {errors.content && <p>{errors.content.message}</p>}
@@ -344,7 +362,7 @@ function Rating({
     mutationKey: ["rate_venue"],
   });
 
-  //Component spcefic logic
+  //Component specific logic
   async function setRatingHandler(rating: number) {
     try {
       if (handleLoggedIn) handleLoggedIn();
@@ -420,6 +438,7 @@ function Reviews({ id }: { id: string }) {
     client.get(`venues/${id}/reviews`)
   );
   const reviews = data?.data.data;
+  const defaultAvatar = process.env.NEXT_PUBLIC_DEFAULT_AVATAR ?? "";
 
   return (
     <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
@@ -447,12 +466,10 @@ function Reviews({ id }: { id: string }) {
             {reviews && reviews?.length > 0 ? (
               reviews?.map((review, reviewIdx) => (
                 <div key={review.id} className="flex  text-sm text-gray-500">
-                  <div className="flex-none py-10">
-                    {/* <img
-                    src={review.avatarSrc}
-                    alt=""
-                    className="h-10 w-10 rounded-full bg-gray-100"
-                  /> */}
+                  <div className="flex-none py-10 pr-2">
+                    <AvatarIcon
+                      imageUrl={review.user.avatar_url ?? defaultAvatar}
+                    />
                   </div>
                   <div
                     className={clsx(
@@ -463,9 +480,11 @@ function Reviews({ id }: { id: string }) {
                     <h3 className="font-medium text-gray-900">
                       {review.user.username}
                     </h3>
-                    {/* <p>
-                    <time dateTime={review.datetime}>{review.date}</time>
-                  </p> */}
+                    <p>
+                      <time dateTime={review.created_at}>
+                        {new Date(review.created_at).toDateString()}
+                      </time>
+                    </p>
 
                     <div className="mt-4 flex items-center">
                       {[0, 1, 2, 3, 4].map((rating) => (

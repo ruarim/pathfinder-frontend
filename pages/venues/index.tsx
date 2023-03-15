@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useGetVenues } from "../../hooks/queries/getVenues";
-
 import VenueCard from "../../components/VenueCard";
 import PaginatorScrollBar from "../../components/PaginatorScrollBar";
 import SearchInput from "../../components/SearchInput";
 import { useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useDebounce } from "../../hooks/utility/useDebounce";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Venues() {
-  const { data: venueData } = useGetVenues();
+  const { data: venueData, isLoading: venuesLoading } = useGetVenues();
   const [searchParam, setSearchParam] = useState("");
   const debouncedSearchParam = useDebounce(searchParam, 500);
 
@@ -45,17 +45,23 @@ export default function Venues() {
         <div className="pt-12">
           <SearchInput setSearchParam={setSearchParam} />
         </div>
-        <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
-          {venueSearchData && searchParam != ""
-            ? venueSearchData.data.data.map((venue: Venue, key: number) => {
-                return <VenueCard venue={venue} key={key} />;
-              })
-            : venueData
-            ? venueData.data.data.map((venue: Venue, key: number) => {
-                return <VenueCard venue={venue} key={key} />;
-              })
-            : isLoading && <></>}
-        </div>
+        {!venuesLoading ? (
+          <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
+            {venueSearchData && searchParam != ""
+              ? venueSearchData.data.data.map((venue: Venue, key: number) => {
+                  return <VenueCard venue={venue} key={key} />;
+                })
+              : venueData
+              ? venueData.data.data.map((venue: Venue, key: number) => {
+                  return <VenueCard venue={venue} key={key} />;
+                })
+              : isLoading && <LoadingSpinner />}
+          </div>
+        ) : (
+          <div className="text-black flex justify-center p-24">
+            <LoadingSpinner />
+          </div>
+        )}
       </div>
     </div>
   );
