@@ -261,12 +261,17 @@ function NameModal({ onSave, isLoading }: NameModalProps) {
   return (
     <div className="flex-wrap space-y-3 pt-2">
       <input
-        className="w-full text-xl p-1"
+        className="block w-full appearance-none rounded-lg border border-gray-300 p-3 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black text-md"
+        placeholder="Plan name..."
         type="text"
         onChange={(e) => setPlanName(e.currentTarget.value)}
       />
       <div className="flex justify-center">
-        <LoadingButton onClick={() => onSave(planName)} isLoading={isLoading}>
+        <LoadingButton
+          onClick={() => onSave(planName)}
+          isLoading={isLoading}
+          styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
+        >
           Create
         </LoadingButton>
       </div>

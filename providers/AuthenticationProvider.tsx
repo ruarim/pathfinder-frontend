@@ -58,11 +58,11 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   }
 
   function logout() {
+    router.push("/");
     localStorage.removeItem("token");
     localStorage.removeItem("user_id");
     setIsLoggedIn(false);
     queryClient.invalidateQueries();
-    router.push("/");
   }
 
   function getToken() {

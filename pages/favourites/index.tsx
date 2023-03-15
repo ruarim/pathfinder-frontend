@@ -2,13 +2,16 @@ import VenueCard from "../../components/VenueCard";
 import { useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Favourites() {
   const { isLoggedIn } = useAuthContext();
-  const { data: venuesData } = useQuery<VenueResponse>(
-    ["venue_favourites"],
-    () => client.get("venues/user/favourites")
-  );
+  const { data: venuesData, isLoading: favouritesLoading } =
+    useQuery<VenueResponse>(
+      ["venue_favourites"],
+      () => client.get("venues/user/favourites"),
+      { enabled: isLoggedIn }
+    );
 
   const venues = venuesData?.data?.data;
 
@@ -19,27 +22,42 @@ export default function Favourites() {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Favourites
           </h2>
-          {isLoggedIn && venues && venues.length > 0 ? (
-            <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-              Venues you enjoyed the most.
-            </p>
-          ) : isLoggedIn ? (
-            <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-              You haven't added any venues to your favourites.
-            </p>
+          {isLoggedIn ? (
+            <>
+              {venues && venues.length > 0 ? (
+                <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
+                  Venues you enjoyed the most.
+                </p>
+              ) : (
+                <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
+                  You haven't added any venues to your favourites.
+                </p>
+              )}
+            </>
           ) : (
             <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
               Login or register to add venues to your favourites.
             </p>
           )}
         </div>
-        <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
-          {isLoggedIn &&
-            venues &&
-            venues.map((venue: Venue, key: number) => {
-              return <VenueCard venue={venue} key={key} />;
-            })}
-        </div>
+        {isLoggedIn && (
+          <>
+            {favouritesLoading && (
+              <div className="text-black flex justify-center p-24">
+                <LoadingSpinner />
+              </div>
+            )}
+            {!favouritesLoading && (
+              <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
+                {isLoggedIn &&
+                  venues &&
+                  venues.map((venue: Venue, key: number) => {
+                    return <VenueCard venue={venue} key={key} />;
+                  })}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

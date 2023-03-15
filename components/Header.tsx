@@ -8,6 +8,8 @@ import Link from "next/link";
 import Modal from "./Modal";
 import Login from "./Login";
 import Register from "./Register";
+import AvatarIcon from "./AvatarIcon";
+import { useGetUser } from "../hooks/queries/getUser";
 
 const navigation = [
   {
@@ -28,7 +30,7 @@ const navigation = [
   },
 ];
 
-const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
+const defaultAvatar = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
 
 function DesktopNavLink({ name, href }: { name: string; href: string }) {
   const router = useRouter();
@@ -73,16 +75,19 @@ function MobileNavLink() {
 function ProfileDropDown() {
   const { logout, isLoggedIn, setLoginModalOpen, setRegisterModalOpen } =
     useAuthContext();
+  const { data: userData } = useGetUser();
+  const user = userData?.data.user;
+
   function logoutHandler() {
     logout && logout();
   }
-  return (
+  return isLoggedIn ? (
     <div>
       <Menu as="div" className="relative ml-4 flex-shrink-0">
         <div>
-          <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none ">
             <span className="sr-only">Open user menu</span>
-            <img className="h-8 w-8 rounded-full" src={avatarPhoto} alt="" />
+            <AvatarIcon imageUrl={user?.avatar_url ?? defaultAvatar} />
           </Menu.Button>
         </div>
         <Transition
@@ -95,45 +100,6 @@ function ProfileDropDown() {
           leaveTo="transform opacity-0 scale-95"
         >
           <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            {!isLoggedIn && (
-              <>
-                {" "}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="w-full">
-                      <button
-                        onClick={() => {
-                          if (setLoginModalOpen) setLoginModalOpen(true);
-                        }}
-                        className={clsx(
-                          active ? "bg-gray-100 w-full text-left" : "",
-                          "block px-4 py-2 text-sm text-primary/50"
-                        )}
-                      >
-                        Login
-                      </button>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="w-full">
-                      <button
-                        onClick={() => {
-                          if (setRegisterModalOpen) setRegisterModalOpen(true);
-                        }}
-                        className={clsx(
-                          active ? "bg-gray-100 w-full text-left" : "",
-                          "block px-4 py-2 text-sm text-primary/50"
-                        )}
-                      >
-                        Register
-                      </button>
-                    </div>
-                  )}
-                </Menu.Item>
-              </>
-            )}
             {isLoggedIn && (
               <>
                 <Menu.Item>
@@ -156,6 +122,25 @@ function ProfileDropDown() {
           </Menu.Items>
         </Transition>
       </Menu>
+    </div>
+  ) : (
+    <div className="mx-4 space-x-4">
+      <button
+        className="hover:underline"
+        onClick={() => {
+          if (setLoginModalOpen) setLoginModalOpen(true);
+        }}
+      >
+        Sign In
+      </button>
+      <button
+        className="bg-contrast/75 hover:bg-contrast p-3 px-7 rounded-full"
+        onClick={() => {
+          if (setRegisterModalOpen) setRegisterModalOpen(true);
+        }}
+      >
+        Register
+      </button>
     </div>
   );
 }
