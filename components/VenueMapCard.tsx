@@ -2,7 +2,12 @@ import { useState } from "react";
 import timeFormatter from "../helpers/timeFormatter";
 import clsx from "clsx";
 import { useMap } from "react-map-gl";
-import { MapPinIcon, StarIcon } from "@heroicons/react/20/solid";
+import {
+  MapPinIcon,
+  MinusIcon,
+  PlusIcon,
+  StarIcon,
+} from "@heroicons/react/20/solid";
 import Link from "next/link";
 
 interface VenueMapCardProps {
@@ -77,39 +82,43 @@ export default function VenueMapCard({
                   );
                 })}
               </div>
-              <div className="mt-3 flex items-center">
+              <div className="mt-1 flex items-center">
                 <p className="text-sm font-medium text-gray-900">
                   <a
                     href={`venues/${venue.id}`}
                     className="hover:underline"
                   ></a>
                 </p>
-                <div className="flex flex-col text-sm text-primary">
-                  <time dateTime={venue.opening_time}>
-                    Opening Time {timeFormatter(venue.opening_time)}
-                  </time>
-                  <time dateTime={venue.closing_time}>
-                    Closing Time {timeFormatter(venue.closing_time)}
-                  </time>
+                <div className="flex flex-1 justify-between">
+                  <div className="flex flex-col text-sm text-primary pt-1">
+                    <time dateTime={venue.opening_time}>
+                      Opening Time {timeFormatter(venue.opening_time)}
+                    </time>
+                    <time dateTime={venue.closing_time}>
+                      Closing Time {timeFormatter(venue.closing_time)}
+                    </time>
+                  </div>
+                  <div>
+                    {!isVenueInPlan(venue, venuesPlan) ? (
+                      <button
+                        onClick={() => toggleVenueInPlan(venue)}
+                        className="p-2 rounded-full bg-blue-300 transition hover:bg-blue-400 text-lg text-blue-800 text-center"
+                      >
+                        <PlusIcon className="w-8" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => toggleVenueInPlan(venue)}
+                        className="p-2 rounded-full bg-red-300 transition hover:bg-red-400 text-lg text-red-800"
+                      >
+                        <MinusIcon className="w-8" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          {!isVenueInPlan(venue, venuesPlan) ? (
-            <button
-              onClick={() => toggleVenueInPlan(venue)}
-              className="p-2 mt-2 w-full rounded-lg bg-blue-500 transition hover:bg-blue-600 text-lg text-gray-100"
-            >
-              Add to plan
-            </button>
-          ) : (
-            <button
-              onClick={() => toggleVenueInPlan(venue)}
-              className="p-2 mt-2 w-full rounded-lg bg-red-500 transition hover:bg-red-600 text-lg text-gray-100"
-            >
-              Remove
-            </button>
-          )}
         </div>
       )}
       <div

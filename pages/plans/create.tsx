@@ -96,7 +96,7 @@ export default function Create() {
 
   return (
     <MapProvider>
-      <div className="mx-auto">
+      <div className="mx-auto ">
         {/* create plan modal */}
         {attributes?.data && (
           <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
@@ -158,12 +158,14 @@ export default function Create() {
                       );
                     })}
                   </div>
-                  <button
-                    onClick={() => setAttributesSearchParams([])}
-                    className="p-2 mt-2 w-full rounded-lg bg-red-500 transition hover:bg-red-600 text-white"
-                  >
-                    Clear attributes
-                  </button>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setAttributesSearchParams([])}
+                      className="px-5 py-3 w-48 mt-2 rounded-full bg-red-200 transition hover:bg-red-300 text-red-700"
+                    >
+                      Clear attributes
+                    </button>
+                  </div>
                 </div>
                 {venuesPlan.length > 0 && (
                   <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
@@ -191,12 +193,14 @@ export default function Create() {
               </div>
             )}
             {venuesPlan.length > 0 && (
-              <button
-                className="p-2 w-full rounded-lg bg-blue-500 transition hover:bg-blue-700 text-white"
-                onClick={() => setNameModalOpen(true)}
-              >
-                Create plan ({venuesPlan.length})
-              </button>
+              <div className="flex justify-center">
+                <button
+                  className="px-6 py-3 w-48 rounded-full bg-blue-200 transition hover:bg-blue-300 text-blue-700"
+                  onClick={() => setNameModalOpen(true)}
+                >
+                  Create plan ({venuesPlan.length})
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -253,6 +257,10 @@ interface PlanConfigModalProps {
   ) => void;
   isLoading: boolean;
 }
+type TimeType = {
+  hour: string;
+  minute: string;
+};
 
 function PlanConfigModal({ onSave, isLoading }: PlanConfigModalProps) {
   const [planName, setPlanName] = useState<string>("");
@@ -260,12 +268,23 @@ function PlanConfigModal({ onSave, isLoading }: PlanConfigModalProps) {
     startDate: null,
     endDate: null,
   });
+  const [timeValue, setTimeValue] = useState<TimeType>({
+    hour: "",
+    minute: "",
+  });
 
   const handleDateChange = (newValue: DateValueType) => {
     setDateValue(newValue);
   };
+  const handleTimeChange = (newValue: TimeType) => {
+    setTimeValue(newValue);
+  };
 
   const startDate = dateValue?.startDate?.toString();
+  const startTime =
+    timeValue.hour != "" && timeValue.minute != ""
+      ? `${timeValue.hour}:${timeValue.minute}`
+      : undefined;
 
   return (
     <div className="flex-wrap space-y-5 pt-2">
@@ -280,7 +299,7 @@ function PlanConfigModal({ onSave, isLoading }: PlanConfigModalProps) {
             onChange={handleDateChange}
           />
         </div>
-        <TimePicker />
+        <TimePicker onChange={handleTimeChange} />
       </div>
       <div className="space-y-1">
         <label>Plan name</label>
@@ -293,7 +312,7 @@ function PlanConfigModal({ onSave, isLoading }: PlanConfigModalProps) {
       </div>
       <div className="flex justify-center">
         <LoadingButton
-          onClick={() => onSave(planName, startDate, "")}
+          onClick={() => onSave(planName, startDate, startTime)}
           isLoading={isLoading}
           styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
         >
@@ -304,24 +323,34 @@ function PlanConfigModal({ onSave, isLoading }: PlanConfigModalProps) {
   );
 }
 
-function TimePicker() {
+function TimePicker({ onChange }: { onChange: (newValue: TimeType) => void }) {
   const hours = Array.from(Array(24).keys());
   const minutes = Array.from(Array(60).keys());
+  const [hour, setHour] = useState("");
+  const [minute, setMinute] = useState("");
+
+  useEffect(() => {
+    onChange({ hour, minute });
+  }, [hour, minute]);
 
   return (
     <div className="space-y-1">
       <label className="grid grid-cols-1">Start Time</label>
-      <div className="inline-flex text-lg border rounded-md p-1.5">
+      <div className="inline-flex text-lg border rounded-md p-1.5 ">
         <select
           name="hours"
           id=""
           className="px-2 outline-none appearance-none bg-transparent"
+          onChange={(e) => setHour(e.target.value)}
         >
+          <option value="" className="text-gray-200" selected disabled hidden>
+            - -
+          </option>
           {hours.map((hour) => {
             let leadingZero = "";
             if (hour < 10) leadingZero = "0";
             return (
-              <option value={hour} key={hour}>
+              <option value={leadingZero + hour} key={hour}>
                 {`${leadingZero + hour}`}
               </option>
             );
@@ -332,12 +361,16 @@ function TimePicker() {
           name="mins"
           id=""
           className="px-2 outline-none appearance-none bg-transparent"
+          onChange={(e) => setMinute(e.target.value)}
         >
+          <option value="" className="text-gray-200" selected disabled hidden>
+            - -
+          </option>
           {minutes.map((min) => {
             let leadingZero = "";
             if (min < 10) leadingZero = "0";
             return (
-              <option value={min} key={min}>
+              <option value={leadingZero + min} key={min}>
                 {`${leadingZero + min}`}
               </option>
             );
