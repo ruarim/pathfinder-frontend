@@ -1068,6 +1068,11 @@ react-map-gl@^7.0.19:
   dependencies:
     "@types/mapbox-gl" "^2.6.0"
 
+react-tailwindcss-datepicker@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/react-tailwindcss-datepicker/-/react-tailwindcss-datepicker-1.5.1.tgz#442fbda87e0e686cf338ce7427ca9c3165f26cd6"
+  integrity sha512-IbNw3Lu2dwkRYOlYr3ffOwEbLiVz+QufaYbwiy0ToeLmx7ZUt0CPh3HfwVQGNS1/o4D/+8Rl4WHNsLd+wVb5Mg==
+
 react@18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"

@@ -28,6 +28,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.39.3",
     "react-map-gl": "^7.0.19",
+    "react-tailwindcss-datepicker": "^1.5.1",
     "typescript": "4.8.4"
   },
   "devDependencies": {

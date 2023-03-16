@@ -1,4 +1,4 @@
-import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import {
   useGetAttributes,
   useGetVenuesByAttributes,
@@ -26,6 +26,8 @@ import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import LoadingButton from "../../components/LoadingButton";
+import Datepicker from "react-tailwindcss-datepicker";
+import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -36,7 +38,7 @@ const DEFAULT_CENTER_LOCATION = {
 export default function Create() {
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const [isPlanModalOpen, setPlanModalOpen] = useState(true);
-  const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]); //@dev might need venue id for db ref
+  const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]);
   const [selectedStart, setSelectedStart] = useState<MapLocation>({
     place_name: "",
     center: [0, 0],
@@ -86,24 +88,8 @@ export default function Create() {
     },
   });
 
-  const createPlan = async (
-    name: string,
-    venuesInPlan: Venue[],
-    start: MapLocation,
-    end: MapLocation
-  ) => {
-    const venues = venuesInPlan.map((venue) => venue.id);
-
-    const res = await savePlan({
-      name,
-      startpoint_name: start.place_name,
-      startpoint_lat: start.center[1],
-      startpoint_long: start.center[0],
-      endpoint_name: end.place_name,
-      endpoint_lat: end.center[1],
-      endpoint_long: end.center[0],
-      venues,
-    });
+  const createPlan = async (planData: PlanMutationData) => {
+    const res = await savePlan(planData);
 
     router.push({ pathname: "/plans/[id]", query: { id: res.data.data.id } });
   };
@@ -219,18 +205,27 @@ export default function Create() {
           <Modal
             isOpen={isNameModalOpen}
             setOpen={setNameModalOpen}
-            title="Give the plan a name"
+            title="Plan Details"
           >
-            <NameModal
-              onSave={(name: string) => {
+            <PlanConfigModal
+              onSave={(name, start_date, start_time) => {
                 if (handleLoggedIn) {
                   handleLoggedIn();
                 }
                 if (name === "") name = "Untitled Plan";
                 setPlanLoading(true);
-                createPlan(name, venuesPlan, selectedStart, selectedEnd).catch(
-                  () => setPlanLoading(false)
-                );
+                createPlan({
+                  name,
+                  start_time,
+                  start_date,
+                  venues: venuesPlan.map((venue) => venue.id),
+                  startpoint_name: selectedStart.place_name,
+                  startpoint_lat: selectedStart.center[1],
+                  startpoint_long: selectedStart.center[0],
+                  endpoint_name: selectedEnd.place_name,
+                  endpoint_lat: selectedEnd.center[1],
+                  endpoint_long: selectedEnd.center[0],
+                }).catch(() => setPlanLoading(false));
               }}
               isLoading={isPlanLoading}
             />
@@ -250,30 +245,104 @@ export default function Create() {
   );
 }
 
-interface NameModalProps {
-  onSave: (name: string) => void;
+interface PlanConfigModalProps {
+  onSave: (
+    name: string,
+    start_date: string | undefined,
+    start_time: string | undefined
+  ) => void;
   isLoading: boolean;
 }
 
-function NameModal({ onSave, isLoading }: NameModalProps) {
+function PlanConfigModal({ onSave, isLoading }: PlanConfigModalProps) {
   const [planName, setPlanName] = useState<string>("");
+  const [dateValue, setDateValue] = useState<DateValueType>({
+    startDate: null,
+    endDate: null,
+  });
+
+  const handleDateChange = (newValue: DateValueType) => {
+    setDateValue(newValue);
+  };
+
+  const startDate = dateValue?.startDate?.toString();
 
   return (
-    <div className="flex-wrap space-y-3 pt-2">
-      <input
-        className="block w-full appearance-none rounded-lg border border-gray-300 p-3 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black text-md"
-        placeholder="Plan name..."
-        type="text"
-        onChange={(e) => setPlanName(e.currentTarget.value)}
-      />
+    <div className="flex-wrap space-y-5 pt-2">
+      <div className="flex space-x-2">
+        <div className="space-y-1">
+          <label>Start date</label>
+          <Datepicker
+            inputClassName={"border border-gray-200"}
+            useRange={false}
+            asSingle={true}
+            value={dateValue}
+            onChange={handleDateChange}
+          />
+        </div>
+        <TimePicker />
+      </div>
+      <div className="space-y-1">
+        <label>Plan name</label>
+        <input
+          className="block w-full appearance-none rounded-lg border border-gray-300 p-3 placeholder-gray-400 shadow-sm  text-md"
+          placeholder="Enter a name..."
+          type="text"
+          onChange={(e) => setPlanName(e.currentTarget.value)}
+        />
+      </div>
       <div className="flex justify-center">
         <LoadingButton
-          onClick={() => onSave(planName)}
+          onClick={() => onSave(planName, startDate, "")}
           isLoading={isLoading}
           styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
         >
           Create
         </LoadingButton>
+      </div>
+    </div>
+  );
+}
+
+function TimePicker() {
+  const hours = Array.from(Array(24).keys());
+  const minutes = Array.from(Array(60).keys());
+
+  return (
+    <div className="space-y-1">
+      <label className="grid grid-cols-1">Start Time</label>
+      <div className="inline-flex text-lg border rounded-md p-1.5">
+        <select
+          name="hours"
+          id=""
+          className="px-2 outline-none appearance-none bg-transparent"
+        >
+          {hours.map((hour) => {
+            let leadingZero = "";
+            if (hour < 10) leadingZero = "0";
+            return (
+              <option value={hour} key={hour}>
+                {`${leadingZero + hour}`}
+              </option>
+            );
+          })}
+        </select>
+        <span className="px-2">:</span>
+        <select
+          name="mins"
+          id=""
+          className="px-2 outline-none appearance-none bg-transparent"
+        >
+          {minutes.map((min) => {
+            let leadingZero = "";
+            if (min < 10) leadingZero = "0";
+            return (
+              <option value={min} key={min}>
+                {`${leadingZero + min}`}
+              </option>
+            );
+          })}
+        </select>
       </div>
     </div>
   );
