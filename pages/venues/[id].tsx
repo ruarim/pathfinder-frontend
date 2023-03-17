@@ -438,7 +438,6 @@ function Reviews({ id }: { id: string }) {
     client.get(`venues/${id}/reviews`)
   );
   const reviews = data?.data.data;
-  const defaultAvatar = process.env.NEXT_PUBLIC_DEFAULT_AVATAR ?? "";
 
   return (
     <div className="mx-auto mt-10 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
@@ -468,7 +467,7 @@ function Reviews({ id }: { id: string }) {
                 <div key={review.id} className="flex  text-sm text-gray-500">
                   <div className="flex-none py-10 pr-2">
                     <AvatarIcon
-                      imageUrl={review.user.avatar_url ?? defaultAvatar}
+                      imageUrl={review.user.avatar_url}
                     />
                   </div>
                   <div

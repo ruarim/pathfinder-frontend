@@ -14,8 +14,6 @@ import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import LoadingButton from "../../components/LoadingButton";
 
-const avatarPhoto = process.env.NEXT_PUBLIC_DEFAULT_AVATAR ?? "";
-
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
 };
@@ -36,17 +34,16 @@ export default function Plan({ id }: { id: string }) {
   //display plan
   return (
     <div className="flex justify-center items-center p-6">
-      {plan && <PlanCard plan={plan} avatarSrc={avatarPhoto} />}
+      {plan && <PlanCard plan={plan} />}
     </div>
   );
 }
 
 interface PlanCardProps {
   plan: Plan;
-  avatarSrc: string;
 }
 
-function PlanCard({ plan, avatarSrc }: PlanCardProps) {
+function PlanCard({ plan }: PlanCardProps) {
   const { data: userData } = useGetUser();
   const user = userData?.data.user;
   const startName = plan?.startpoint_name
@@ -60,10 +57,12 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
       <div className="space-y-2 bg-white md:p-12 rounded-lg m-2 p-5">
         <div className="md:flex justify-between space-y-1">
           <h1 className="text-3xl font-bold">{plan.name}</h1>
-          <h2 className="text-2xl flex gap-2 md:pr-2">
-            {creator?.username}
-            <AvatarIcon imageUrl={creator?.avatar_url ?? avatarSrc} />
-          </h2>
+          {creator && (
+            <h2 className="text-2xl flex gap-2 md:pr-2">
+              {creator?.username}
+              {<AvatarIcon imageUrl={creator?.avatar_url} />}
+            </h2>
+          )}
         </div>
         {user && isInvited(plan.users, user) && (
           <div className="flex space-x-2 font-bold text-lg">

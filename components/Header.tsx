@@ -30,8 +30,6 @@ const navigation = [
   },
 ];
 
-const defaultAvatar = process.env.NEXT_PUBLIC_DEFAULT_AVATAR || "";
-
 function DesktopNavLink({ name, href }: { name: string; href: string }) {
   const router = useRouter();
   return (
@@ -87,7 +85,7 @@ function ProfileDropDown() {
         <div>
           <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none ">
             <span className="sr-only">Open user menu</span>
-            <AvatarIcon imageUrl={user?.avatar_url ?? defaultAvatar} />
+            {user?.avatar_url && <AvatarIcon imageUrl={user?.avatar_url} />}
           </Menu.Button>
         </div>
         <Transition
