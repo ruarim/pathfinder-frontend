@@ -47,6 +47,8 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan, avatarSrc }: PlanCardProps) {
+  const { data: userData } = useGetUser();
+  const user = userData?.data.user;
   const startName = plan?.startpoint_name
     ? plan?.startpoint_name.split(",")
     : [];
@@ -55,7 +57,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
 
   return (
     <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
-      <div className="space-y-2 bg-white p-7 md:p-12 rounded-lg m-2">
+      <div className="space-y-2 bg-white md:p-12 rounded-lg m-2 p-5">
         <div className="md:flex justify-between space-y-1">
           <h1 className="text-3xl font-bold">{plan.name}</h1>
           <h2 className="text-2xl flex gap-2 md:pr-2">
@@ -63,6 +65,16 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
             <AvatarIcon imageUrl={creator?.avatar_url ?? avatarSrc} />
           </h2>
         </div>
+        {user && isInvited(plan.users, user) && (
+          <div className="flex space-x-2 font-bold text-lg">
+            {plan?.start_date && (
+              <h2>{new Date(plan?.start_date).toDateString()}</h2>
+            )}
+            {plan?.start_time && <p>-</p>}
+            <h2>{plan?.start_time?.substring(0, 5)}</h2>
+          </div>
+        )}
+
         <Separator />
         <div className="md:flex justify-between space-y-3 ">
           <div className="space-y-3 md:pr-2">
@@ -82,7 +94,7 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
               )}
             </div>
             <Separator />
-            <InviteCard plan={plan} />
+            {user && <InviteCard plan={plan} user={user} />}
           </div>
           <div className="flex justify-center">
             <MapBox
@@ -103,7 +115,6 @@ function PlanCard({ plan, avatarSrc }: PlanCardProps) {
     </div>
   );
 }
-
 
 function VenueList({ venues }: { venues: Venue[] }) {
   return (
@@ -148,11 +159,9 @@ function VenueList({ venues }: { venues: Venue[] }) {
   );
 }
 
-function InviteCard({ plan }: { plan: Plan }) {
+function InviteCard({ plan, user }: { plan: Plan; user: User }) {
   const { setLoginModalOpen, setRegisterModalOpen, isLoggedIn } =
     useAuthContext();
-  const { data: userData } = useGetUser();
-  const user = userData?.data.user;
   const [isLoading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -173,6 +182,8 @@ function InviteCard({ plan }: { plan: Plan }) {
       endpoint_name: data?.endpoint_name,
       endpoint_lat: data?.startpoint_lat,
       endpoint_long: data?.startpoint_long,
+      start_date: data?.start_date,
+      start_time: data?.start_time,
       venues,
     })
       .then((res) => {
@@ -188,10 +199,10 @@ function InviteCard({ plan }: { plan: Plan }) {
   return (
     <div className="space-y-2">
       {isLoggedIn ? (
-        user && isInvited(plan.users, user) ? (
+        isInvited(plan.users, user) ? (
           <>
             {user?.id == getCreator(plan.users)?.id ? (
-              <SetParticipants id={plan.id} plan={plan} />
+              <SetParticipants id={plan.id} plan={plan} loggedInUser={user} />
             ) : (
               <h2 className="text-xl font-bold">Invited Users</h2>
             )}
@@ -252,11 +263,18 @@ function UserList({ users }: { users: User[] }) {
   );
 }
 
-function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
+function SetParticipants({
+  id,
+  plan,
+  loggedInUser,
+}: {
+  id: number;
+  plan: Plan;
+  loggedInUser: User;
+}) {
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
-  const { data: loggedInUser } = useGetUser();
 
   //addUser mutaion
   const { mutateAsync: addUser } = useMutation<
@@ -295,7 +313,6 @@ function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
   }, [debouncedQuery]);
 
   const users = usersResults?.data?.data;
-  const loggedIn = loggedInUser?.data?.user;
 
   return (
     <div className="md:pr-2">
@@ -324,7 +341,7 @@ function SetParticipants({ id, plan }: { id: number; plan: Plan }) {
                     </div>
                   ) : (
                     users?.slice(0, 5)?.map((user) => {
-                      if (loggedIn && user.email == loggedIn.email)
+                      if (loggedInUser && user.email == loggedInUser.email)
                         return <></>;
                       return (
                         <Combobox.Option

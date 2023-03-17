@@ -1,4 +1,4 @@
-import { BaseSyntheticEvent, useEffect, useRef, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import {
   useGetAttributes,
   useGetVenuesByAttributes,
@@ -15,7 +15,6 @@ import Map, {
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapSearch from "../../components/MapSearch";
 import VenueMapCard from "../../components/VenueMapCard";
-import Modal from "../../components/Modal";
 import {
   XMarkIcon,
   MapPinIcon,
@@ -25,7 +24,7 @@ import { useMutation } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
-import LoadingButton from "../../components/LoadingButton";
+import PlanDetailsModal from "../../components/PlanDetailsModal";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -36,7 +35,7 @@ const DEFAULT_CENTER_LOCATION = {
 export default function Create() {
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const [isPlanModalOpen, setPlanModalOpen] = useState(true);
-  const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]); //@dev might need venue id for db ref
+  const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]);
   const [selectedStart, setSelectedStart] = useState<MapLocation>({
     place_name: "",
     center: [0, 0],
@@ -47,10 +46,11 @@ export default function Create() {
   });
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
-  const [isPlanLoading, setPlanLoading] = useState(false);
+  const [showAllAttributes, setShowAllAttributes] = useState(false);
+  const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
   const router = useRouter();
 
-  const [isNameModalOpen, setNameModalOpen] = useState(false);
+  const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
 
   const { handleLoggedIn } = useAuthContext();
 
@@ -86,31 +86,14 @@ export default function Create() {
     },
   });
 
-  const createPlan = async (
-    name: string,
-    venuesInPlan: Venue[],
-    start: MapLocation,
-    end: MapLocation
-  ) => {
-    const venues = venuesInPlan.map((venue) => venue.id);
-
-    const res = await savePlan({
-      name,
-      startpoint_name: start.place_name,
-      startpoint_lat: start.center[1],
-      startpoint_long: start.center[0],
-      endpoint_name: end.place_name,
-      endpoint_lat: end.center[1],
-      endpoint_long: end.center[0],
-      venues,
-    });
-
+  const createPlan = async (planData: PlanMutationData) => {
+    const res = await savePlan(planData);
     router.push({ pathname: "/plans/[id]", query: { id: res.data.data.id } });
   };
 
   return (
     <MapProvider>
-      <div className="mx-auto">
+      <div className="mx-auto ">
         {/* create plan modal */}
         {attributes?.data && (
           <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
@@ -156,28 +139,55 @@ export default function Create() {
                     Choose some attributes
                   </div>
                   <div className="grid grid-cols-4 w-full gap-2">
-                    {attributes?.data.data.map((attribute: string) => {
-                      return (
-                        <button
-                          onClick={(e) => toggleVenueAttribute(e)}
-                          className={clsx(
-                            "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
-                            attributesParams.includes(attribute) &&
-                              "bg-gray-300"
-                          )}
-                          key={attribute}
-                        >
-                          {attribute}
-                        </button>
-                      );
-                    })}
+                    {attributes?.data.data.map(
+                      (attribute: string, i: number) => {
+                        if (i > 7 && !showAllAttributes) return <></>;
+                        if (i === 7 && !showAllAttributes)
+                          return (
+                            <button
+                              onClick={(e) => setShowAllAttributes(true)}
+                              className={clsx(
+                                "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                              )}
+                              key={attribute}
+                            >
+                              show more
+                            </button>
+                          );
+                        return (
+                          <button
+                            onClick={(e) => toggleVenueAttribute(e)}
+                            className={clsx(
+                              "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
+                              attributesParams.includes(attribute) &&
+                                "bg-gray-300"
+                            )}
+                            key={attribute}
+                          >
+                            {attribute}
+                          </button>
+                        );
+                      }
+                    )}
+                    {showAllAttributes && (
+                      <button
+                        onClick={(e) => setShowAllAttributes(false)}
+                        className={clsx(
+                          "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                        )}
+                      >
+                        show less
+                      </button>
+                    )}
                   </div>
-                  <button
-                    onClick={() => setAttributesSearchParams([])}
-                    className="p-2 mt-2 w-full rounded-lg bg-red-500 transition hover:bg-red-600 text-white"
-                  >
-                    Clear attributes
-                  </button>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setAttributesSearchParams([])}
+                      className="px-5 py-3 w-48 mt-2 rounded-full bg-red-200 transition hover:bg-red-300 text-red-700"
+                    >
+                      Clear attributes
+                    </button>
+                  </div>
                 </div>
                 {venuesPlan.length > 0 && (
                   <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
@@ -205,36 +215,43 @@ export default function Create() {
               </div>
             )}
             {venuesPlan.length > 0 && (
-              <button
-                className="p-2 w-full rounded-lg bg-blue-500 transition hover:bg-blue-700 text-white"
-                onClick={() => setNameModalOpen(true)}
-              >
-                Create plan ({venuesPlan.length})
-              </button>
+              <div className="flex justify-center">
+                <button
+                  className="px-6 py-3 w-48 rounded-full bg-blue-200 transition hover:bg-blue-300 text-blue-700"
+                  onClick={() => setPlanDetailsModalOpen(true)}
+                >
+                  Create plan ({venuesPlan.length})
+                </button>
+              </div>
             )}
           </div>
         )}
 
-        {isNameModalOpen && (
-          <Modal
-            isOpen={isNameModalOpen}
-            setOpen={setNameModalOpen}
-            title="Give the plan a name"
-          >
-            <NameModal
-              onSave={(name: string) => {
-                if (handleLoggedIn) {
-                  handleLoggedIn();
-                }
-                if (name === "") name = "Untitled Plan";
-                setPlanLoading(true);
-                createPlan(name, venuesPlan, selectedStart, selectedEnd).catch(
-                  () => setPlanLoading(false)
-                );
-              }}
-              isLoading={isPlanLoading}
-            />
-          </Modal>
+        {isPlanDetailsModalOpen && (
+          <PlanDetailsModal
+            isOpen={isPlanDetailsModalOpen}
+            setOpen={setPlanDetailsModalOpen}
+            onSave={(name, start_date, start_time) => {
+              if (handleLoggedIn) {
+                handleLoggedIn();
+              }
+              if (name === "") name = "Untitled Plan";
+              setCreatePlanLoading(true);
+              createPlan({
+                name,
+                start_time,
+                start_date,
+                venues: venuesPlan.map((venue) => venue.id),
+                startpoint_name: selectedStart.place_name,
+                startpoint_lat: selectedStart.center[1],
+                startpoint_long: selectedStart.center[0],
+                endpoint_name: selectedEnd.place_name,
+                endpoint_lat: selectedEnd.center[1],
+                endpoint_long: selectedEnd.center[0],
+              }).catch(() => setCreatePlanLoading(false));
+            }}
+            isLoading={isCreatePlanLoading}
+          />
         )}
 
         {/* map box */}
@@ -247,35 +264,6 @@ export default function Create() {
         />
       </div>
     </MapProvider>
-  );
-}
-
-interface NameModalProps {
-  onSave: (name: string) => void;
-  isLoading: boolean;
-}
-
-function NameModal({ onSave, isLoading }: NameModalProps) {
-  const [planName, setPlanName] = useState<string>("");
-
-  return (
-    <div className="flex-wrap space-y-3 pt-2">
-      <input
-        className="block w-full appearance-none rounded-lg border border-gray-300 p-3 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black text-md"
-        placeholder="Plan name..."
-        type="text"
-        onChange={(e) => setPlanName(e.currentTarget.value)}
-      />
-      <div className="flex justify-center">
-        <LoadingButton
-          onClick={() => onSave(planName)}
-          isLoading={isLoading}
-          styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
-        >
-          Create
-        </LoadingButton>
-      </div>
-    </div>
   );
 }
 

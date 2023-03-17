@@ -113,6 +113,8 @@ type PlanMutationData = {
   endpoint_lat?: number;
   endpoint_long?: number;
   venues: number[];
+  start_time?: string;
+  start_date?: string;
 };
 
 type PlanUserMutationData = {
@@ -131,6 +133,8 @@ type Plan = {
   endpoint_long?: number;
   venues: Venue[];
   users: User[];
+  start_date?: string;
+  start_time?: string;
 };
 
 type PlanResponse = {

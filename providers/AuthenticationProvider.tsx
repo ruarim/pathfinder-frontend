@@ -43,17 +43,17 @@ function AuthenticationProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
   async function loginHandler(data: LoginResponse) {
+    setLoginModalOpen(false);
     localStorage.setItem("token", data.data.token ?? "");
     localStorage.setItem("user_id", data.data.user.id.toString() ?? "");
     setIsLoggedIn(true);
-    setLoginModalOpen(false);
     queryClient.invalidateQueries();
   }
 
   function registerHandler(data: RegisterResponse) {
+    setRegisterModalOpen(false);
     localStorage.setItem("token", data.data.token ?? "");
     setIsLoggedIn(true);
-    setRegisterModalOpen(false);
     queryClient.invalidateQueries();
   }
 
