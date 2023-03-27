@@ -135,6 +135,8 @@ type Plan = {
   users: User[];
   start_date?: string;
   start_time?: string;
+  is_public: number;
+  rating: number;
 };
 
 type PlanResponse = {
