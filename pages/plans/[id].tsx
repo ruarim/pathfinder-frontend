@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
 import {
   EnvelopeIcon,
+  LockClosedIcon,
+  LockOpenIcon,
   MapPinIcon,
   StarIcon,
   UserIcon,
@@ -57,44 +59,56 @@ function PlanCard({ plan }: PlanCardProps) {
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
   const creator = getCreator(plan.users);
-  const avg_rating = plan.rating;
-
-  //rating handler
+  const avg_rating = plan?.rating == undefined ? 0 : plan?.rating;
 
   return (
     <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
       <div className="space-y-2 bg-white md:p-12 rounded-lg m-2 p-5">
-        <div className="md:flex justify-between space-y-1">
-          <h1 className="text-3xl font-bold">{plan.name}</h1>
-          {creator && (
-            <h2 className="text-2xl flex gap-2 md:pr-2">
-              {creator?.username}
-              {<AvatarIcon imageUrl={creator?.avatar_url} />}
-            </h2>
-          )}
-        </div>
-        {user && isInvited(plan.users, user) && (
-          <div className="flex space-x-2 font-bold text-lg">
-            {plan?.start_date && (
-              <h2>{new Date(plan?.start_date).toDateString()}</h2>
-            )}
-            {plan?.start_time && <p>-</p>}
-            <h2>{plan?.start_time?.substring(0, 5)}</h2>
-          </div>
-        )}
-        <div className="pt-1 flex">
-          {[0, 1, 2, 3, 4].map((rating) => (
-            <StarIcon
-              key={rating}
-              className={clsx(
-                avg_rating > rating ? "text-yellow-400" : "text-gray-300",
-                "h-5 w-5 flex-shrink-0"
+        <div className="space-y-1">
+          <div className="flex justify-between">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold">{plan.name}</h1>
+              {user && isInvited(plan.users, user) && (
+                <div className="flex space-x-2 font-bold text-lg">
+                  {plan?.start_date && (
+                    <h2>{new Date(plan?.start_date).toDateString()}</h2>
+                  )}
+                  {plan?.start_time && <p>-</p>}
+                  <h2>{plan?.start_time?.substring(0, 5)}</h2>
+                </div>
               )}
-              aria-hidden="true"
-            />
-          ))}
+            </div>
+            <div className="pl-3 space-y-1">
+              <div className="flex justify-end">
+                {plan.is_public === 1 ? (
+                  <div className="text-gray-400 flex pt-1">
+                    <div>Private</div>
+                    <div className="pl-1 pt-1">
+                      <LockOpenIcon className="w-4" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-400 flex pt-1">
+                    <div>Private</div>
+                    <div className="pl-1 pt-1">
+                      <LockClosedIcon className="w-4" />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div>
+                {creator && (
+                  <h2 className="text-2xl flex md:gap-2 md:justify-end">
+                    {creator?.username}
+                    {<AvatarIcon imageUrl={creator?.avatar_url} />}
+                  </h2>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
+        <Rating avg_rating={avg_rating} plan={plan} />
         <Separator />
         <div className="md:flex justify-between space-y-3 ">
           <div className="space-y-3 md:pr-2">
@@ -133,6 +147,43 @@ function PlanCard({ plan }: PlanCardProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+function Rating({ avg_rating, plan }: { avg_rating: number; plan: Plan }) {
+  const { handleLoggedIn, isLoggedIn } = useAuthContext();
+  const queryClient = useQueryClient();
+  const { mutateAsync } = useMutation<any, any, RatingMutationData>((data) =>
+    client.post(`paths/${plan.id}/rate`, data)
+  );
+
+  const setRatingHandler = async (rating: number) => {
+    const ratingData: RatingMutationData = {
+      rating: rating + 1,
+    };
+
+    if (handleLoggedIn && !isLoggedIn) return handleLoggedIn();
+    await mutateAsync(ratingData);
+    queryClient.invalidateQueries(["plan"]);
+  };
+
+  return (
+    <button className="flex items-center">
+      {[0, 1, 2, 3, 4].map((rating) => (
+        <StarIcon
+          onClick={() => setRatingHandler(rating)}
+          key={rating}
+          className={clsx(
+            avg_rating && Math.round(avg_rating) > rating
+              ? "text-yellow-400"
+              : "text-gray-300",
+            "h-5 w-5 flex-shrink-0 hover:text-yellow-700"
+          )}
+          aria-hidden="true"
+        />
+      ))}
+      <span className="pl-1">({avg_rating})</span>
+    </button>
   );
 }
 
@@ -240,22 +291,24 @@ function InviteCard({ plan, user }: { plan: Plan; user: User }) {
           </div>
         )
       ) : (
-        <div className="font-bold text-xl">
-          Login to invite your friends
-          <div className="flex space-x-2 py-2">
+        <div>
+          <label className="font-bold text-xl">
+            Login to invite your friends
+          </label>
+          <div className="mx-4 space-x-4 flex justify-center pt-2">
             <button
+              className="hover:underline"
               onClick={() => {
                 if (setLoginModalOpen) setLoginModalOpen(true);
               }}
-              className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-              Sign in
+              Sign In
             </button>
             <button
+              className="bg-contrast/75 hover:bg-contrast p-3 px-7 rounded-full"
               onClick={() => {
                 if (setRegisterModalOpen) setRegisterModalOpen(true);
               }}
-              className="flex w-full justify-center rounded-md border border-transparent bg-emerald-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               Register
             </button>

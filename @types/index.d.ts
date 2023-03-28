@@ -149,6 +149,10 @@ type VenueFavouriteMutation = {
   remove: boolean;
 };
 
+type RatingMutationData = {
+  rating: number;
+};
+
 type Rating = {
   id: number;
   user_id: number;
