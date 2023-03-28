@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
-import { EnvelopeIcon, MapPinIcon, UserIcon } from "@heroicons/react/20/solid";
+import {
+  EnvelopeIcon,
+  MapPinIcon,
+  StarIcon,
+  UserIcon,
+} from "@heroicons/react/20/solid";
 import { GeolocateControl, Map, Marker, NavigationControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/AvatarIcon";
@@ -13,6 +18,7 @@ import { useGetUser } from "../../hooks/queries/getUser";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import LoadingButton from "../../components/LoadingButton";
+import clsx from "clsx";
 
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
@@ -51,6 +57,9 @@ function PlanCard({ plan }: PlanCardProps) {
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
   const creator = getCreator(plan.users);
+  const avg_rating = plan.rating;
+
+  //rating handler
 
   return (
     <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
@@ -73,6 +82,18 @@ function PlanCard({ plan }: PlanCardProps) {
             <h2>{plan?.start_time?.substring(0, 5)}</h2>
           </div>
         )}
+        <div className="pt-1 flex">
+          {[0, 1, 2, 3, 4].map((rating) => (
+            <StarIcon
+              key={rating}
+              className={clsx(
+                avg_rating > rating ? "text-yellow-400" : "text-gray-300",
+                "h-5 w-5 flex-shrink-0"
+              )}
+              aria-hidden="true"
+            />
+          ))}
+        </div>
 
         <Separator />
         <div className="md:flex justify-between space-y-3 ">

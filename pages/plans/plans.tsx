@@ -23,9 +23,6 @@ export default function Collection() {
             Search through the plans you've created.
           </p>
         </div>
-        {/* <div className="pt-12">
-          <SearchInput setSearchParam={setSearchParam} />
-        </div> */}
         {!plansLoading ? (
           <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
             {plansData.data.data.map((plan: Plan, key: number) => {

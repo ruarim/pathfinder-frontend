@@ -20,12 +20,12 @@ export default function PlanCard({ plan }: PlanCardProps) {
   return (
     <div className="bg-gradient-to-r from-green-300 to-blue-500 rounded-md p-1.5 shadow-md">
       <Link href={`${plan.id}`} className=" space-y-2 rounded-md">
-        <div className="p-2 bg-white rounded-md h-full space-y-2">
+        <div className="p-2 bg-white rounded-md h-full space-y-2 py-3">
           <div className="flex justify-between">
             <div className="flex  pt-1">
               <MapPinIcon className="w-12 text-red-400" />
               <div>
-                <div className="text-xl font-medium text-primary text-clip overflow-hidden ...">
+                <div className="text-xl font-medium text-primary hover:underline">
                   {plan.name}
                 </div>
                 <div className="flex space-x-2">
