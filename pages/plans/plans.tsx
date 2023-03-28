@@ -22,7 +22,7 @@ export default function Collection() {
           </h2>
           {isLoggedIn ? (
             <>
-              {plans?.length === 0 ? (
+              {plans && plans.length === 0 ? (
                 <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
                   You havent created any plans yet.
                 </p>
