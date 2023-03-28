@@ -91,10 +91,10 @@ function PlanCard({ plan }: PlanCardProps) {
               )}
             </div>
             <div className="pl-3 space-y-1">
-              <div className="flex justify-end">
+              <div className="flex">
                 {plan.is_public === 1 ? (
                   <div className="text-gray-400 flex pt-1">
-                    <div>Private</div>
+                    <div>Public</div>
                     <div className="pl-1 pt-1">
                       <LockOpenIcon className="w-4" />
                     </div>
@@ -111,7 +111,7 @@ function PlanCard({ plan }: PlanCardProps) {
               <div>
                 {creator && (
                   <h2 className="text-2xl flex md:gap-2 md:justify-end">
-                    {creator?.username}
+                    <div className="pt-1">{creator?.username}</div>
                     {<AvatarIcon imageUrl={creator?.avatar_url} />}
                   </h2>
                 )}

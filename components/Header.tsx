@@ -85,11 +85,7 @@ function ProfileDropDown() {
         <div>
           <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none ">
             <span className="sr-only">Open user menu</span>
-            {user?.avatar_url ? (
-              <AvatarIcon imageUrl={user?.avatar_url} />
-            ) : (
-              <div className="bg-gray-300 rounded-md w-8 h-8"></div>
-            )}
+            <AvatarIcon imageUrl={user?.avatar_url} />
           </Menu.Button>
         </div>
         <Transition

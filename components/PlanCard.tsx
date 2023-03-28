@@ -36,6 +36,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
           if (i >= 6) return <></>;
           return (
             <img
+              key={i}
               className={`h-48 object-cover ${widths[numberOfVenues - 1]}`}
               src={venue.images[0] ?? "/pub-placeholder.jpg"}
               alt=""
@@ -46,7 +47,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
 
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
-          <p className="flex justify-between text-xl font-medium text-primary">
+          <div className="flex justify-between text-xl font-medium text-primary">
             <Link href={`${plan.id}`} className="hover:underline truncate ...">
               {plan.name}
             </Link>
@@ -65,10 +66,10 @@ export default function PlanCard({ plan }: PlanCardProps) {
               </div>
               <div className="text-lg">({avg_rating})</div>
             </div>
-          </p>
+          </div>
           <div className="space-y-1 mt-1">
             {attributes.map((attribute, i) => {
-              if (i === 4)
+              if (i === 3)
                 return (
                   <div
                     key={attribute}
@@ -77,7 +78,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
                     <div>...</div>
                   </div>
                 );
-              if (i > 4) return <></>;
+              if (i > 3) return <div key={attribute}></div>;
               return (
                 <div
                   key={attribute}
@@ -93,7 +94,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
             <div className="pt-5">
               {plan.is_public === 1 ? (
                 <div className="text-gray-400 flex pt-1">
-                  <div>Private</div>
+                  <div>Public</div>
                   <div className="pl-1 pt-1">
                     <LockOpenIcon className="w-4" />
                   </div>
