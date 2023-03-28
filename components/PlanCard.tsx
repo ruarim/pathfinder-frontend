@@ -8,6 +8,8 @@ const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
 };
 
+const widths = ["w-full", "w-1/2", "w-1/3", "w-1/4", "w-1/5", "w-1/6"];
+
 interface PlanCardProps {
   plan: Plan;
 }
@@ -29,30 +31,18 @@ export default function PlanCard({ plan }: PlanCardProps) {
       key={plan.name}
       className="flex flex-col overflow-hidden rounded-lg shadow-lg"
     >
-      {numberOfVenues == 1 ? (
-        <div className="flex">
-          {plan.venues.map((venue) => (
+      <div className="flex">
+        {plan.venues.map((venue, i) => {
+          if (i >= 6) return <></>;
+          return (
             <img
-              className={`h-48 w-full object-cover`}
+              className={`h-48 object-cover ${widths[numberOfVenues - 1]}`}
               src={venue.images[0] ?? "/pub-placeholder.jpg"}
               alt=""
             />
-          ))}
-        </div>
-      ) : (
-        <div className="flex">
-          {plan.venues.map((venue, i) => {
-            if (i >= 6) return <></>;
-            return (
-              <img
-                className={`h-48 w-1/${numberOfVenues} object-cover`}
-                src={venue.images[0] ?? "/pub-placeholder.jpg"}
-                alt=""
-              />
-            );
-          })}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
