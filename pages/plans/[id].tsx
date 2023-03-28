@@ -47,7 +47,10 @@ export default function Plan({ id }: { id: string }) {
   if (isError)
     return (
       <div className="grid place-items-center h-screen font-bold">
-        YOU CANNOT ACCESS THIS PLAN!
+        <div className="space-y-2">
+          <div>YOU CANNOT ACCESS THIS PLAN!</div>
+          <div>IF YOU ARE INVITED - TRY SIGNING IN</div>
+        </div>
       </div>
     );
 
