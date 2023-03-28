@@ -11,39 +11,6 @@ import LoadingButton from "../../components/LoadingButton";
 import { useForm } from "react-hook-form";
 import AvatarIcon from "../../components/AvatarIcon";
 
-const reviews = {
-  average: 4,
-  featured: [
-    {
-      id: 1,
-      rating: 5,
-      content: `
-        <p>Fantastic live music, superb range of beers and ciders, amazing quality food and a great smoking area to the rear.
-
-        The pub seems to have recently improved in leaps and bounds! The staff seem happier, it’s always very clean and well laid out and stocked too!</p>
-      `,
-      date: "July 16, 2021",
-      datetime: "2021-07-16",
-      author: "Emily Selman",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    {
-      id: 2,
-      rating: 5,
-      content: `
-        <p>Always have a lovely time at this pub, love the quiz and all the games they have you can play. Visited this weekend and Alex who served me was super friendly and helpful. Will definitely be back soon!</p>
-      `,
-      date: "July 12, 2021",
-      datetime: "2021-07-12",
-      author: "Hector Gibbons",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    // More reviews...
-  ],
-};
-
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
   const { isLoggedIn, handleLoggedIn } = useAuthContext();
@@ -334,10 +301,6 @@ function Review({ id }: { id: string }) {
   );
 }
 
-interface RatingData {
-  rating: number;
-}
-
 function Rating({
   venueRating,
   venueId,
@@ -349,15 +312,15 @@ function Rating({
   const { isLoggedIn, handleLoggedIn } = useAuthContext();
   const [rating, setRating] = useState<number | undefined>(venueRating);
   const queryClient = useQueryClient();
-  const { data: ratingData } = useQuery<RatingData, any, any>(
+  const { data: ratingData } = useQuery<RatingMutationData, any, any>(
     ["rating", venueId],
     () => client.get(`venues/${venueId}/rating`),
     {
       enabled: isLoggedIn,
     }
   );
-  const { mutateAsync } = useMutation<void, any, RatingData>({
-    mutationFn: (data: RatingData) =>
+  const { mutateAsync } = useMutation<void, any, RatingMutationData>({
+    mutationFn: (data: RatingMutationData) =>
       client.post(`venues/${venueId}/rate`, data),
     mutationKey: ["rate_venue"],
   });
@@ -367,7 +330,7 @@ function Rating({
     try {
       if (handleLoggedIn) handleLoggedIn();
       setRating(rating);
-      const ratingData: RatingData = {
+      const ratingData: RatingMutationData = {
         rating: rating + 1,
       };
       await mutateAsync(ratingData);
@@ -427,7 +390,6 @@ function Rating({
           </>
         )}
       </div>
-      <p className="sr-only">{reviews.average} out of 5 stars</p>
     </div>
   );
 }
@@ -466,9 +428,7 @@ function Reviews({ id }: { id: string }) {
               reviews?.map((review, reviewIdx) => (
                 <div key={review.id} className="flex  text-sm text-gray-500">
                   <div className="flex-none py-10 pr-2">
-                    <AvatarIcon
-                      imageUrl={review.user.avatar_url}
-                    />
+                    <AvatarIcon imageUrl={review.user.avatar_url} />
                   </div>
                   <div
                     className={clsx(

@@ -8,7 +8,7 @@ interface VenueCardProps {
 }
 
 export default function VenueCard({ venue }: VenueCardProps) {
-  const avg_rating = venue?.rating;
+  const avg_rating = venue?.rating == undefined ? 0 : venue?.rating;
 
   return (
     <div
@@ -28,17 +28,20 @@ export default function VenueCard({ venue }: VenueCardProps) {
             <Link href={`venues/${venue.id}`} className="hover:underline">
               {venue.name}
             </Link>
-            <div className="pt-1 pl-2 flex">
-              {[0, 1, 2, 3, 4].map((rating) => (
-                <StarIcon
-                  key={rating}
-                  className={clsx(
-                    avg_rating > rating ? "text-yellow-400" : "text-gray-300",
-                    "h-5 w-5 flex-shrink-0"
-                  )}
-                  aria-hidden="true"
-                />
-              ))}
+            <div className="flex">
+              <div className="pt-1 pl-2 flex">
+                {[0, 1, 2, 3, 4].map((rating) => (
+                  <StarIcon
+                    key={rating}
+                    className={clsx(
+                      avg_rating > rating ? "text-yellow-400" : "text-gray-300",
+                      "h-5 w-5 flex-shrink-0"
+                    )}
+                    aria-hidden="true"
+                  />
+                ))}
+              </div>
+              <div className="text-lg">({avg_rating})</div>
             </div>
           </p>
           <div className="space-y-1 mt-1">
@@ -62,7 +65,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
             <p className="text-primary text-sm">{venue.address.country}</p>
           </Link>
         </div>
-        <div className="mt-6 flex items-center">
+        <div className="mt-4 flex items-center">
           <div className="flex-shrink-0">
             <Link href={venue.address.address_1}>
               <span className="sr-only">{venue?.address?.address_2}</span>

@@ -135,6 +135,8 @@ type Plan = {
   users: User[];
   start_date?: string;
   start_time?: string;
+  is_public: number;
+  rating: number;
 };
 
 type PlanResponse = {
@@ -145,6 +147,10 @@ type PlanResponse = {
 
 type VenueFavouriteMutation = {
   remove: boolean;
+};
+
+type RatingMutationData = {
+  rating: number;
 };
 
 type Rating = {
