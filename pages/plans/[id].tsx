@@ -21,6 +21,7 @@ import { useAuthContext } from "../../hooks/context/useAuthContext";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import LoadingButton from "../../components/LoadingButton";
 import clsx from "clsx";
+import { AxiosError } from "axios";
 
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
@@ -33,11 +34,22 @@ const isInvited = (users: User[], loggedInUser: User) => {
 export default function Plan({ id }: { id: string }) {
   const router = useRouter();
 
-  const { data: planData } = useQuery<PlanResponse, any, any>(
+  const { data: planData, isError } = useQuery<PlanResponse, AxiosError, any>(
     ["plan", id],
-    () => client.get(`paths/${router.query.id}`)
+    () => client.get(`paths/${router.query.id}`),
+    {
+      retry: false,
+    }
   );
+
   const plan = planData?.data?.data;
+
+  if (isError)
+    return (
+      <div className="grid place-items-center h-screen font-bold">
+        YOU CANNOT ACCESS THIS PLAN!
+      </div>
+    );
 
   //display plan
   return (

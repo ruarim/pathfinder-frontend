@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import client from "../../axios/apiClient";
 import { useAuthContext } from "../context/useAuthContext";
 
@@ -16,11 +15,5 @@ export const useGetUser = () => {
     queryKey: ["user"],
     queryFn: (): Promise<UserDto> => client.get("user"),
     enabled: isLoggedIn,
-    // retry(failureCount: number, error: AxiosError) { //@dev removing this for now
-    //   if (error.code === "ERR_BAD_RESPONSE") {
-    //     failureCount = 2;
-    //   }
-    // },
-    //should be retry: 2?
   });
 };
