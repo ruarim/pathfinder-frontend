@@ -3,7 +3,7 @@ type User = {
   username: string;
   firstName: string;
   lastName: string;
-  isAdmin: number;
+  is_admin: number;
   email: string;
   avatar_url: string;
   is_creator?: number;
