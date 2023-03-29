@@ -80,21 +80,20 @@ function PlanCard({ plan }: PlanCardProps) {
     <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
       <div className="space-y-2 bg-white md:p-12 rounded-lg m-2 p-5">
         <div className="space-y-1">
-          <div className="flex justify-between">
+          <div className="md:flex md:justify-between">
             <div className="space-y-1">
               <h1 className="text-3xl font-bold">{plan.name}</h1>
               {user && isInvited(plan.users, user) && (
-                <div className="flex space-x-2 font-bold text-lg">
+                <div className="md:flex md:space-x-2 font-bold text-lg">
                   {plan?.start_date && (
                     <h2>{new Date(plan?.start_date).toDateString()}</h2>
                   )}
-                  {plan?.start_time && <p>-</p>}
                   <h2>{plan?.start_time?.substring(0, 5)}</h2>
                 </div>
               )}
             </div>
-            <div className="pl-3 space-y-1">
-              <div className="flex">
+            <div className="md:pl-3 space-y-1">
+              <div className="flex md:justify-end">
                 {plan.is_public === 1 ? (
                   <div className="text-gray-400 flex pt-1">
                     <div>Public</div>
@@ -113,7 +112,7 @@ function PlanCard({ plan }: PlanCardProps) {
               </div>
               <div>
                 {creator && (
-                  <h2 className="text-2xl flex md:gap-2 md:justify-end">
+                  <h2 className="text-2xl flex gap-2 md:justify-end">
                     <div className="pt-1">{creator?.username}</div>
                     {<AvatarIcon imageUrl={creator?.avatar_url} />}
                   </h2>
