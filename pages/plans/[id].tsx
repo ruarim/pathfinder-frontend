@@ -177,7 +177,12 @@ function Rating({ avg_rating, plan }: { avg_rating: number; plan: Plan }) {
     };
 
     if (handleLoggedIn && !isLoggedIn) return handleLoggedIn();
-    await mutateAsync(ratingData);
+    try {
+      await mutateAsync(ratingData);
+    } catch (e) {
+      console.log(e);
+    }
+
     queryClient.invalidateQueries(["plan"]);
   };
 
