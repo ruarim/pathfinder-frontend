@@ -25,7 +25,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
           <p className="flex justify-between text-xl font-medium text-primary">
-            <Link href={`venues/${venue.id}`} className="hover:underline">
+            <Link href={`/venues/${venue.id}`} className="hover:underline">
               {venue.name}
             </Link>
             <div className="flex">

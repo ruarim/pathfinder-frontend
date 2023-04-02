@@ -268,7 +268,7 @@ export default function Create() {
 }
 
 interface MapBoxProps {
-  venues: VenueResponse;
+  venues: VenuesResponse;
   venuesPlan: Venue[];
   startPoint: MapLocation;
   endPoint: MapLocation;

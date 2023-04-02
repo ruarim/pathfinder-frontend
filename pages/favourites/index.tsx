@@ -7,7 +7,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 export default function Favourites() {
   const { isLoggedIn } = useAuthContext();
   const { data: venuesData, isLoading: favouritesLoading } =
-    useQuery<VenueResponse>(
+    useQuery<VenuesResponse>(
       ["venue_favourites"],
       () => client.get("venues/user/favourites"),
       { enabled: isLoggedIn }

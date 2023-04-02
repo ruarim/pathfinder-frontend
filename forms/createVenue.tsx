@@ -1,4 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import client from "../axios/apiClient";
 import Field from "../components/form/Field";
@@ -30,6 +32,7 @@ type CreateVenueData = {
 };
 
 export default function CreateVenueForm() {
+  const [isLoading, setLoading] = useState(false);
   const form = useForm<CreateVenueData>();
   const { mutateAsync: createVenue } = useMutation<
     Venue,
@@ -37,14 +40,17 @@ export default function CreateVenueForm() {
     CreateVenueData
   >((data) => client.post("/venues", data));
 
-  const onSubmit = async (data: CreateVenueData) => {
-    console.log(data);
+  const router = useRouter();
 
+  const onSubmit = async (data: CreateVenueData) => {
+    setLoading(true);
     try {
       await createVenue(data);
+      router.push("/admin/venues");
     } catch (e) {
       console.log(e);
     }
+    setLoading(false);
   };
 
   return (
@@ -173,6 +179,7 @@ export default function CreateVenueForm() {
                 </div>
                 <div>
                   <LoadingButton
+                    isLoading={isLoading}
                     type="submit"
                     styles="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 p-3 text-md font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >

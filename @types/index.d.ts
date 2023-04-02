@@ -69,7 +69,7 @@ type Venue = {
   images: string[];
 };
 
-type VenueResponse = {
+type VenuesResponse = {
   data: {
     data: Venue[];
   };
