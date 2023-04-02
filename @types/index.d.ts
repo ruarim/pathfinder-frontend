@@ -75,6 +75,10 @@ type VenuesResponse = {
   };
 };
 
+type AttributesResponse = {
+  data: { data: string[] };
+};
+
 type Address = {
   address_1: stirng;
   address_2?: string;

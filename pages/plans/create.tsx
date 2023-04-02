@@ -91,11 +91,13 @@ export default function Create() {
     router.push({ pathname: "/plans/[id]", query: { id: res.data.data.id } });
   };
 
+  const attributesData = attributes?.data.data;
+
   return (
     <MapProvider>
       <div className="mx-auto ">
         {/* create plan modal */}
-        {attributes?.data && (
+        {attributesData && (
           <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
             <div className="flex justify-between gap-3">
               <h2 className="text-xl font-bold text-gray-900">
@@ -139,36 +141,34 @@ export default function Create() {
                     Choose some attributes
                   </div>
                   <div className="grid grid-cols-4 w-full gap-2">
-                    {attributes?.data.data.map(
-                      (attribute: string, i: number) => {
-                        if (i > 7 && !showAllAttributes) return <></>;
-                        if (i === 7 && !showAllAttributes)
-                          return (
-                            <button
-                              onClick={(e) => setShowAllAttributes(true)}
-                              className={clsx(
-                                "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
-                              )}
-                              key={attribute}
-                            >
-                              show more
-                            </button>
-                          );
+                    {attributesData.map((attribute: string, i: number) => {
+                      if (i > 7 && !showAllAttributes) return <></>;
+                      if (i === 7 && !showAllAttributes)
                         return (
                           <button
-                            onClick={(e) => toggleVenueAttribute(e)}
+                            onClick={(e) => setShowAllAttributes(true)}
                             className={clsx(
-                              "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
-                              attributesParams.includes(attribute) &&
-                                "bg-gray-300"
+                              "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
                             )}
                             key={attribute}
                           >
-                            {attribute}
+                            show more
                           </button>
                         );
-                      }
-                    )}
+                      return (
+                        <button
+                          onClick={(e) => toggleVenueAttribute(e)}
+                          className={clsx(
+                            "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
+                            attributesParams.includes(attribute) &&
+                              "bg-gray-300"
+                          )}
+                          key={attribute}
+                        >
+                          {attribute}
+                        </button>
+                      );
+                    })}
                     {showAllAttributes && (
                       <button
                         onClick={(e) => setShowAllAttributes(false)}

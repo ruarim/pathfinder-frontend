@@ -80,7 +80,12 @@ function ProfileDropDown() {
     logout && logout();
   }
   return isLoggedIn ? (
-    <div>
+    <div className="flex">
+      {user && user?.is_admin === 1 && (
+        <Link href="/admin" className="hover:underline pt-1">
+          Admin
+        </Link>
+      )}
       <Menu as="div" className="relative ml-4 flex-shrink-0">
         <div>
           <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none ">
