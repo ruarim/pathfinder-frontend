@@ -38,8 +38,7 @@ export default function DropDown({
             {options.map((option) => (
               <Menu.Item>
                 {({ active }) => (
-                  <a
-                    href="#"
+                  <div
                     onClick={() => setValue(option)}
                     className={clsx(
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
@@ -47,7 +46,7 @@ export default function DropDown({
                     )}
                   >
                     {option}
-                  </a>
+                  </div>
                 )}
               </Menu.Item>
             ))}
