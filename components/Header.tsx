@@ -80,7 +80,7 @@ function ProfileDropDown() {
     logout && logout();
   }
   return isLoggedIn ? (
-    <div className="flex">
+    <div className="flex justify-end pr-4 lg:pr-0">
       {user && user?.is_admin === 1 && (
         <Link href="/admin" className="hover:underline pt-1">
           Admin
