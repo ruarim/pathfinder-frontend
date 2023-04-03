@@ -1,4 +1,3 @@
-import { MapIcon } from "@heroicons/react/20/solid";
 import { useRouter } from "next/router";
 
 export default function Plans() {
@@ -9,21 +8,25 @@ export default function Plans() {
       title: "Create",
       icon: "🍻",
       href: "plans/create",
+      bgColour: "bg-contrast/50",
     },
     {
       title: "Plans",
       icon: "📚",
       href: "plans/plans",
+      bgColour: "bg-notice/50",
     },
     {
       title: "Explore",
       icon: "🌍",
       href: "plans/explore",
+      bgColour: "bg-contrast/50 md:bg-notice/50",
     },
     {
       title: "Random",
       icon: "🎲",
       href: "plans/random",
+      bgColour: "bg-notice/50 md:bg-contrast/50",
     },
   ];
 
@@ -43,7 +46,9 @@ export default function Plans() {
               onClick={() => router.push(option.href)}
             >
               {/*@dev make boxes alternate between bg-contrast/50 bg-notice/50  */}
-              <span className="absolute inset-0 transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-contrast/50 group-hover:translate-x-0 group-hover:translate-y-0"></span>
+              <span
+                className={`absolute inset-0 transition duration-300 ease-out transform -translate-x-2 -translate-y-2 ${option.bgColour} group-hover:translate-x-0 group-hover:translate-y-0`}
+              ></span>
               <span className="absolute inset-0 border-2 border-primary"></span>
               <div className="space-x-2">
                 <span className="relative text-3xl">{option.title}</span>
