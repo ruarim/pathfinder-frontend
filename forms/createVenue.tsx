@@ -5,8 +5,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import client from "../axios/apiClient";
 import Field from "../components/form/Field";
 import FieldArrayInput from "../components/form/ImagesArrayInput";
-import ControlledInput from "../components/form/LineInput";
-import ControlledTextArea from "../components/form/TextArea";
+import LineInput from "../components/form/LineInput";
+import TextArea from "../components/form/TextArea";
 import VenueTypePicker from "../components/form/VenueTypePicker";
 import LoadingButton from "../components/LoadingButton";
 
@@ -70,7 +70,7 @@ export default function CreateVenueForm() {
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <Field>
-                  <ControlledInput
+                  <LineInput
                     defaultValue=""
                     placeholder="Venue name"
                     name="name"
@@ -86,7 +86,7 @@ export default function CreateVenueForm() {
                 </div>
 
                 <Field>
-                  <ControlledInput
+                  <LineInput
                     placeholder="Capacity"
                     name="capacity"
                     type="number"
@@ -96,14 +96,14 @@ export default function CreateVenueForm() {
 
                 <div className="grid grid-cols-2 space-x-2">
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="opening_time"
                       type="time"
                       label="Opening Time"
                     />
                   </Field>
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="closing_time"
                       type="time"
                       label="Closing Time"
@@ -114,7 +114,7 @@ export default function CreateVenueForm() {
                 <div className="space-y-2">
                   <label>Venue Address</label>
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="address.address_1"
                       type="text"
                       label="Address 1"
@@ -122,7 +122,7 @@ export default function CreateVenueForm() {
                     />
                   </Field>
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="address.address_2"
                       type="text"
                       label="Address 2"
@@ -131,7 +131,7 @@ export default function CreateVenueForm() {
                   </Field>
 
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="address.town_city"
                       type="text"
                       label="Town/City"
@@ -140,7 +140,7 @@ export default function CreateVenueForm() {
                   </Field>
 
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="address.postcode"
                       type="text"
                       label="Postcode"
@@ -149,7 +149,7 @@ export default function CreateVenueForm() {
                   </Field>
 
                   <Field>
-                    <ControlledInput
+                    <LineInput
                       name="address.country"
                       type="text"
                       label="Country"
@@ -159,7 +159,7 @@ export default function CreateVenueForm() {
                 </div>
 
                 <Field>
-                  <ControlledTextArea
+                  <TextArea
                     name="description"
                     label="Venue Description"
                     placeholder="Describe your venue"
