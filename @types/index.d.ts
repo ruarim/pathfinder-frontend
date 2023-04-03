@@ -3,7 +3,7 @@ type User = {
   username: string;
   firstName: string;
   lastName: string;
-  isAdmin: number;
+  is_admin: number;
   email: string;
   avatar_url: string;
   is_creator?: number;
@@ -69,10 +69,14 @@ type Venue = {
   images: string[];
 };
 
-type VenueResponse = {
+type VenuesResponse = {
   data: {
     data: Venue[];
   };
+};
+
+type AttributesResponse = {
+  data: { data: string[] };
 };
 
 type Address = {

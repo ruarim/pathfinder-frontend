@@ -4,7 +4,7 @@ import client from "../../axios/apiClient";
 export const useGetVenuesByAttributes = (attributes: string[]) => {
   const searchParam = formatArrayAsString(attributes);
 
-  return useQuery<VenueResponse, any, any>({
+  return useQuery<VenuesResponse, any, any>({
     queryKey: ["attributes_venues", searchParam],
     queryFn: () => client.get(`venue_attributes_search?${searchParam}`),
   });

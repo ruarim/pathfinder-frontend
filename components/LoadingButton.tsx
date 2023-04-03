@@ -5,7 +5,7 @@ interface LoadingButtonProps {
   onClick?: () => void;
   children?: React.ReactNode;
   type?: "button" | "submit" | "reset" | undefined;
-  styles: string;
+  styles?: string;
 }
 export default function LoadingButton({
   onClick,

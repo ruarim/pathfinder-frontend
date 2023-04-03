@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useGetVenues } from "../../hooks/queries/getVenues";
 import VenueCard from "../../components/VenueCard";
-import PaginatorScrollBar from "../../components/PaginatorScrollBar";
 import SearchInput from "../../components/SearchInput";
 import { useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
@@ -17,7 +16,7 @@ export default function Venues() {
     data: venueSearchData,
     refetch,
     isLoading,
-  } = useQuery<VenueResponse, any, any>(
+  } = useQuery<VenuesResponse, any, any>(
     ["searchParam", debouncedSearchParam],
     () => client.get(`venue_name_search?name=${debouncedSearchParam}`),
     {

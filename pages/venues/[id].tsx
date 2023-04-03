@@ -16,7 +16,7 @@ export default function Venue({ id }: { id: string }) {
   const { isLoggedIn, handleLoggedIn } = useAuthContext();
   const [isFavouriteLoading, setFavouriteLoading] = useState(false);
 
-  const { data: venueData } = useQuery<VenueResponse, any, any>(
+  const { data: venueData } = useQuery<VenuesResponse, any, any>(
     ["venue", id],
     () => client.get(`venues/${id}`),
     {
