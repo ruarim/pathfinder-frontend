@@ -19,9 +19,15 @@ export default function Venues() {
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Your Venues
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-            These are your venues.
-          </p>
+          {venues?.length !== 0 ? (
+            <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
+              These are your venues.
+            </p>
+          ) : (
+            <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
+              You haven't created any venues yet.
+            </p>
+          )}
         </div>
         {!venuesLoading ? (
           <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
