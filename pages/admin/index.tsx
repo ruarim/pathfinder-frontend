@@ -19,7 +19,6 @@ export default function Admin() {
           <span className="absolute inset-0 border-2 border-primary"></span>
           <div className="space-x-2">
             <span className="relative text-3xl">{option.title}</span>
-            {/* <span className="relative text-3xl">{option.icon}</span> */}
           </div>
         </button>
       ))}
