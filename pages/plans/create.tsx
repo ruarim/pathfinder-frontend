@@ -33,6 +33,9 @@ const DEFAULT_CENTER_LOCATION = {
 };
 
 export default function Create() {
+  const [userLocation, setUserLocation] = useState<LatLong>(
+    DEFAULT_CENTER_LOCATION
+  );
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const [isPlanModalOpen, setPlanModalOpen] = useState(true);
   const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]);
@@ -127,12 +130,14 @@ export default function Create() {
                     placeholder={"Choose a starting location"}
                     selected={selectedStart}
                     setSelected={setSelectedStart}
+                    userLocation={userLocation}
                   />
                   <MapSearch
                     label={"End"}
                     placeholder={"Choose an ending location"}
                     selected={selectedEnd}
                     setSelected={setSelectedEnd}
+                    userLocation={userLocation}
                   />
                 </div>
                 <div>
@@ -256,6 +261,7 @@ export default function Create() {
 
         {/* map box */}
         <MapBox
+          setUserLocation={setUserLocation}
           venues={venues}
           venuesPlan={venuesPlan}
           startPoint={selectedStart}
@@ -268,6 +274,7 @@ export default function Create() {
 }
 
 interface MapBoxProps {
+  setUserLocation: (location: LatLong) => void;
   venues: VenuesResponse;
   venuesPlan: Venue[];
   startPoint: MapLocation;
@@ -276,6 +283,7 @@ interface MapBoxProps {
 }
 
 function MapBox({
+  setUserLocation,
   venues,
   venuesPlan,
   startPoint,
@@ -288,6 +296,10 @@ function MapBox({
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
+        setUserLocation({
+          lat: position.coords.longitude,
+          long: position.coords.latitude,
+        });
         if (map)
           map.flyTo({
             center: [position.coords.longitude, position.coords.latitude],

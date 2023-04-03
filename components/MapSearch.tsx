@@ -5,12 +5,15 @@ import { useMap } from "react-map-gl";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export const useGetMapBoxLocations = (searchText: string) => {
+export const useGetMapBoxLocations = (
+  searchText: string,
+  userLocation: LatLong
+) => {
   return useQuery<MapLocations>({
     queryKey: ["location_search", searchText],
     queryFn: () =>
       axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchText}.json?access_token=${process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchText}.json?proximity=${userLocation.lat},${userLocation.long}&access_token=${process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}`
       ),
   });
 };
@@ -25,6 +28,7 @@ interface MapSearchProps {
   placeholder: string;
   setSelected: (location: MapLocation) => void;
   selected: MapLocation;
+  userLocation: LatLong;
 }
 
 export default function MapSearch({
@@ -32,16 +36,19 @@ export default function MapSearch({
   placeholder,
   selected,
   setSelected,
+  userLocation,
 }: MapSearchProps) {
   const [query, setQuery] = useState<string>("");
 
-  const { data: locations } = useGetMapBoxLocations(query); //@dev useDebounce
+  const { data: locationsData } = useGetMapBoxLocations(query, userLocation); //@dev useDebounce
   const { map } = useMap();
 
   const onChange = (location: any) => {
     setSelected(location);
     if (map) map.flyTo({ center: [location.center[0], location.center[1]] });
   };
+
+  const locations = locationsData?.data?.features;
 
   return (
     <div className="top-16">
@@ -73,12 +80,13 @@ export default function MapSearch({
             afterLeave={() => setQuery("")}
           >
             <Combobox.Options className="absolute mt-1 max-h-60 w-11/12 rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {locations?.data?.features.length === 0 && query !== "" ? (
+              {locations && locations.length === 0 && query !== "" ? (
                 <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                   Nothing found.
                 </div>
               ) : (
-                locations?.data?.features.map((location) => {
+                locations &&
+                locations.map((location) => {
                   const splitPlacename = location.place_name.split(",");
 
                   return (
