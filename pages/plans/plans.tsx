@@ -7,9 +7,9 @@ import { useAuthContext } from "../../hooks/context/useAuthContext";
 export default function Collection() {
   const { isLoggedIn } = useAuthContext();
   const { data: plansData, isLoading: plansLoading } = useQuery<
-    PlanResponse,
-    any,
-    any
+    unknown,
+    unknown,
+    PlansResponse
   >(["plans"], () => client.get("paths/user/all"), { enabled: isLoggedIn });
   const plans = plansData?.data?.data;
 
@@ -42,9 +42,10 @@ export default function Collection() {
           <>
             {!plansLoading ? (
               <div className="mx-auto pt-6 grid max-w-lg gap-5 lg:max-w-none lg:grid-cols-3">
-                {plans.map((plan: Plan, key: number) => {
-                  return <PlanCard plan={plan} key={key} />;
-                })}
+                {plans &&
+                  plans.map((plan: Plan, key: number) => {
+                    return <PlanCard plan={plan} key={key} />;
+                  })}
               </div>
             ) : (
               <div className="text-black flex justify-center p-24">

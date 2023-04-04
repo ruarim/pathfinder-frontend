@@ -149,6 +149,12 @@ type PlanResponse = {
   };
 };
 
+type PlansResponse = {
+  data: {
+    data: Plan[];
+  };
+};
+
 type VenueFavouriteMutation = {
   remove: boolean;
 };
