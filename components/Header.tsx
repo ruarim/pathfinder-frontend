@@ -81,11 +81,6 @@ function ProfileDropDown() {
   }
   return isLoggedIn ? (
     <div className="flex justify-end pr-4 lg:pr-0">
-      {user && user?.is_admin === 1 && (
-        <Link href="/admin" className="hover:underline pt-1">
-          Admin Panel
-        </Link>
-      )}
       <Menu as="div" className="relative ml-4 flex-shrink-0">
         <div>
           <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none ">
@@ -120,6 +115,23 @@ function ProfileDropDown() {
                     </div>
                   )}
                 </Menu.Item>
+                {user && user?.is_admin === 1 && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <Link
+                        href="/admin"
+                        className={clsx(
+                          active
+                            ? "bg-green-400/50  cursor-pointer"
+                            : "bg-blue-400/50",
+                          "block px-4 py-2 text-sm text-primary/50"
+                        )}
+                      >
+                        Admin
+                      </Link>
+                    )}
+                  </Menu.Item>
+                )}
               </>
             )}
           </Menu.Items>
