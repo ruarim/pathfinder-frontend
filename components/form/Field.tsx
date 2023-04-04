@@ -12,7 +12,7 @@ export default function Field({ children, error, helpText }: FieldProps) {
       {children}
       <p
         className={clsx({
-          "bg-red-300  text-red-900 shadow rounded-md p-0.5 mt-1 flex justify-center":
+          "bg-red-300  text-red-900 shadow rounded-md p-0.5 mt-1 text-center":
             error,
         })}
       >
