@@ -46,7 +46,7 @@ export default function CreateVenueForm() {
       address_2: yup.string().nullable(),
       postcode: yup.string().required("Venue must have an postcode"),
       town_city: yup.string().required("Venue must have an town or city"),
-      country: yup.string().required("Venue must have an country"),
+      country: yup.string().required("Venue must have a country"),
     }),
     description: yup.string().required("Give the venue a description"),
     attributes: yup
