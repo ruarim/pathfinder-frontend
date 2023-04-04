@@ -18,24 +18,28 @@ export default function Plans() {
   const planOptions = [
     {
       title: "Create",
+      subTitle: "Plan your perfect evening.",
       icon: "🍻",
       href: "plans/create",
       bgColour: "bg-contrast/50",
     },
     {
       title: "Plans",
+      subTitle: "Search through the plans you've created.",
       icon: "📚",
       href: "plans/plans",
       bgColour: "bg-notice/50",
     },
     {
       title: "Explore",
+      subTitle: "Explore plans created by other users.",
       icon: "🌍",
       href: "plans/explore",
       bgColour: "bg-contrast/50 md:bg-notice/50",
     },
     {
       title: "Random",
+      subTitle: "Find some inspiration with a random plan.",
       icon: "🎲",
       href: `plans/${random}`,
       bgColour: "bg-notice/50 md:bg-contrast/50",
@@ -66,6 +70,7 @@ export default function Plans() {
                   <span className="relative text-3xl">{option.title}</span>
                   <span className="relative text-3xl">{option.icon}</span>
                 </div>
+                <span>{option.subTitle}</span>
               </button>
             );
           })}
