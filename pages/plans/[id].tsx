@@ -31,6 +31,10 @@ const isInvited = (users: User[], loggedInUser: User) => {
   return users.find((user) => user.id === loggedInUser.id) ? true : false;
 };
 
+const isCreator = (user: User, users: User[]) => {
+  return user.id === getCreator(users)?.id;
+};
+
 export default function Plan({ id }: { id: string }) {
   const router = useRouter();
 
@@ -76,6 +80,22 @@ function PlanCard({ plan }: PlanCardProps) {
   const creator = getCreator(plan.users);
   const avg_rating = plan?.rating == undefined ? 0 : plan?.rating;
 
+  const { mutateAsync: togglePublic } = useMutation<
+    any,
+    any,
+    { is_public: 0 | 1 }
+  >((data) => client.post(`paths/${plan.id}/set_public`, data));
+
+  const queryClient = useQueryClient();
+
+  const handleTogglePublic = async (is_public: 0 | 1) => {
+    try {
+      await togglePublic({ is_public });
+    } catch (e) {
+      console.log(e);
+    }
+    queryClient.invalidateQueries(["plan"]);
+  };
   return (
     <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
       <div className="space-y-2 bg-white md:p-12 rounded-lg m-2 p-5">
@@ -95,19 +115,31 @@ function PlanCard({ plan }: PlanCardProps) {
             <div className="md:pl-3 space-y-1">
               <div className="flex md:justify-end">
                 {plan.is_public === 1 ? (
-                  <div className="text-gray-400 flex pt-1">
+                  <button
+                    onClick={() => {
+                      if (user && isCreator(user, plan.users))
+                        handleTogglePublic(0);
+                    }}
+                    className="text-gray-400 flex pt-1 hover:underline"
+                  >
                     <div>Public</div>
                     <div className="pl-1 pt-1">
                       <LockOpenIcon className="w-4" />
                     </div>
-                  </div>
+                  </button>
                 ) : (
-                  <div className="text-gray-400 flex pt-1">
+                  <button
+                    onClick={() => {
+                      if (user && isCreator(user, plan.users))
+                        handleTogglePublic(1);
+                    }}
+                    className="text-gray-400 flex pt-1 hover:underline"
+                  >
                     <div>Private</div>
                     <div className="pl-1 pt-1">
                       <LockClosedIcon className="w-4" />
                     </div>
-                  </div>
+                  </button>
                 )}
               </div>
               <div>
