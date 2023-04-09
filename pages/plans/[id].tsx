@@ -12,7 +12,7 @@ import {
 import { GeolocateControl, Map, Marker, NavigationControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/AvatarIcon";
-import { Combobox, Transition } from "@headlessui/react";
+import { Combobox, Tab, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
 import Link from "next/link";
@@ -106,10 +106,6 @@ function PlanCard({ plan }: PlanCardProps) {
             <div className="lg:col-span-4 lg:row-end-1">
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 w-full">
                 <MapBox
-                  center={{
-                    lat: plan.venues[0].address.latitude,
-                    long: plan.venues[0].address.longitude,
-                  }}
                   startpoint={{
                     lat: plan.startpoint_lat,
                     long: plan.startpoint_long,
@@ -206,13 +202,32 @@ function PlanCard({ plan }: PlanCardProps) {
                   </div>
                 </div>
               </p>
-
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 pb-2">
-                {user && <InviteCard plan={plan} user={user} />}
-              </div>
-
-              <div className="mt-1 border-t border-gray-200 pt-10">
-                <h3 className="text-sm font-medium text-gray-900">Share</h3>
+            </div>
+            <div className="mx-auto mt-5 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
+              <Tab.Group as="div">
+                <div className="border-b border-gray-200">
+                  <Tab.List className="-mb-px flex space-x-8">
+                    <Tab
+                      className={({ selected }) =>
+                        clsx(
+                          selected
+                            ? "border-indigo-600 text-indigo-600"
+                            : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
+                          "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
+                        )
+                      }
+                    >
+                      Invite
+                    </Tab>
+                  </Tab.List>
+                </div>
+                <Tab.Panels as={Fragment}>
+                  <Tab.Panel className="-mb-10">
+                    {user && <InviteCard plan={plan} user={user} />}
+                  </Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
+              <div className="mt-1  pt-10">
                 <ul role="list" className="mt-4 flex items-center space-x-6">
                   <li>
                     <a
@@ -403,7 +418,7 @@ function InviteCard({ plan, user }: { plan: Plan; user: User }) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 pt-3">
       {isLoggedIn ? (
         isInvited(plan.users, user) ? (
           <>
@@ -613,25 +628,37 @@ function SetParticipants({
 }
 
 function MapBox({
-  center,
   startpoint,
   endpoint,
   venues,
 }: {
-  center: LatLong;
   startpoint?: { lat?: number; long?: number };
   endpoint?: { lat?: number; long?: number };
   venues: Venue[];
 }) {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 
+  const getMidPoint = (venues: Venue[]) => {
+    const total = Object.values(venues).reduce(
+      (total, current) => {
+        return {
+          lat: total.lat + Number(current.address.latitude),
+          long: total.long + Number(current.address.longitude),
+        };
+      },
+      { lat: 0, long: 0 }
+    );
+
+    return { lat: total.lat / venues.length, long: total.long / venues.length };
+  };
+
   return (
     <div className="rounded-md">
       <Map
         id="map"
         initialViewState={{
-          latitude: center.lat,
-          longitude: center.long,
+          latitude: getMidPoint(venues).lat,
+          longitude: getMidPoint(venues).long,
           zoom: 13,
           bearing: 0,
           pitch: 0,
@@ -685,10 +712,6 @@ function MapBox({
       </Map>
     </div>
   );
-}
-
-function Separator() {
-  return <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>;
 }
 
 export async function getServerSideProps(context: { query: { id: number } }) {
