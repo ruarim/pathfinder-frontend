@@ -14,8 +14,8 @@ interface VenueMapCardProps {
   venuesPlan: Venue[];
   toggleVenueInPlan: (venue: Venue) => void;
   latLong: LatLong;
-  openVenueCard: string;
-  setOpenVenueCard: (venue: string) => void;
+  openVenueCard: number;
+  setOpenVenueCard: (venue: number) => void;
 }
 
 export default function VenueMapCard({
@@ -29,14 +29,16 @@ export default function VenueMapCard({
   const { current: map } = useMap();
   const avg_rating = venue?.rating;
 
+  const isVenueInPlan = (venue: Venue, venues: Venue[]) => {
+    return venues.find((v) => v.id === venue.id);
+  };
+
   const isOpen = () => {
-    return openVenueCard == venue.name;
+    return openVenueCard == venue.id;
   };
 
   const openCard = () => {
-    openVenueCard == venue.name
-      ? setOpenVenueCard("")
-      : setOpenVenueCard(venue.name);
+    isOpen() ? setOpenVenueCard(0) : setOpenVenueCard(venue.id);
 
     if (!isOpen() && map)
       map.flyTo({
@@ -149,8 +151,4 @@ export default function VenueMapCard({
       </div>
     </div>
   );
-}
-
-function isVenueInPlan(venue: Venue, venues: Venue[]) {
-  return venues.find((v) => v.id === venue.id);
 }

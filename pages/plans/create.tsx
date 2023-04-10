@@ -308,7 +308,7 @@ function MapBox({
     }
   }, [map]);
 
-  const [openVenueCard, setOpenVenueCard] = useState<string>("");
+  const [openVenueCard, setOpenVenueCard] = useState<number>(0);
 
   //@dev create render geoPoints list and sort to fix venueMapCard overlap
   return (
