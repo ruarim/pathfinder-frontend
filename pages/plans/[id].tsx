@@ -223,7 +223,7 @@ function PlanCard({ plan }: PlanCardProps) {
                 </div>
                 <Tab.Panels as={Fragment}>
                   <Tab.Panel className="-mb-10">
-                    {user && <InviteCard plan={plan} user={user} />}
+                    <InviteCard plan={plan} user={user} />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
@@ -380,7 +380,7 @@ function VenueList({ venues }: { venues: Venue[] }) {
   );
 }
 
-function InviteCard({ plan, user }: { plan: Plan; user: User }) {
+function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
   const { setLoginModalOpen, setRegisterModalOpen, isLoggedIn } =
     useAuthContext();
   const [isLoading, setLoading] = useState(false);
@@ -419,16 +419,16 @@ function InviteCard({ plan, user }: { plan: Plan; user: User }) {
 
   return (
     <div className="space-y-2 pt-3">
-      {isLoggedIn ? (
+      {isLoggedIn && user ? (
         isInvited(plan.users, user) ? (
-          <>
+          <div>
             {user?.id == getCreator(plan.users)?.id ? (
               <SetParticipants id={plan.id} plan={plan} loggedInUser={user} />
             ) : (
               <h2 className="text-xl font-bold">Invited Users</h2>
             )}
             <UserList users={plan.users} />
-          </>
+          </div>
         ) : (
           <div className="flex items-center justify-center pb-1">
             <LoadingButton
