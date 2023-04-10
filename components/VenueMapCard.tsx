@@ -27,6 +27,15 @@ export default function VenueMapCard({
   const { current: map } = useMap();
   const avg_rating = venue?.rating;
 
+  const centerViewport = () => {
+    isOpen ? setOpen(false) : setOpen(true);
+    if (!isOpen && map)
+      map.flyTo({
+        center: [latLong.long, Number(latLong.lat) + 0.006],
+        zoom: 14,
+      });
+  };
+
   return (
     <div>
       {isOpen && (
@@ -125,11 +134,7 @@ export default function VenueMapCard({
         className={`flex justify-center ${clsx(
           isVenueInPlan(venue, venuesPlan) ? "text-blue-400" : "text-red-400"
         )}`}
-        onClick={() => {
-          isOpen ? setOpen(false) : setOpen(true);
-          if (!isOpen && map)
-            map.flyTo({ center: [latLong.long, latLong.lat] });
-        }}
+        onClick={centerViewport}
       >
         <MapPinIcon className="w-8" />
       </div>
