@@ -1,4 +1,3 @@
-import { useState } from "react";
 import timeFormatter from "../helpers/timeFormatter";
 import clsx from "clsx";
 import { useMap } from "react-map-gl";
@@ -15,6 +14,8 @@ interface VenueMapCardProps {
   venuesPlan: Venue[];
   toggleVenueInPlan: (venue: Venue) => void;
   latLong: LatLong;
+  openVenueCard: string;
+  setOpenVenueCard: (venue: string) => void;
 }
 
 export default function VenueMapCard({
@@ -22,14 +23,22 @@ export default function VenueMapCard({
   venuesPlan,
   toggleVenueInPlan,
   latLong,
+  openVenueCard,
+  setOpenVenueCard,
 }: VenueMapCardProps) {
-  const [isOpen, setOpen] = useState(false);
   const { current: map } = useMap();
   const avg_rating = venue?.rating;
 
-  const centerViewport = () => {
-    isOpen ? setOpen(false) : setOpen(true);
-    if (!isOpen && map)
+  const isOpen = () => {
+    return openVenueCard == venue.name;
+  };
+
+  const openCard = () => {
+    openVenueCard == venue.name
+      ? setOpenVenueCard("")
+      : setOpenVenueCard(venue.name);
+
+    if (!isOpen() && map)
       map.flyTo({
         center: [latLong.long, Number(latLong.lat) + 0.006],
         zoom: 14,
@@ -38,8 +47,8 @@ export default function VenueMapCard({
 
   return (
     <div>
-      {isOpen && (
-        <div onClick={() => setOpen(true)} className="w-64">
+      {isOpen() && (
+        <div className="w-64">
           <div
             key={venue.name}
             className="flex flex-col overflow-hidden rounded-lg shadow-lg"
@@ -134,7 +143,7 @@ export default function VenueMapCard({
         className={`flex justify-center ${clsx(
           isVenueInPlan(venue, venuesPlan) ? "text-blue-400" : "text-red-400"
         )}`}
-        onClick={centerViewport}
+        onClick={openCard}
       >
         <MapPinIcon className="w-8" />
       </div>
