@@ -9,7 +9,14 @@ import {
   StarIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
-import { GeolocateControl, Map, Marker, NavigationControl } from "react-map-gl";
+import {
+  GeolocateControl,
+  Layer,
+  Map,
+  Marker,
+  NavigationControl,
+  Source,
+} from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/AvatarIcon";
 import { Combobox, Tab, Transition } from "@headlessui/react";
@@ -22,6 +29,7 @@ import { CheckIcon } from "@heroicons/react/24/outline";
 import LoadingButton from "../../components/LoadingButton";
 import clsx from "clsx";
 import { AxiosError } from "axios";
+import { useMapRoute } from "../../hooks/queries/useMapRoute";
 
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
@@ -106,12 +114,14 @@ function PlanCard({ plan }: PlanCardProps) {
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 w-full">
                 <MapBox
                   startpoint={{
-                    lat: plan.startpoint_lat,
-                    long: plan.startpoint_long,
+                    place_name: plan.startpoint_name || "",
+                    lat: plan.startpoint_lat || 0,
+                    long: plan.startpoint_long || 0,
                   }}
                   endpoint={{
-                    lat: plan?.endpoint_lat,
-                    long: plan?.endpoint_long,
+                    place_name: plan.endpoint_name || "",
+                    lat: plan?.endpoint_lat || 0,
+                    long: plan?.endpoint_long || 0,
                   }}
                   venues={plan.venues}
                 />
@@ -130,7 +140,7 @@ function PlanCard({ plan }: PlanCardProps) {
                           {plan?.start_date && (
                             <h2>{new Date(plan?.start_date).toDateString()}</h2>
                           )}
-                          <h2>{plan?.start_time?.substring(0, 5)}</h2>
+                          <h2>- {plan?.start_time?.substring(0, 5)}</h2>
                         </div>
                       )}
                     </div>
@@ -406,7 +416,7 @@ function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
 
 function UserList({ users }: { users: User[] }) {
   return (
-    <div>
+    <div className="pt-2">
       {users.map((user) => {
         if (user.is_creator) return <></>;
         else
@@ -567,8 +577,8 @@ function MapBox({
   endpoint,
   venues,
 }: {
-  startpoint?: { lat?: number; long?: number };
-  endpoint?: { lat?: number; long?: number };
+  startpoint: { place_name: string; lat: number; long: number };
+  endpoint: { place_name: string; lat: number; long: number };
   venues: Venue[];
 }) {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
@@ -587,23 +597,28 @@ function MapBox({
     return { lat: total.lat / venues.length, long: total.long / venues.length };
   };
 
-  //@dev for drawing route
-  const getPlanPoints = (
-    venues: Venue[],
-    start?: { lat?: number; long?: number },
-    end?: { lat?: number; long?: number }
-  ) => {
-    const venuePoints = venues.map((venue) => [
-      venue.address.longitude,
-      venue.address.latitude,
-    ]);
-    return [
-      [start?.lat, start?.long],
-      ...venuePoints,
-      [end?.lat, end?.long],
-    ];
-  };
-  const planPoints = getPlanPoints(venues, startpoint, endpoint);
+  const routeCoords = useMapRoute({
+    venuesPlan: venues,
+    startPoint: {
+      place_name: startpoint.place_name,
+      center: [startpoint.long, startpoint.lat],
+    },
+    endPoint: {
+      place_name: endpoint.place_name,
+      center: [endpoint.long, endpoint.lat],
+    },
+  });
+
+  let venuesRoute;
+  if (routeCoords)
+    venuesRoute = {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "LineString",
+        coordinates: [...routeCoords],
+      },
+    };
 
   return (
     <div className="rounded-md">
@@ -612,7 +627,7 @@ function MapBox({
         initialViewState={{
           latitude: getMidPoint(venues).lat,
           longitude: getMidPoint(venues).long,
-          zoom: 12,
+          zoom: 13,
           bearing: 0,
           pitch: 0,
         }}
@@ -661,6 +676,26 @@ function MapBox({
           >
             <MapPinIcon className="w-8 text-blue-400" />
           </Marker>
+        )}
+
+        {/* route */}
+        {routeCoords && venues.length > 0 && (
+          /* @ts-ignore */
+          <Source id="polylineLayer" type="geojson" data={venuesRoute}>
+            <Layer
+              id="lineLayer"
+              type="line"
+              source="my-data"
+              layout={{
+                "line-join": "round",
+                "line-cap": "round",
+              }}
+              paint={{
+                "line-color": "rgba(3, 170, 238, 0.5)",
+                "line-width": 5,
+              }}
+            />
+          </Source>
         )}
       </Map>
     </div>

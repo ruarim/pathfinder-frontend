@@ -4,13 +4,16 @@ import {
   useGetVenuesByAttributes,
 } from "../../hooks/queries";
 import clsx from "clsx";
-import Map, {
+import {
   Marker,
   NavigationControl,
   FullscreenControl,
   GeolocateControl,
   MapProvider,
   useMap,
+  Source,
+  Layer,
+  Map,
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapSearch from "../../components/MapSearch";
@@ -25,6 +28,7 @@ import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import PlanDetailsModal from "../../components/PlanDetailsModal";
+import { useMapRoute } from "../../hooks/queries/useMapRoute";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -308,7 +312,20 @@ function MapBox({
     }
   }, [map]);
 
+  const routeCoords = useMapRoute({ venuesPlan, startPoint, endPoint });
+
   const [openVenueCard, setOpenVenueCard] = useState<number>(0);
+
+  let venuesRoute;
+  if (routeCoords)
+    venuesRoute = {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "LineString",
+        coordinates: [...routeCoords],
+      },
+    };
 
   //@dev create render geoPoints list and sort to fix venueMapCard overlap
   return (
@@ -329,6 +346,7 @@ function MapBox({
       <FullscreenControl position="top-right" />
       <NavigationControl position="top-right" />
 
+      {/* start and endpoint */}
       <div className="text-black">
         {startPoint.place_name !== "" && (
           <Marker
@@ -350,6 +368,7 @@ function MapBox({
         )}
       </div>
 
+      {/* venues that match attributes */}
       {venues?.data?.data
         ?.sort(
           (first: Venue, second: Venue) =>
@@ -378,6 +397,55 @@ function MapBox({
             </Marker>
           );
         })}
+
+      {/* venues in plan */}
+      {venuesPlan
+        .sort(
+          (first: Venue, second: Venue) =>
+            second.address.latitude - first.address.latitude
+        )
+        .map((venue: Venue) => {
+          return (
+            <Marker
+              key={venue.id}
+              latitude={venue.address.latitude}
+              longitude={venue.address.longitude}
+              anchor="bottom"
+            >
+              <VenueMapCard
+                key={venue.id}
+                venue={venue}
+                venuesPlan={venuesPlan}
+                toggleVenueInPlan={toggleVenueInPlan}
+                latLong={{
+                  lat: venue.address.latitude,
+                  long: venue.address.longitude,
+                }}
+                openVenueCard={openVenueCard}
+                setOpenVenueCard={setOpenVenueCard}
+              />
+            </Marker>
+          );
+        })}
+
+      {routeCoords && venuesPlan.length > 0 && (
+        /* @ts-ignore */
+        <Source id="polylineLayer" type="geojson" data={venuesRoute}>
+          <Layer
+            id="lineLayer"
+            type="line"
+            source="my-data"
+            layout={{
+              "line-join": "round",
+              "line-cap": "round",
+            }}
+            paint={{
+              "line-color": "rgba(3, 170, 238, 0.5)",
+              "line-width": 5,
+            }}
+          />
+        </Source>
+      )}
     </Map>
   );
 }
