@@ -308,6 +308,8 @@ function MapBox({
     }
   }, [map]);
 
+  const [openVenueCard, setOpenVenueCard] = useState<number>(0);
+
   //@dev create render geoPoints list and sort to fix venueMapCard overlap
   return (
     <Map
@@ -370,6 +372,8 @@ function MapBox({
                   lat: venue.address.latitude,
                   long: venue.address.longitude,
                 }}
+                openVenueCard={openVenueCard}
+                setOpenVenueCard={setOpenVenueCard}
               />
             </Marker>
           );

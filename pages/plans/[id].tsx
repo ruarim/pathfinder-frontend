@@ -12,7 +12,7 @@ import {
 import { GeolocateControl, Map, Marker, NavigationControl } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/AvatarIcon";
-import { Combobox, Transition } from "@headlessui/react";
+import { Combobox, Tab, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
 import Link from "next/link";
@@ -78,7 +78,6 @@ function PlanCard({ plan }: PlanCardProps) {
     : [];
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
   const creator = getCreator(plan.users);
-  const avg_rating = plan?.rating == undefined ? 0 : plan?.rating;
 
   const { mutateAsync: togglePublic } = useMutation<
     any,
@@ -97,101 +96,136 @@ function PlanCard({ plan }: PlanCardProps) {
     queryClient.invalidateQueries(["plan"]);
   };
   return (
-    <div className="bg-gradient-to-r from-green-300 to-blue-500 shadow-md rounded-lg">
-      <div className="space-y-2 bg-white md:p-12 rounded-lg m-2 p-5">
-        <div className="space-y-1">
-          <div className="md:flex md:justify-between">
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold">{plan.name}</h1>
-              {user && isInvited(plan.users, user) && (
-                <div className="md:flex md:space-x-2 font-bold text-lg">
-                  {plan?.start_date && (
-                    <h2>{new Date(plan?.start_date).toDateString()}</h2>
-                  )}
-                  <h2>{plan?.start_time?.substring(0, 5)}</h2>
-                </div>
-              )}
-            </div>
-            <div className="md:pl-3 space-y-1">
-              <div className="flex md:justify-end">
-                {plan.is_public === 1 ? (
-                  <button
-                    onClick={() => {
-                      if (user && isCreator(user, plan.users))
-                        handleTogglePublic(0);
-                    }}
-                    className="text-gray-400 flex pt-1 hover:underline"
-                  >
-                    <div>Public</div>
-                    <div className="pl-1 pt-1">
-                      <LockOpenIcon className="w-4" />
-                    </div>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      if (user && isCreator(user, plan.users))
-                        handleTogglePublic(1);
-                    }}
-                    className="text-gray-400 flex pt-1 hover:underline"
-                  >
-                    <div>Private</div>
-                    <div className="pl-1 pt-1">
-                      <LockClosedIcon className="w-4" />
-                    </div>
-                  </button>
-                )}
-              </div>
-              <div>
-                {creator && (
-                  <h2 className="text-2xl flex gap-2 md:justify-end">
-                    <div className="pt-1">{creator?.username}</div>
-                    {<AvatarIcon imageUrl={creator?.avatar_url} />}
-                  </h2>
-                )}
+    <div className="w-full">
+      {plan && (
+        <div className="mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
+          {/* Product */}
+          <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
+            {/* Product image */}
+            <div className="lg:col-span-4 lg:row-end-1">
+              <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 w-full">
+                <MapBox
+                  startpoint={{
+                    lat: plan.startpoint_lat,
+                    long: plan.startpoint_long,
+                  }}
+                  endpoint={{
+                    lat: plan?.endpoint_lat,
+                    long: plan?.endpoint_long,
+                  }}
+                  venues={plan.venues}
+                />
               </div>
             </div>
-          </div>
-        </div>
 
-        <Rating avg_rating={avg_rating} plan={plan} />
-        <Separator />
-        <div className="md:flex justify-between space-y-3 ">
-          <div className="space-y-3 md:pr-2">
-            <div>
-              {plan.startpoint_name && (
-                <div className="flex">
-                  <MapPinIcon className="w-4 text-green-600" />
-                  {startName[0]}
+            {/* Product details */}
+            <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none w-full">
+              <div className="flex flex-col-reverse">
+                <div className="space-y-1">
+                  <div className="md:flex md:justify-between">
+                    <div className="space-y-1">
+                      <h1 className="text-3xl font-bold">{plan.name}</h1>
+                      {user && isInvited(plan.users, user) && (
+                        <div className="md:flex md:space-x-2 font-bold text-lg">
+                          {plan?.start_date && (
+                            <h2>{new Date(plan?.start_date).toDateString()}</h2>
+                          )}
+                          <h2>{plan?.start_time?.substring(0, 5)}</h2>
+                        </div>
+                      )}
+                    </div>
+                    <div className="md:pl-3 space-y-1">
+                      <div>
+                        {creator && (
+                          <h2 className="text-2xl flex gap-2 md:justify-end">
+                            <div className="pt-1">{creator?.username}</div>
+                            {<AvatarIcon imageUrl={creator?.avatar_url} />}
+                          </h2>
+                        )}
+                      </div>
+                      <div className="flex md:justify-end">
+                        {plan.is_public === 1 ? (
+                          <button
+                            onClick={() => {
+                              if (user && isCreator(user, plan.users))
+                                handleTogglePublic(0);
+                            }}
+                            className="text-gray-400 flex pt-1 hover:underline"
+                          >
+                            <div>Public</div>
+                            <div className="pl-1 pt-1">
+                              <LockOpenIcon className="w-4" />
+                            </div>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              if (user && isCreator(user, plan.users))
+                                handleTogglePublic(1);
+                            }}
+                            className="text-gray-400 flex pt-1 hover:underline"
+                          >
+                            <div>Private</div>
+                            <div className="pl-1 pt-1">
+                              <LockClosedIcon className="w-4" />
+                            </div>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <Rating avg_rating={plan.rating} plan={plan} />
                 </div>
-              )}
-              <VenueList venues={plan.venues} />
-              {plan.endpoint_name && (
-                <div className="flex">
-                  <MapPinIcon className="w-4 text-blue-500" />
-                  {endName[0]}
+              </div>
+
+              <p className="mt-6 text-gray-500">
+                <div className="space-y-3 md:pr-2">
+                  <div>
+                    {plan.startpoint_name && (
+                      <div className="flex">
+                        <MapPinIcon className="w-4 text-green-600" />
+                        {startName[0]}
+                      </div>
+                    )}
+                    <VenueList venues={plan.venues} />
+                    {plan.endpoint_name && (
+                      <div className="flex">
+                        <MapPinIcon className="w-4 text-blue-500" />
+                        {endName[0]}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+              </p>
             </div>
-            <Separator />
-            {user && <InviteCard plan={plan} user={user} />}
-          </div>
-          <div className="flex justify-center">
-            <MapBox
-              center={{
-                lat: plan.venues[0].address.latitude,
-                long: plan.venues[0].address.longitude,
-              }}
-              startpoint={{
-                lat: plan.startpoint_lat,
-                long: plan.startpoint_long,
-              }}
-              endpoint={{ lat: plan?.endpoint_lat, long: plan?.endpoint_long }}
-              venues={plan.venues}
-            />
+            <div className="mx-auto mt-5 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
+              <Tab.Group as="div">
+                <div className="border-b border-gray-200">
+                  <Tab.List className="-mb-px flex space-x-8">
+                    <Tab
+                      className={({ selected }) =>
+                        clsx(
+                          selected
+                            ? "border-indigo-600 text-indigo-600"
+                            : "border-transparent text-gray-700 hover:text-gray-800 hover:border-gray-300",
+                          "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
+                        )
+                      }
+                    >
+                      Invite
+                    </Tab>
+                  </Tab.List>
+                </div>
+                <Tab.Panels as={Fragment}>
+                  <Tab.Panel className="-mb-10">
+                    <InviteCard plan={plan} user={user} />
+                  </Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -281,7 +315,7 @@ function VenueList({ venues }: { venues: Venue[] }) {
   );
 }
 
-function InviteCard({ plan, user }: { plan: Plan; user: User }) {
+function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
   const { setLoginModalOpen, setRegisterModalOpen, isLoggedIn } =
     useAuthContext();
   const [isLoading, setLoading] = useState(false);
@@ -319,17 +353,17 @@ function InviteCard({ plan, user }: { plan: Plan; user: User }) {
   };
 
   return (
-    <div className="space-y-2">
-      {isLoggedIn ? (
+    <div className="space-y-2 pt-3">
+      {isLoggedIn && user ? (
         isInvited(plan.users, user) ? (
-          <>
+          <div>
             {user?.id == getCreator(plan.users)?.id ? (
               <SetParticipants id={plan.id} plan={plan} loggedInUser={user} />
             ) : (
               <h2 className="text-xl font-bold">Invited Users</h2>
             )}
             <UserList users={plan.users} />
-          </>
+          </div>
         ) : (
           <div className="flex items-center justify-center pb-1">
             <LoadingButton
@@ -447,7 +481,7 @@ function SetParticipants({
             <div className="mt-1">
               <Combobox.Input
                 id="input"
-                className="block w-full rounded-full p-3 bg-gray-200 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="block w-full min-w-[175px] rounded-full p-3 bg-gray-200 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 placeholder={"Enter users email"}
                 onChange={(event) => setQuery(event.target.value)}
               />
@@ -529,30 +563,65 @@ function SetParticipants({
 }
 
 function MapBox({
-  center,
   startpoint,
   endpoint,
   venues,
 }: {
-  center: LatLong;
   startpoint?: { lat?: number; long?: number };
   endpoint?: { lat?: number; long?: number };
   venues: Venue[];
 }) {
   const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 
+  const getMidPoint = (venues: Venue[]) => {
+    const total = Object.values(venues).reduce(
+      (total, current) => {
+        return {
+          lat: total.lat + Number(current.address.latitude),
+          long: total.long + Number(current.address.longitude),
+        };
+      },
+      { lat: 0, long: 0 }
+    );
+
+    return { lat: total.lat / venues.length, long: total.long / venues.length };
+  };
+
+  //@dev for drawing route
+  const getPlanPoints = (
+    venues: Venue[],
+    start?: { lat?: number; long?: number },
+    end?: { lat?: number; long?: number }
+  ) => {
+    const venuePoints = venues.map((venue) => [
+      venue.address.longitude,
+      venue.address.latitude,
+    ]);
+    return [
+      [start?.lat, start?.long],
+      ...venuePoints,
+      [end?.lat, end?.long],
+    ];
+  };
+  const planPoints = getPlanPoints(venues, startpoint, endpoint);
+
   return (
     <div className="rounded-md">
       <Map
         id="map"
         initialViewState={{
-          latitude: center.lat,
-          longitude: center.long,
+          latitude: getMidPoint(venues).lat,
+          longitude: getMidPoint(venues).long,
           zoom: 12,
           bearing: 0,
           pitch: 0,
         }}
-        style={{ height: "300px", width: "300px", borderRadius: "0.375rem" }}
+        style={{
+          aspectRatio: 8 / 6,
+          width: "100%",
+          height: "100%",
+          borderRadius: "0.375rem",
+        }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={mapboxToken}
       >
@@ -596,10 +665,6 @@ function MapBox({
       </Map>
     </div>
   );
-}
-
-function Separator() {
-  return <div className="border bg-slate-200 border-gray-300 rounded-lg"></div>;
 }
 
 export async function getServerSideProps(context: { query: { id: number } }) {
