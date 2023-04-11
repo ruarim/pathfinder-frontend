@@ -50,5 +50,5 @@ export const useMapRoute = ({
     { lat: endPoint.center[0], long: endPoint.center[1] }
   );
 
-  return routeData?.data.matchings[0].geometry.coordinates;
+  return routeData?.data?.matchings[0]?.geometry.coordinates;
 };
