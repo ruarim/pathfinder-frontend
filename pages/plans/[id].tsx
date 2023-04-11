@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import client from "../../axios/apiClient";
 import {
@@ -19,7 +24,7 @@ import {
 } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import AvatarIcon from "../../components/AvatarIcon";
-import { Combobox, Tab, Transition } from "@headlessui/react";
+import { Combobox, Switch, Tab, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { useDebounce } from "../../hooks/utility/useDebounce";
 import Link from "next/link";
@@ -87,22 +92,8 @@ function PlanCard({ plan }: PlanCardProps) {
   const endName = plan?.endpoint_name ? plan?.endpoint_name.split(",") : [];
   const creator = getCreator(plan.users);
 
-  const { mutateAsync: togglePublic } = useMutation<
-    any,
-    any,
-    { is_public: 0 | 1 }
-  >((data) => client.post(`paths/${plan.id}/set_public`, data));
-
   const queryClient = useQueryClient();
 
-  const handleTogglePublic = async (is_public: 0 | 1) => {
-    try {
-      await togglePublic({ is_public });
-    } catch (e) {
-      console.log(e);
-    }
-    queryClient.invalidateQueries(["plan"]);
-  };
   return (
     <div className="w-full">
       {plan && (
@@ -154,32 +145,8 @@ function PlanCard({ plan }: PlanCardProps) {
                         )}
                       </div>
                       <div className="flex md:justify-end">
-                        {plan.is_public === 1 ? (
-                          <button
-                            onClick={() => {
-                              if (user && isCreator(user, plan.users))
-                                handleTogglePublic(0);
-                            }}
-                            className="text-gray-400 flex pt-1 hover:underline"
-                          >
-                            <div>Public</div>
-                            <div className="pl-1 pt-1">
-                              <LockOpenIcon className="w-4" />
-                            </div>
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              if (user && isCreator(user, plan.users))
-                                handleTogglePublic(1);
-                            }}
-                            className="text-gray-400 flex pt-1 hover:underline"
-                          >
-                            <div>Private</div>
-                            <div className="pl-1 pt-1">
-                              <LockClosedIcon className="w-4" />
-                            </div>
-                          </button>
+                        {user && isCreator(user, plan.users) && (
+                          <TogglePublic plan={plan} queryClient={queryClient} />
                         )}
                       </div>
                     </div>
@@ -236,6 +203,55 @@ function PlanCard({ plan }: PlanCardProps) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function TogglePublic({
+  plan,
+  queryClient,
+}: {
+  plan: Plan;
+  queryClient: QueryClient;
+}) {
+  const isPublic = Boolean(plan.is_public);
+
+  const { mutateAsync: togglePublic } = useMutation<
+    any,
+    any,
+    { is_public: 0 | 1 }
+  >((data) => client.post(`paths/${plan.id}/set_public`, data));
+
+  const handleTogglePublic = async (is_public: 0 | 1) => {
+    togglePublic({ is_public }).then(() =>
+      queryClient.invalidateQueries(["plan"])
+    );
+  };
+
+  return (
+    <div className="pt-2">
+      <Switch
+        checked={isPublic}
+        //@ts-ignore
+        onChange={() => handleTogglePublic(isPublic ? 0 : 1)}
+        className={`${isPublic ? "bg-teal-800" : "bg-teal-600"}
+          relative inline-flex h-[28px] w-[56px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75`}
+      >
+        <span className="sr-only">Use setting</span>
+        <span
+          aria-hidden="true"
+          className={`${isPublic ? "translate-x-7" : "translate-x-0"}
+            pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+        >
+          <div className="pt-1.5 pl-1.5 text-gray-400">
+            {plan.is_public === 1 ? (
+              <LockOpenIcon className="w-3" />
+            ) : (
+              <LockClosedIcon className="w-3" />
+            )}
+          </div>
+        </span>
+      </Switch>
     </div>
   );
 }
