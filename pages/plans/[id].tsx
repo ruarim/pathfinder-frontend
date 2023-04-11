@@ -140,7 +140,7 @@ function PlanCard({ plan }: PlanCardProps) {
                           {plan?.start_date && (
                             <h2>{new Date(plan?.start_date).toDateString()}</h2>
                           )}
-                          <h2>{plan?.start_time?.substring(0, 5)}</h2>
+                          <h2>- {plan?.start_time?.substring(0, 5)}</h2>
                         </div>
                       )}
                     </div>

@@ -312,7 +312,7 @@ function MapBox({
     }
   }, [map]);
 
-  const routeCoords = useMapRoute({venuesPlan, startPoint, endPoint});
+  const routeCoords = useMapRoute({ venuesPlan, startPoint, endPoint });
 
   const [openVenueCard, setOpenVenueCard] = useState<number>(0);
 
