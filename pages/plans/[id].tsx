@@ -229,7 +229,7 @@ function TogglePublic({
   };
 
   return (
-    <div className="pt-2">
+    <div>
       <Switch
         checked={isPublic}
         //@ts-ignore
