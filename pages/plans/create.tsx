@@ -28,7 +28,7 @@ import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import PlanDetailsModal from "../../components/PlanDetailsModal";
-import axios from "axios";
+import { useMapRoute } from "../../hooks/queries/useMapRoute";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -312,46 +312,9 @@ function MapBox({
     }
   }, [map]);
 
-  const getPlanPoints = (
-    venues: Venue[],
-    start?: { lat?: number; long?: number },
-    end?: { lat?: number; long?: number }
-  ) => {
-    const venuePoints = venues.map(
-      (venue) => `${venue.address.longitude},${venue.address.latitude}`
-    );
-
-    let points = "";
-    if (startPoint.place_name != "") points += `${start?.lat},${start?.long};`;
-    if (venuePoints.length > 0) points += `${venuePoints.join(";")}`;
-    if (endPoint.place_name != "") points += `;${end?.lat},${end?.long}`;
-
-    return points;
-  };
-
-  const routePoints = getPlanPoints(
-    venuesPlan,
-    { lat: startPoint.center[0], long: startPoint.center[1] },
-    { lat: endPoint.center[0], long: endPoint.center[1] }
-  );
-
-  useEffect(() => {
-    const step = "20";
-    const radiuses = venuesPlan.map(() => step);
-    if (startPoint.place_name != "") radiuses.push(step);
-    if (endPoint.place_name != "") radiuses.push(step);
-    const radiusesString = radiuses.join(";");
-
-    axios
-      .get(
-        `https://api.mapbox.com/matching/v5/mapbox/driving/${routePoints}?geometries=geojson&radiuses=${radiusesString}&access_token=${mapboxToken}`
-      )
-      .then((res) => setRouteCoords(res.data.matchings[0].geometry.coordinates))
-      .catch((e) => console.log(e));
-  }, [venuesPlan, startPoint, endPoint]);
+  const routeCoords = useMapRoute({venuesPlan, startPoint, endPoint});
 
   const [openVenueCard, setOpenVenueCard] = useState<number>(0);
-  const [routeCoords, setRouteCoords] = useState<number[][]>();
 
   let venuesRoute;
   if (routeCoords)
