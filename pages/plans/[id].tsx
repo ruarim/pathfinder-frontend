@@ -379,7 +379,7 @@ function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
             <LoadingButton
               onClick={() => handleUsePlan(plan)}
               isLoading={isLoading}
-              styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center  justify-center px-5 py-2 rounded-md shadow-md text-white w-full"
+              styles="px-6 py-3 rounded-full bg-blue-200 transition hover:bg-blue-300 text-blue-800 flex items-center"
             >
               Use this plan
             </LoadingButton>
