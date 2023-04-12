@@ -127,11 +127,12 @@ function PlanCard({ plan }: PlanCardProps) {
                     <div className="space-y-1">
                       <h1 className="text-3xl font-bold">{plan.name}</h1>
                       {user && isInvited(plan.users, user) && (
-                        <div className="md:flex md:space-x-2 font-bold text-lg">
+                        <div className="flex md:space-x-2 font-bold text-lg">
                           {plan?.start_date && (
                             <h2>{new Date(plan?.start_date).toDateString()}</h2>
                           )}
-                          <h2>- {plan?.start_time?.substring(0, 5)}</h2>
+                          <div className="px-1">-</div>
+                          <h2>{plan?.start_time?.substring(0, 5)}</h2>
                         </div>
                       )}
                     </div>
