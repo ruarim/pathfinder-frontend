@@ -12,6 +12,10 @@ export const useMapRoute = ({
   startPoint: MapLocation;
   endPoint: MapLocation;
 }) => {
+  const isEnabled = () =>
+    (startPoint.place_name != "" || endPoint.place_name != "") &&
+    venuesPlan.length != 0;
+
   const { data: routeData } = useQuery(
     ["points", venuesPlan, startPoint, endPoint],
     () => {
@@ -24,7 +28,8 @@ export const useMapRoute = ({
       return axios.get(
         `https://api.mapbox.com/matching/v5/mapbox/driving/${routePoints}?geometries=geojson&radiuses=${radiusesString}&access_token=${mapboxToken}`
       );
-    }
+    },
+    { enabled: isEnabled() }
   );
 
   const getPlanPoints = (

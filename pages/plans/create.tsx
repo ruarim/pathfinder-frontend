@@ -7,7 +7,6 @@ import clsx from "clsx";
 import {
   Marker,
   NavigationControl,
-  FullscreenControl,
   GeolocateControl,
   MapProvider,
   useMap,
@@ -29,6 +28,7 @@ import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
 import PlanDetailsModal from "../../components/PlanDetailsModal";
 import { useMapRoute } from "../../hooks/queries/useMapRoute";
+import { Tab } from "@headlessui/react";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -40,9 +40,11 @@ export default function Create() {
   const [userLocation, setUserLocation] = useState<LatLong>(
     DEFAULT_CENTER_LOCATION
   );
-  const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const [isPlanModalOpen, setPlanModalOpen] = useState(true);
+
   const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]);
+
+  //
   const [selectedStart, setSelectedStart] = useState<MapLocation>({
     place_name: "",
     center: [0, 0],
@@ -51,13 +53,18 @@ export default function Create() {
     place_name: "",
     center: [0, 0],
   });
+
+  const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
   const [showAllAttributes, setShowAllAttributes] = useState(false);
+
   const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
   const router = useRouter();
 
   const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
+
+  const [selectedPlanningIndex, setSelectedPlanningIndex] = useState(0);
 
   const { handleLoggedIn } = useAuthContext();
 
@@ -82,7 +89,6 @@ export default function Create() {
     setVenuesPlan([...plan]);
   };
 
-  //plans mutation
   const { mutateAsync: savePlan } = useMutation<
     PlanResponse,
     any,
@@ -100,12 +106,14 @@ export default function Create() {
 
   const attributesData = attributes?.data.data;
 
+  const attributesSelected = () => attributesParams.length > 0;
+
   return (
     <MapProvider>
-      <div className="mx-auto ">
+      <div className="mx-auto">
         {/* create plan modal */}
         {attributesData && (
-          <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute">
+          <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute w-5/6 md:w-[350px]">
             <div className="flex justify-between gap-3">
               <h2 className="text-xl font-bold text-gray-900">
                 Plan your route
@@ -115,7 +123,7 @@ export default function Create() {
                   onClick={() => setPlanModalOpen(false)}
                   className="hover:animate-pulse"
                 >
-                  <ChevronDoubleUpIcon className="w-6" />
+                  <XMarkIcon className="w-6 hover:text-gray-700" />
                 </div>
               ) : (
                 <div
@@ -127,100 +135,198 @@ export default function Create() {
               )}
             </div>
             {isPlanModalOpen && (
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <MapSearch
-                    label={"Start"}
-                    placeholder={"Choose a starting location"}
-                    selected={selectedStart}
-                    setSelected={setSelectedStart}
-                    userLocation={userLocation}
-                  />
-                  <MapSearch
-                    label={"End"}
-                    placeholder={"Choose an ending location"}
-                    selected={selectedEnd}
-                    setSelected={setSelectedEnd}
-                    userLocation={userLocation}
-                  />
-                </div>
-                <div>
-                  {/* choose attributes */}
-                  <div className="text-lg font-medium text-gray-900 mb-2">
-                    Choose some attributes
+              //   {/* {venuesPlan.length > 0 && (
+              //     <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
+              //   )}
+              //   {venuesPlan.length > 0 && (
+              //     <div className="space-y-3">
+              //       <h3 className="text-lg">Plan</h3>
+              //       <div className="space-y-2">
+              //         {venuesPlan?.map((venue) => {
+              //           return (
+              //             <div
+              //               key={venue.id}
+              //               className="flex justify-between bg-gray-200 p-2 rounded-md"
+              //             >
+              //               {venue.name}
+              //               <button onClick={() => toggleVenueInPlan(venue)}>
+              //                 <XMarkIcon className="w-6" />
+              //               </button>
+              //             </div>
+              //           );
+              //         })}
+              //       </div>
+              //     </div>
+              //   )} */}
+
+              <div className="w-full max-w-md ">
+                <Tab.Group
+                  selectedIndex={selectedPlanningIndex}
+                  onChange={setSelectedPlanningIndex}
+                >
+                  <div className="grid grid-cols-5 place-items-center">
+                    <label className="w-full col-start-1 flex justify-center font-semibold">
+                      Location
+                    </label>
+                    <label className="w-full col-start-3 flex justify-center font-semibold">
+                      Filter
+                    </label>
+                    <label className="w-full col-start-5 flex justify-center font-semibold">
+                      Results
+                    </label>
                   </div>
-                  <div className="grid grid-cols-4 w-full gap-2">
-                    {attributesData.map((attribute: string, i: number) => {
-                      if (i > 7 && !showAllAttributes) return <></>;
-                      if (i === 7 && !showAllAttributes)
-                        return (
+                  <Tab.List className="flex h-full items-center space-x-1 rounded-xl p-1">
+                    <div className="w-full">
+                      <div className="flex justify-center">
+                        <Tab
+                          className={({ selected }) =>
+                            clsx(
+                              "w-5 h-5 rounded-full py-2.5 text-sm font-medium bg-gray-200 text-gray-800",
+                              selected
+                                ? "bg-gray-400 shadow"
+                                : "hover:bg-gray-400 "
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 border-2 border-gray-200 -z-10 rounded-full mx-auto"></div>
+                    <div className="w-full">
+                      <div className="flex justify-center">
+                        <Tab
+                          className={({ selected }) =>
+                            clsx(
+                              "w-5 h-5 rounded-full py-2.5 text-sm font-medium bg-gray-200 text-gray-800",
+                              selected
+                                ? "bg-gray-400 shadow"
+                                : "hover:bg-gray-400 "
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full h-2 bg-gray-200 border-2 border-gray-200 -z-10 rounded-full mx-auto"></div>
+                    <div className="w-full">
+                      <div className="flex justify-center">
+                        <Tab
+                          disabled={!attributesSelected()}
+                          className={({ selected }) =>
+                            clsx(
+                              "w-5 h-5 rounded-full py-2.5 text-sm font-medium bg-gray-200 text-gray-800",
+                              selected
+                                ? "bg-gray-400 shadow"
+                                : "hover:bg-gray-400 "
+                            )
+                          }
+                        ></Tab>
+                      </div>
+                    </div>
+                  </Tab.List>
+                  <Tab.Panels className={"pt-3"}>
+                    <Tab.Panel>
+                      <div className="space-y-2">
+                        <MapSearch
+                          label={"Start"}
+                          placeholder={"Choose a starting location"}
+                          selected={selectedStart}
+                          setSelected={setSelectedStart}
+                          userLocation={userLocation}
+                        />
+                        <MapSearch
+                          label={"End"}
+                          placeholder={"Choose an ending location"}
+                          selected={selectedEnd}
+                          setSelected={setSelectedEnd}
+                          userLocation={userLocation}
+                        />
+                        <div className="flex justify-center">
                           <button
-                            onClick={(e) => setShowAllAttributes(true)}
-                            className={clsx(
-                              "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
-                            )}
-                            key={attribute}
+                            onClick={() => setSelectedPlanningIndex(1)}
+                            className="px-6 py-3 mt-2 rounded-full bg-blue-200 transition hover:bg-blue-300 text-blue-700"
                           >
-                            show more
+                            Filter venues
                           </button>
-                        );
-                      return (
-                        <button
-                          onClick={(e) => toggleVenueAttribute(e)}
-                          className={clsx(
-                            "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm",
-                            attributesParams.includes(attribute) &&
-                              "bg-gray-300"
+                        </div>
+                      </div>
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <div>
+                        <h2 className="text-lg font-medium text-gray-700 mb-2">
+                          Choose some attributes
+                        </h2>
+                        <div className="grid grid-cols-4 w-full gap-2">
+                          {attributesData.map(
+                            (attribute: string, i: number) => {
+                              if (i > 7 && !showAllAttributes) return <></>;
+                              if (i === 7 && !showAllAttributes)
+                                return (
+                                  <button
+                                    onClick={(e) => setShowAllAttributes(true)}
+                                    className={clsx(
+                                      "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                                    )}
+                                    key={attribute}
+                                  >
+                                    show more
+                                  </button>
+                                );
+                              return (
+                                <button
+                                  onClick={(e) => toggleVenueAttribute(e)}
+                                  className={clsx(
+                                    "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-200 bg-gray-100 text-sm border-2 border-gray-200",
+                                    attributesParams.includes(attribute) &&
+                                      "bg-gray-200"
+                                  )}
+                                  key={attribute}
+                                >
+                                  {attribute}
+                                </button>
+                              );
+                            }
                           )}
-                          key={attribute}
-                        >
-                          {attribute}
-                        </button>
-                      );
-                    })}
-                    {showAllAttributes && (
-                      <button
-                        onClick={(e) => setShowAllAttributes(false)}
-                        className={clsx(
-                          "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
-                        )}
-                      >
-                        show less
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => setAttributesSearchParams([])}
-                      className="px-5 py-3 w-48 mt-2 rounded-full bg-red-200 transition hover:bg-red-300 text-red-700"
-                    >
-                      Clear attributes
-                    </button>
-                  </div>
-                </div>
-                {venuesPlan.length > 0 && (
-                  <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
-                )}
-                {venuesPlan.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-lg">Plan</h3>
-                    <div className="space-y-2">
-                      {venuesPlan?.map((venue) => {
-                        return (
-                          <div
-                            key={venue.id}
-                            className="flex justify-between bg-gray-200 p-2 rounded-md"
+                          {showAllAttributes && (
+                            <button
+                              onClick={(e) => setShowAllAttributes(false)}
+                              className={clsx(
+                                "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                              )}
+                            >
+                              show less
+                            </button>
+                          )}
+                        </div>
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => setAttributesSearchParams([])}
+                            className="px-6 py-3 mt-2 rounded-full bg-red-200 transition hover:bg-red-300 text-red-700"
                           >
-                            {venue.name}
-                            <button onClick={() => toggleVenueInPlan(venue)}>
-                              <XMarkIcon className="w-6" />
+                            Clear
+                          </button>
+                        </div>
+                        {attributesSelected() && (
+                          <div className="flex justify-center">
+                            <button
+                              onClick={() => setSelectedPlanningIndex(2)}
+                              className="px-6 py-3 mt-2 rounded-full bg-green-200 transition hover:bg-green-300 text-green-700"
+                            >
+                              View results
                             </button>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                        )}
+                      </div>
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <h2 className="text-lg font-medium text-gray-700 mb-2">
+                        Generated routes
+                      </h2>
+
+                      <h2 className="text-lg font-medium text-gray-700 mb-2">
+                        Create custom route
+                      </h2>
+                    </Tab.Panel>
+                  </Tab.Panels>
+                </Tab.Group>
               </div>
             )}
             {venuesPlan.length > 0 && (
@@ -343,7 +449,6 @@ function MapBox({
       mapboxAccessToken={mapboxToken}
     >
       <GeolocateControl position="top-right" />
-      <FullscreenControl position="top-right" />
       <NavigationControl position="top-right" />
 
       {/* start and endpoint */}
