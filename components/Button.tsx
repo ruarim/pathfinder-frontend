@@ -1,20 +1,24 @@
-import React from "react";
-
-export default function Button({
-  name,
-  onClick,
-}: {
-  name: string;
+interface ButtonProps {
+  children: string | JSX.Element | JSX.Element[];
   onClick: () => void;
-}) {
+  colour: "red" | "blue" | "green";
+}
+
+export default function Button({ children, onClick, colour }: ButtonProps) {
+  const colours = new Map([
+    ["red", "bg-red-200  hover:bg-red-300 text-red-700"],
+    ["blue", "bg-blue-200  hover:bg-blue-300 text-blue-700"],
+    ["green", "bg-green-200  hover:bg-green-300 text-green-700"],
+  ]);
+
   return (
     <button
-      className="relative mt-4 my-2 px-6 py-2 font-bold text-primary group"
       onClick={onClick}
+      className={`px-5 py-2 mt-2 rounded-full transition text-sm ${colours.get(
+        colour
+      )}`}
     >
-      <span className="absolute inset-0 transition duration-300 ease-out transform -translate-x-2 -translate-y-2 bg-contrast/50 group-hover:translate-x-0 group-hover:translate-y-0"></span>
-      <span className="absolute inset-0 border-2 border-primary"></span>
-      <span className="relative">{name}</span>
+      {children}
     </button>
   );
 }

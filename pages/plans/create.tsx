@@ -29,6 +29,7 @@ import { useAuthContext } from "../../hooks/context/useAuthContext";
 import PlanDetailsModal from "../../components/PlanDetailsModal";
 import { useMapRoute } from "../../hooks/queries/useMapRoute";
 import { Tab } from "@headlessui/react";
+import Button from "../../components/Button";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -44,7 +45,6 @@ export default function Create() {
 
   const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]);
 
-  //
   const [selectedStart, setSelectedStart] = useState<MapLocation>({
     place_name: "",
     center: [0, 0],
@@ -55,6 +55,11 @@ export default function Create() {
   });
 
   const [attributesParams, setAttributesSearchParams] = useState<string[]>([]);
+  const [venueStopsAttributes, setVenueStopsAttributes] = useState<
+    string[][] | undefined
+  >();
+  const [venueStopsIndex, setVenueStopsIndex] = useState(0);
+
   const { data: attributes } = useGetAttributes();
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
   const [showAllAttributes, setShowAllAttributes] = useState(false);
@@ -77,6 +82,35 @@ export default function Create() {
       params.splice(index, 1);
     } else params?.push(value);
     setAttributesSearchParams([...params]);
+  };
+
+  const handleAddStopAttribute = (
+    e: BaseSyntheticEvent,
+    currentIndex: number
+  ) => {
+    let attribute = e.target.innerText;
+    let stopAttributes;
+
+    //initalize stops
+    if (venueStopsAttributes === undefined) {
+      setVenueStopsIndex(venueStopsIndex + 1);
+      return setVenueStopsAttributes([[attribute]]);
+    }
+
+    if (venueStopsAttributes !== undefined) {
+      //get previous stops
+      let prev = venueStopsAttributes;
+      stopAttributes = venueStopsAttributes[currentIndex];
+
+      //add attribute for current stop
+      if (!stopAttributes) stopAttributes = [attribute];
+      else if (!stopAttributes.includes(attribute))
+        stopAttributes.push(attribute);
+
+      //set new stop attribute
+      prev[currentIndex] = stopAttributes;
+      setVenueStopsAttributes([...prev]);
+    }
   };
 
   const toggleVenueInPlan = (venue: Venue) => {
@@ -106,14 +140,12 @@ export default function Create() {
 
   const attributesData = attributes?.data.data;
 
-  const attributesSelected = () => attributesParams.length > 0;
-
   return (
     <MapProvider>
       <div className="mx-auto">
         {/* create plan modal */}
         {attributesData && (
-          <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute w-5/6 md:w-[350px]">
+          <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute w-5/6 min-[590px]:w-[350px]">
             <div className="flex justify-between gap-3">
               <h2 className="text-xl font-bold text-gray-900">
                 Plan your route
@@ -135,30 +167,6 @@ export default function Create() {
               )}
             </div>
             {isPlanModalOpen && (
-              //   {/* {venuesPlan.length > 0 && (
-              //     <div className="border bg-gray-200 border-gray-200 rounded-lg"></div>
-              //   )}
-              //   {venuesPlan.length > 0 && (
-              //     <div className="space-y-3">
-              //       <h3 className="text-lg">Plan</h3>
-              //       <div className="space-y-2">
-              //         {venuesPlan?.map((venue) => {
-              //           return (
-              //             <div
-              //               key={venue.id}
-              //               className="flex justify-between bg-gray-200 p-2 rounded-md"
-              //             >
-              //               {venue.name}
-              //               <button onClick={() => toggleVenueInPlan(venue)}>
-              //                 <XMarkIcon className="w-6" />
-              //               </button>
-              //             </div>
-              //           );
-              //         })}
-              //       </div>
-              //     </div>
-              //   )} */}
-
               <div className="w-full max-w-md ">
                 <Tab.Group
                   selectedIndex={selectedPlanningIndex}
@@ -209,7 +217,7 @@ export default function Create() {
                     <div className="w-full">
                       <div className="flex justify-center">
                         <Tab
-                          disabled={!attributesSelected()}
+                          disabled={venueStopsIndex < 1}
                           className={({ selected }) =>
                             clsx(
                               "w-5 h-5 rounded-full py-2.5 text-sm font-medium bg-gray-200 text-gray-800",
@@ -218,7 +226,7 @@ export default function Create() {
                                 : "hover:bg-gray-400 "
                             )
                           }
-                        ></Tab>
+                        />
                       </div>
                     </div>
                   </Tab.List>
@@ -240,87 +248,151 @@ export default function Create() {
                           userLocation={userLocation}
                         />
                         <div className="flex justify-center">
-                          <button
+                          <Button
                             onClick={() => setSelectedPlanningIndex(1)}
-                            className="px-6 py-3 mt-2 rounded-full bg-blue-200 transition hover:bg-blue-300 text-blue-700"
+                            colour="blue"
                           >
                             Filter venues
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </Tab.Panel>
                     <Tab.Panel>
                       <div>
-                        <h2 className="text-lg font-medium text-gray-700 mb-2">
-                          Choose some attributes
-                        </h2>
-                        <div className="grid grid-cols-4 w-full gap-2">
-                          {attributesData.map(
-                            (attribute: string, i: number) => {
-                              if (i > 7 && !showAllAttributes) return <></>;
-                              if (i === 7 && !showAllAttributes)
+                        <div>
+                          <h2 className="text-lg font-medium text-gray-700 mb-2">
+                            Choose some attributes
+                          </h2>
+                          <div className="grid grid-cols-4 w-full gap-2">
+                            {attributesData.map(
+                              (attribute: string, i: number) => {
+                                if (i > 7 && !showAllAttributes) return <></>;
+                                if (i === 7 && !showAllAttributes)
+                                  return (
+                                    <button
+                                      onClick={(e) =>
+                                        setShowAllAttributes(true)
+                                      }
+                                      className={clsx(
+                                        "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                                      )}
+                                      key={attribute}
+                                    >
+                                      more..
+                                    </button>
+                                  );
                                 return (
                                   <button
-                                    onClick={(e) => setShowAllAttributes(true)}
+                                    onClick={(e) =>
+                                      handleAddStopAttribute(
+                                        e,
+                                        venueStopsIndex - 1
+                                      )
+                                    }
                                     className={clsx(
-                                      "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                                      "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-200 bg-gray-100 border-2 border-gray-200 text-xs font-medium",
+                                      attributesParams.includes(attribute) &&
+                                        "bg-gray-200"
                                     )}
                                     key={attribute}
                                   >
-                                    show more
+                                    {attribute}
                                   </button>
                                 );
-                              return (
-                                <button
-                                  onClick={(e) => toggleVenueAttribute(e)}
-                                  className={clsx(
-                                    "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-200 bg-gray-100 text-sm border-2 border-gray-200",
-                                    attributesParams.includes(attribute) &&
-                                      "bg-gray-200"
-                                  )}
-                                  key={attribute}
+                              }
+                            )}
+                            {showAllAttributes && (
+                              <button
+                                onClick={(e) => setShowAllAttributes(false)}
+                                className={clsx(
+                                  "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
+                                )}
+                              >
+                                less..
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        {venueStopsAttributes !== undefined && (
+                          <div>
+                            <h2 className="text-lg font-medium text-gray-700 pt-1">
+                              Stops
+                            </h2>
+                            {/* show stops - use drag and drop to select order */}
+                            {Array.from(Array(venueStopsIndex).keys()).map(
+                              (i) => (
+                                <div className="my-1 p-1 rounded-md bg-gray-200/80">
+                                  <div className="flex justify-between w-full">
+                                    <h3 className="font-medium text-sm rounded-full mx-1">
+                                      Venue {i + 1}
+                                    </h3>
+                                    <button>
+                                      <XMarkIcon className="w-5" />
+                                    </button>
+                                  </div>
+                                  <div>
+                                    {venueStopsAttributes[i]?.map(
+                                      (attribute) => {
+                                        return (
+                                          <div
+                                            key={attribute}
+                                            className="bg-teal-400 text-white p-1.5 rounded-md space-x-1 text-xs font-medium inline-flex mr-1 my-0.5"
+                                          >
+                                            <div className="flex items-center h-full">
+                                              <div className="">
+                                                {attribute}
+                                              </div>
+                                              <button>
+                                                <XMarkIcon className="w-4" />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            )}
+                            <div className="space-y-1 w-full grid grid-cols-1 place-items-center">
+                              <Button
+                                onClick={() =>
+                                  setVenueStopsIndex(venueStopsIndex + 1)
+                                }
+                                colour="green"
+                              >
+                                Add stop
+                              </Button>
+                              <div className="grid grid-cols-1 place-items-center pt-2">
+                                <Button
+                                  onClick={() => setSelectedPlanningIndex(2)}
+                                  colour="blue"
                                 >
-                                  {attribute}
-                                </button>
-                              );
-                            }
-                          )}
-                          {showAllAttributes && (
-                            <button
-                              onClick={(e) => setShowAllAttributes(false)}
-                              className={clsx(
-                                "p-2 w-full mb-2 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-sm font-bold"
-                              )}
-                            >
-                              show less
-                            </button>
-                          )}
-                        </div>
-                        <div className="flex justify-center">
-                          <button
-                            onClick={() => setAttributesSearchParams([])}
-                            className="px-6 py-3 mt-2 rounded-full bg-red-200 transition hover:bg-red-300 text-red-700"
-                          >
-                            Clear
-                          </button>
-                        </div>
-                        {attributesSelected() && (
-                          <div className="flex justify-center">
-                            <button
-                              onClick={() => setSelectedPlanningIndex(2)}
-                              className="px-6 py-3 mt-2 rounded-full bg-green-200 transition hover:bg-green-300 text-green-700"
-                            >
-                              View results
-                            </button>
+                                  Generate routes
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {venueStopsIndex > 0 && (
+                          <div>
+                            {/* <div className="flex justify-center">
+                              <Button
+                                onClick={() => setAttributesSearchParams([])}
+                                colour="red"
+                              >
+                                Clear
+                              </Button>
+                            </div> */}
                           </div>
                         )}
                       </div>
                     </Tab.Panel>
                     <Tab.Panel>
                       <h2 className="text-lg font-medium text-gray-700 mb-2">
-                        Generated routes
+                        Routes
                       </h2>
-
                       <h2 className="text-lg font-medium text-gray-700 mb-2">
                         Create custom route
                       </h2>
