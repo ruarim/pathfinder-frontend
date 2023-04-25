@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { Combobox, Transition } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useMap } from "react-map-gl";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -43,31 +43,55 @@ export default function MapSearch({
   const { data: locationsData } = useGetMapBoxLocations(query, userLocation); //@dev useDebounce
   const { map } = useMap();
 
-  const onChange = (location: any) => {
+  const onChange = (location: MapLocation) => {
     setSelected(location);
     if (map) map.flyTo({ center: [location.center[0], location.center[1]] });
   };
 
   const locations = locationsData?.data?.features;
 
+  const handleSelectCurrentLocation = () => {
+    const lat = userLocation.lat;
+    const long = userLocation.long;
+
+    setSelected({
+      place_name: "Current Location",
+      center: [lat, long],
+    });
+  };
+
   return (
     <div className="top-16">
+      {/* @ts-ignore */}
       <Combobox value={selected.place_name} onChange={onChange}>
         <div>
           <label
             htmlFor="input"
-            className="ml-px block pl-4 text-lg font-medium text-gray-700"
+            className="ml-px block pl-4 text-md font-medium text-gray-700"
           >
             {label}
           </label>
           <div className="flex space-x-2">
             <Combobox.Input
               id="input"
-              className="block w-full rounded-full bg-gray-200 p-2 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="block w-full rounded-full bg-gray-200 p-2 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
               placeholder={placeholder}
               onChange={(event) => setQuery(event.target.value)}
             />
-            <CurrentLocation />
+            <button
+              onClick={() =>
+                setSelected({
+                  place_name: "",
+                  center: [0, 0],
+                })
+              }
+              className="absolute right-[75px] pt-2 w-6 text-gray-700"
+            >
+              <XMarkIcon className="bg-gray-300 rounded-full hover:bg-gray-400" />
+            </button>
+            <button onClick={handleSelectCurrentLocation}>
+              <CurrentLocation />
+            </button>
           </div>
 
           <Transition
@@ -77,7 +101,7 @@ export default function MapSearch({
             leaveTo="opacity-0"
             afterLeave={() => setQuery("")}
           >
-            <Combobox.Options className="absolute mt-1 max-h-60 w-11/12 rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Combobox.Options className="absolute mt-1 max-h-60 w-11/12 rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20">
               {locations && locations.length === 0 && query !== "" ? (
                 <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                   Nothing found.
@@ -146,14 +170,5 @@ const CurrentLocation = () => (
         </g>
       </svg>
     </div>
-
-    {/* arrow svg */}
-    {/* <div className="border-2 border-gray-200 bg-gray-100 rounded-full hover:bg-gray-200 px-1.5">
-<div className="w-6 py-1.5  ">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-    <path d="M0 0l20 8-8 4-2 8z" />
-  </svg>
-</div>
-</div> */}
   </div>
 );
