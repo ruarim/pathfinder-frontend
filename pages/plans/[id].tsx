@@ -84,6 +84,7 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan }: PlanCardProps) {
+  const { isLoggedIn } = useAuthContext();
   const { data: userData } = useGetUser();
   const user = userData?.data.user;
   const startName = plan?.startpoint_name
@@ -119,7 +120,6 @@ function PlanCard({ plan }: PlanCardProps) {
               </div>
             </div>
 
-            {/* Product details */}
             <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none w-full">
               <div className="flex flex-col-reverse">
                 <div className="space-y-1">
@@ -146,7 +146,7 @@ function PlanCard({ plan }: PlanCardProps) {
                         )}
                       </div>
                       <div className="flex md:justify-end">
-                        {user && isCreator(user, plan.users) && (
+                        {isLoggedIn && user && isCreator(user, plan.users) && (
                           <TogglePublic plan={plan} queryClient={queryClient} />
                         )}
                       </div>

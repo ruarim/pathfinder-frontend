@@ -1,7 +1,7 @@
 interface ButtonProps {
   children: string | JSX.Element | JSX.Element[];
   onClick: () => void;
-  colour: "red" | "blue" | "green";
+  colour: "red" | "blue" | "green" | "gray";
 }
 
 export default function Button({ children, onClick, colour }: ButtonProps) {
@@ -9,6 +9,7 @@ export default function Button({ children, onClick, colour }: ButtonProps) {
     ["red", "bg-red-200  hover:bg-red-300 text-red-700"],
     ["blue", "bg-blue-200  hover:bg-blue-300 text-blue-700"],
     ["green", "bg-green-200  hover:bg-green-300 text-green-700"],
+    ["gray", "bg-gray-200  hover:bg-gray-300 text-gray-700"],
   ]);
 
   return (
