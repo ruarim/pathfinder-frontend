@@ -427,12 +427,12 @@ function AttributesPicker({
                 </div>
               </div>
             ))}
-            <div className="space-y-1 w-full grid grid-cols-1 place-items-center">
+            <div className="w-full grid grid-cols-1 place-items-center">
               <Button onClick={() => addStop(venueStopsIndex)} colour="gray">
                 <PlusIcon className="w-5" />
               </Button>
               {attributesSelected() && (
-                <div className="grid grid-cols-1 place-items-center pt-2">
+                <div className="grid grid-cols-1 place-items-center pt-1">
                   <Button
                     onClick={() => setSelectedPlanningIndex(2)}
                     colour="blue"
