@@ -40,6 +40,7 @@ const DEFAULT_CENTER_LOCATION = {
 
 export default function Create() {
   const { handleLoggedIn } = useAuthContext();
+  const router = useRouter();
 
   const [userLocation, setUserLocation] = useState<LatLong>(
     DEFAULT_CENTER_LOCATION
@@ -61,16 +62,13 @@ export default function Create() {
   const { data: venues } = useGetVenuesByAttributes(attributesParams);
 
   const [selectedPlanningIndex, setSelectedPlanningIndex] = useState(0);
-
-  const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
-  const router = useRouter();
-
-  const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
-
   const [venueStopsIndex, setVenueStopsIndex] = useState(1);
   const [venueStopsAttributes, setVenueStopsAttributes] = useState<string[][]>([
     [],
   ]);
+
+  const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
+  const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
 
   const toggleVenueInPlan = (venue: Venue) => {
     let plan = venuesPlan;
@@ -184,7 +182,7 @@ export default function Create() {
                     </div>
                   </div>
                 </Tab.List>
-                <Tab.Panels className={"pt-3"}>
+                <Tab.Panels className={"pt-2"}>
                   <Tab.Panel>
                     {/* choose start stops point */}
                     <LocationPicker
@@ -265,6 +263,47 @@ export default function Create() {
   );
 }
 
+interface LocationPickerProps {
+  selectedStart: MapLocation;
+  setSelectedStart: (location: MapLocation) => void;
+  userLocation: LatLong;
+  selectedEnd: MapLocation;
+  setSelectedEnd: (location: MapLocation) => void;
+  setSelectedPlanningIndex: (index: number) => void;
+}
+function LocationPicker({
+  selectedStart,
+  setSelectedStart,
+  userLocation,
+  selectedEnd,
+  setSelectedEnd,
+  setSelectedPlanningIndex,
+}: LocationPickerProps) {
+  return (
+    <div className="space-y-2">
+      <MapSearch
+        label={"Start"}
+        placeholder={"Choose a starting location"}
+        selected={selectedStart}
+        setSelected={setSelectedStart}
+        userLocation={userLocation}
+      />
+      <MapSearch
+        label={"End"}
+        placeholder={"Choose an ending location"}
+        selected={selectedEnd}
+        setSelected={setSelectedEnd}
+        userLocation={userLocation}
+      />
+      <div className="flex justify-center">
+        <Button onClick={() => setSelectedPlanningIndex(1)} colour="blue">
+          Filter venues
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 interface AttributesPickerProps {
   venueStopsAttributes: string[][];
   setVenueStopsAttributes: (stops: string[][]) => void;
@@ -339,7 +378,7 @@ function AttributesPicker({
       {attributesData && (
         <div>
           <div>
-            <h2 className="text-lg font-medium text-gray-700 mb-2">
+            <h2 className="text-md font-medium text-gray-700 mb-2">
               Venue attributes
             </h2>
             <div className="grid grid-cols-4 w-full gap-2">
@@ -386,7 +425,7 @@ function AttributesPicker({
 
           {/* venues stops */}
           <div>
-            <h2 className="text-lg font-medium text-gray-700 pt-1">Stops</h2>
+            <h2 className="text-md font-medium text-gray-700 pt-1">Stops</h2>
             {/* show stops - use drag and drop to select order */}
             {Array.from(Array(venueStopsIndex).keys()).map((i) => (
               <div className="my-1 p-1 rounded-md bg-gray-200/80">
@@ -449,52 +488,11 @@ function AttributesPicker({
   );
 }
 
-interface LocationPickerProps {
-  selectedStart: MapLocation;
-  setSelectedStart: (location: MapLocation) => void;
-  userLocation: LatLong;
-  selectedEnd: MapLocation;
-  setSelectedEnd: (location: MapLocation) => void;
-  setSelectedPlanningIndex: (index: number) => void;
-}
-function LocationPicker({
-  selectedStart,
-  setSelectedStart,
-  userLocation,
-  selectedEnd,
-  setSelectedEnd,
-  setSelectedPlanningIndex,
-}: LocationPickerProps) {
-  return (
-    <div className="space-y-2">
-      <MapSearch
-        label={"Start"}
-        placeholder={"Choose a starting location"}
-        selected={selectedStart}
-        setSelected={setSelectedStart}
-        userLocation={userLocation}
-      />
-      <MapSearch
-        label={"End"}
-        placeholder={"Choose an ending location"}
-        selected={selectedEnd}
-        setSelected={setSelectedEnd}
-        userLocation={userLocation}
-      />
-      <div className="flex justify-center">
-        <Button onClick={() => setSelectedPlanningIndex(1)} colour="blue">
-          Filter venues
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 function RouteResults() {
   return (
     <div>
-      <h2 className="text-lg font-medium text-gray-700 mb-2">Routes</h2>
-      <h2 className="text-lg font-medium text-gray-700 mb-2">
+      <h2 className="text-md font-medium text-gray-700 mb-2">Routes</h2>
+      <h2 className="text-md font-medium text-gray-700 mb-2">
         Create custom route
       </h2>
     </div>
