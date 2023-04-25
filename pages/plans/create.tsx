@@ -476,7 +476,7 @@ function AttributesPicker({
                     onClick={() => setSelectedPlanningIndex(2)}
                     colour="blue"
                   >
-                    Generate routes
+                    Suggest routes
                   </Button>
                 </div>
               )}
