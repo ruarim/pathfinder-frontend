@@ -402,7 +402,7 @@ function AttributesPicker({
                       addAttribute(venueStopsIndex - 1, attribute)
                     }
                     className={clsx(
-                      "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-200 bg-gray-100 border-2 border-gray-200 text-xs font-medium"
+                      "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-300 bg-gray-200  text-xs font-medium text-gray-700"
                     )}
                     key={attribute}
                   >
@@ -425,7 +425,9 @@ function AttributesPicker({
 
           {/* venues stops */}
           <div>
-            <h2 className="text-md font-medium text-gray-700 pt-1">Stops</h2>
+            <h2 className="text-md font-medium text-gray-700 pt-1 pb-1">
+              Stops
+            </h2>
             {/* show stops - use drag and drop to select order */}
             {Array.from(Array(venueStopsIndex).keys()).map((i) => (
               <div className="my-1 p-1 rounded-md bg-gray-200/80">
