@@ -13,8 +13,9 @@ export const useMapRoute = ({
   endPoint: MapLocation;
 }) => {
   const isEnabled = () =>
-    (startPoint.place_name != "" || endPoint.place_name != "") &&
-    venuesPlan.length != 0;
+    startPoint.place_name != "" ||
+    endPoint.place_name != "" ||
+    venuesPlan.length != 1;
 
   const { data: routeData } = useQuery(
     ["points", venuesPlan, startPoint, endPoint],

@@ -62,7 +62,7 @@ export default function Venue({ id }: { id: string }) {
   return (
     <div>
       {venue && (
-        <div className="mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
+        <div className="mx-auto pt-6 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
             <div className="lg:col-span-4 lg:row-end-1">
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100">
@@ -73,7 +73,7 @@ export default function Venue({ id }: { id: string }) {
               </div>
             </div>
 
-            <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
+            <div className="mx-auto mt-4 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
               <div className="flex flex-col-reverse">
                 <div className="mt-4">
                   <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">

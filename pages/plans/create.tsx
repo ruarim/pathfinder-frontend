@@ -1,4 +1,4 @@
-import { BaseSyntheticEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useGetAttributes,
   useGetVenuesByAttributes,
@@ -23,7 +23,7 @@ import {
   ChevronDoubleUpIcon,
   PlusIcon,
 } from "@heroicons/react/20/solid";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
@@ -49,6 +49,9 @@ export default function Create() {
 
   const [venuesPlan, setVenuesPlan] = useState<Venue[]>([]);
 
+  const { data: attributesData } = useGetAttributes();
+  const attributes = attributesData?.data.data;
+
   const [selectedStart, setSelectedStart] = useState<MapLocation>({
     place_name: "",
     center: [0, 0],
@@ -69,6 +72,22 @@ export default function Create() {
 
   const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
   const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
+
+  //route suggestion
+  const { data: venueSuggestion, isLoading } = useQuery(
+    ["suggestion", venueStopsAttributes],
+    (): Promise<Venue[]> =>
+      client.get("venues/suggest/route", {
+        params: {
+          start_coords: [selectedStart.center[1], selectedStart.center[0]],
+          end_coords: [selectedEnd.center[1], selectedEnd.center[0]],
+          stops: venueStopsAttributes,
+        },
+        paramsSerializer: {
+          indexes: false,
+        },
+      })
+  );
 
   const toggleVenueInPlan = (venue: Venue) => {
     let plan = venuesPlan;
@@ -196,6 +215,7 @@ export default function Create() {
                   </Tab.Panel>
                   <Tab.Panel>
                     <AttributesPicker
+                      attributes={attributes}
                       venueStopsAttributes={venueStopsAttributes}
                       setVenueStopsAttributes={setVenueStopsAttributes}
                       venueStopsIndex={venueStopsIndex}
@@ -305,6 +325,7 @@ function LocationPicker({
 }
 
 interface AttributesPickerProps {
+  attributes: string[] | undefined;
   venueStopsAttributes: string[][];
   setVenueStopsAttributes: (stops: string[][]) => void;
   venueStopsIndex: number;
@@ -313,14 +334,13 @@ interface AttributesPickerProps {
 }
 
 function AttributesPicker({
+  attributes,
   venueStopsAttributes,
   setVenueStopsAttributes,
   venueStopsIndex,
   setVenueStopsIndex,
   setSelectedPlanningIndex,
 }: AttributesPickerProps) {
-  const { data: attributes } = useGetAttributes();
-  const attributesData = attributes?.data.data;
   const [showAllAttributes, setShowAllAttributes] = useState(false);
 
   const addStop = (stopIndex: number) => {
@@ -375,14 +395,14 @@ function AttributesPicker({
 
   return (
     <>
-      {attributesData && (
+      {attributes && (
         <div>
           <div>
-            <h2 className="text-md font-medium text-gray-700 mb-2">
+            <h2 className="text-md font-medium text-gray-700 mb-1">
               Venue attributes
             </h2>
             <div className="grid grid-cols-4 w-full gap-2">
-              {attributesData.map((attribute: string, i: number) => {
+              {attributes.map((attribute: string, i: number) => {
                 if (i > 7 && !showAllAttributes) return <></>;
                 if (i === 7 && !showAllAttributes)
                   return (
@@ -425,7 +445,7 @@ function AttributesPicker({
 
           {/* venues stops */}
           <div>
-            <h2 className="text-md font-medium text-gray-700 pt-1 pb-1">
+            <h2 className="text-md font-medium text-gray-700 pt-1 mb-1">
               Stops
             </h2>
             {/* show stops - use drag and drop to select order */}
@@ -478,7 +498,7 @@ function AttributesPicker({
                     onClick={() => setSelectedPlanningIndex(2)}
                     colour="blue"
                   >
-                    Suggest routes
+                    View suggestions
                   </Button>
                 </div>
               )}

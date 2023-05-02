@@ -98,7 +98,7 @@ function PlanCard({ plan }: PlanCardProps) {
   return (
     <div className="w-full">
       {plan && (
-        <div className="mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
+        <div className="mx-auto  sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
           {/* Product */}
           <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
             {/* Product image */}
@@ -120,7 +120,7 @@ function PlanCard({ plan }: PlanCardProps) {
               </div>
             </div>
 
-            <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none w-full">
+            <div className="mx-auto mt-4 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none w-full">
               <div className="flex flex-col-reverse">
                 <div className="space-y-1">
                   <div className="md:flex md:justify-between">
@@ -156,7 +156,8 @@ function PlanCard({ plan }: PlanCardProps) {
                 </div>
               </div>
 
-              <p className="mt-6 text-gray-500">
+              <p className="mt-3 text-gray-500">
+                <h2 className="font-medium text-lg">Venues</h2>
                 <div className="space-y-3 md:pr-2">
                   <div>
                     {plan.startpoint_name && (
@@ -303,13 +304,21 @@ function VenueList({ venues }: { venues: Venue[] }) {
   return (
     <div>
       {venues.map((venue) => {
+        const avg_rating = venue?.rating;
         return (
           <Link href={`/venues/${venue.id}`} className="space-y-2">
-            <div className="flex ">
+            <div className="flex">
               <MapPinIcon className="w-4 text-red-400" />
               <div className="hover:underline ">
                 {venue.name.substring(0, 29)}
                 {venue.name.length > 30 && "..."}
+              </div>
+              <div className="pl-1 flex">
+                <StarIcon
+                  className="text-yellow-400 h-5 w-5 flex-shrink-0 hover:text-yellow-700"
+                  aria-hidden="true"
+                />
+                <p className="font-medium">({avg_rating})</p>
               </div>
             </div>
             <div className="flex px-2 space-x-1 pb-2">
