@@ -31,6 +31,9 @@ import PlanDetailsModal from "../../components/PlanDetailsModal";
 import { useMapRoute } from "../../hooks/queries/useMapRoute";
 import { Tab } from "@headlessui/react";
 import Button from "../../components/Button";
+import CardSlider from "../../components/CardSlider";
+import VenueCard from "../../components/VenueCard";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
@@ -74,9 +77,9 @@ export default function Create() {
   const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
 
   //route suggestion
-  const { data: venueSuggestion, isLoading } = useQuery(
+  const { data: venueSuggestion, isLoading: suggestionsLoading } = useQuery(
     ["suggestion", venueStopsAttributes],
-    (): Promise<Venue[]> =>
+    (): Promise<VenuesResponse> =>
       client.get("venues/suggest/route", {
         params: {
           start_coords: [selectedStart.center[1], selectedStart.center[0]],
@@ -86,8 +89,10 @@ export default function Create() {
         paramsSerializer: {
           indexes: false,
         },
-      })
+      }),
+    { enabled: venueStopsAttributes[0].length > 0 }
   );
+  const suggestions = venueSuggestion?.data.data;
 
   const toggleVenueInPlan = (venue: Venue) => {
     let plan = venuesPlan;
@@ -188,7 +193,7 @@ export default function Create() {
                   <div className="w-full">
                     <div className="flex justify-center">
                       <Tab
-                        disabled={venueStopsIndex < 1}
+                        disabled={venueStopsAttributes[0].length == 0}
                         className={({ selected }) =>
                           clsx(
                             "w-5 h-5 rounded-full py-2.5 text-sm font-medium bg-gray-200 text-gray-800",
@@ -224,7 +229,15 @@ export default function Create() {
                     />
                   </Tab.Panel>
                   <Tab.Panel>
-                    <RouteResults />
+                    {suggestionsLoading && <LoadingSpinner />}
+                    {suggestions && !suggestionsLoading && (
+                      <SuggestionResults suggestions={suggestions} />
+                    )}
+                    {suggestions === undefined && !suggestionsLoading && (
+                      <div className="font-medium text-gray-700">
+                        No Suggestion Found
+                      </div>
+                    )}
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
@@ -510,13 +523,18 @@ function AttributesPicker({
   );
 }
 
-function RouteResults() {
+interface SuggestionResultsProps {
+  suggestions: Venue[];
+}
+function SuggestionResults({ suggestions }: SuggestionResultsProps) {
   return (
     <div>
-      <h2 className="text-md font-medium text-gray-700 mb-2">Routes</h2>
-      <h2 className="text-md font-medium text-gray-700 mb-2">
-        Create custom route
-      </h2>
+      <h2 className="text-md font-medium text-gray-700 mb-2">Route</h2>
+      <CardSlider>
+        {suggestions.map((venue) => (
+          <VenueCard venue={venue} />
+        ))}
+      </CardSlider>
     </div>
   );
 }
