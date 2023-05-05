@@ -24,7 +24,7 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
       </div>
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
-          <div className="flex justify-between text-xl font-medium text-primary">
+          <div className="flex justify-between text-md font-medium text-primary">
             <Link
               target="_blank"
               href={`/venues/${venue.id}`}
@@ -39,13 +39,13 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
                     key={rating}
                     className={clsx(
                       avg_rating > rating ? "text-yellow-400" : "text-gray-300",
-                      "h-5 w-5 flex-shrink-0"
+                      "h-4 w-4 flex-shrink-0"
                     )}
                     aria-hidden="true"
                   />
                 ))}
               </div>
-              <div className="text-lg">({avg_rating})</div>
+              <div className="text-md">({avg_rating})</div>
             </div>
           </div>
           <div className="space-y-1 mt-1">

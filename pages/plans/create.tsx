@@ -21,7 +21,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import client from "../../axios/apiClient";
 import { useRouter } from "next/router";
 import { useAuthContext } from "../../hooks/context/useAuthContext";
-import PlanDetailsModal from "../../components/PlanDetailsModal";
+import PlanDetailsModal from "../../components/plans/create/PlanDetailsModal";
 import { useMapRoute } from "../../hooks/queries/useMapRoute";
 import { Tab } from "@headlessui/react";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -286,7 +286,7 @@ function FilterVenues({
               <Tab.Panel>
                 {suggestionsLoading && <LoadingSpinner />}
                 {suggestions && !suggestionsLoading && (
-                  <div className="space-y-2">
+                  <div>
                     <SuggestionResults suggestions={suggestions} />
                     <div className="flex justify-center">
                       <Button
@@ -412,7 +412,7 @@ function MapBox({
               longitude={venue.address.longitude}
               anchor="bottom"
             >
-              <MapPinIcon className="w-8" />
+              <MapPinIcon className="w-8 text-red-500" />
             </Marker>
           ))}
       {suggestedCoords && suggestedVenues && (

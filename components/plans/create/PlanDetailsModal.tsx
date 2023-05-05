@@ -3,8 +3,9 @@ import { Fragment, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { DateValueType } from "react-tailwindcss-datepicker/dist/types";
 import Datepicker from "react-tailwindcss-datepicker";
-import DropDown from "./Dropdown";
-import LoadingButton from "./LoadingButton";
+import DropDown from "../../Dropdown";
+
+import Button from "../../Button";
 
 interface PlanDetailsModalProps {
   isOpen: boolean;
@@ -76,13 +77,13 @@ export default function PlanDetailsModal({
           />
         </div>
         <div className="flex justify-center">
-          <LoadingButton
+          <Button
             onClick={() => onSave(planName, startDate, startTime)}
             isLoading={isLoading}
-            styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
+            colour="blue"
           >
             Create
-          </LoadingButton>
+          </Button>
         </div>
       </div>
     </Modal>

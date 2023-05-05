@@ -10,6 +10,7 @@ import Modal from "../../components/Modal";
 import LoadingButton from "../../components/LoadingButton";
 import { useForm } from "react-hook-form";
 import AvatarIcon from "../../components/AvatarIcon";
+import Button from "../../components/Button";
 
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
@@ -280,13 +281,9 @@ function Review({ id }: { id: string }) {
               placeholder="Write a review.."
             ></textarea>
             <div className="flex justify-center">
-              <LoadingButton
-                isLoading={isLoading}
-                type={"submit"}
-                styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
-              >
+              <Button isLoading={isLoading} type={"submit"} colour="blue">
                 Add Review
-              </LoadingButton>
+              </Button>
             </div>
             <div className="text-red-600 flex justify-center">
               {errors.content && <p>{errors.content.message}</p>}

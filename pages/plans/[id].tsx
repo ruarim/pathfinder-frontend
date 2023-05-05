@@ -302,7 +302,7 @@ function Rating({ avg_rating, plan }: { avg_rating: number; plan: Plan }) {
 
 function VenueList({ venues }: { venues: Venue[] }) {
   return (
-    <div>
+    <div className="space-y-2">
       {venues.map((venue) => {
         const avg_rating = venue?.rating;
         return (
@@ -470,7 +470,6 @@ function SetParticipants({
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
 
-  //addUser mutaion
   const { mutateAsync: addUser } = useMutation<
     PlanResponse,
     unknown,
