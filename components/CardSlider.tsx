@@ -42,6 +42,7 @@ function CardSlider({
       >
         {Children.map(children, (child, index) => (
           <div
+            key={index}
             //@ts-ignore //this causing problems with clicking the slider
             ref={(ref) => (items.current[index] = ref)}
             className={`${
