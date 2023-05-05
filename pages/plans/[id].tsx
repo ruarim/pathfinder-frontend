@@ -623,8 +623,8 @@ function MapBox({
     return { lat: total.lat / venues.length, long: total.long / venues.length };
   };
 
-  const routeCoords = useMapRoute({
-    venuesPlan: venues,
+  const { data: routeData } = useMapRoute({
+    venues,
     startPoint: {
       place_name: startpoint.place_name,
       center: [startpoint.long, startpoint.lat],
@@ -634,6 +634,8 @@ function MapBox({
       center: [endpoint.long, endpoint.lat],
     },
   });
+
+  const routeCoords = routeData?.data?.routes[0]?.geometry.coordinates;
 
   let venuesRoute;
   if (routeCoords)

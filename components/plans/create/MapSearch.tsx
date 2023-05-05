@@ -13,7 +13,7 @@ export const useGetMapBoxLocations = (
     queryKey: ["location_search", searchText],
     queryFn: () =>
       axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchText}.json?proximity=${userLocation.lat},${userLocation.long}&access_token=${process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchText}.json?proximity=${userLocation.long},${userLocation.lat}&access_token=${process.env.NEXT_PUBLIC_MAP_BOX_TOKEN}`
       ),
   });
 };
@@ -23,12 +23,14 @@ export type MapLocations = {
     features: MapLocation[];
   };
 };
+
 interface MapSearchProps {
   label: string;
   placeholder: string;
   setSelected: (location: MapLocation) => void;
   selected: MapLocation;
   userLocation: LatLong;
+  hasUserLocation: boolean;
 }
 
 export default function MapSearch({
@@ -37,6 +39,7 @@ export default function MapSearch({
   selected,
   setSelected,
   userLocation,
+  hasUserLocation,
 }: MapSearchProps) {
   const [query, setQuery] = useState<string>("");
 
@@ -45,19 +48,24 @@ export default function MapSearch({
 
   const onChange = (location: MapLocation) => {
     setSelected(location);
-    if (map) map.flyTo({ center: [location.center[0], location.center[1]] });
+    flyTo(location.center[0], location.center[1]);
   };
 
   const locations = locationsData?.data?.features;
 
-  const handleSelectCurrentLocation = () => {
+  const selectCurrentLocation = () => {
     const lat = userLocation.lat;
     const long = userLocation.long;
 
     setSelected({
       place_name: "Current Location",
-      center: [lat, long],
+      center: [long, lat],
     });
+    flyTo(long, lat);
+  };
+
+  const flyTo = (long: number, lat: number) => {
+    if (map) map.flyTo({ center: [long, lat + 0.004], zoom: 14 });
   };
 
   return (
@@ -67,7 +75,7 @@ export default function MapSearch({
         <div>
           <label
             htmlFor="input"
-            className="ml-px block pl-4 text-md font-medium text-gray-700"
+            className="ml-px block text-md font-medium text-gray-700"
           >
             {label}
           </label>
@@ -89,8 +97,13 @@ export default function MapSearch({
             >
               <XMarkIcon className="bg-gray-300 rounded-full hover:bg-gray-400" />
             </button>
-            <button onClick={handleSelectCurrentLocation}>
-              <CurrentLocation />
+            {/* disable if user locaion is default */}
+            <button
+              disabled={hasUserLocation}
+              className="disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={selectCurrentLocation}
+            >
+              <CurrentLocationIcon />
             </button>
           </div>
 
@@ -154,7 +167,7 @@ export default function MapSearch({
   );
 }
 
-const CurrentLocation = () => (
+const CurrentLocationIcon = () => (
   <div className="border-2 border-gray-200 bg-gray-100 rounded-md hover:bg-gray-200 px-1.5">
     <div className="w-6 py-1.5  ">
       <svg

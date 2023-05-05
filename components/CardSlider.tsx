@@ -3,36 +3,46 @@ import { Children, useLayoutEffect, useRef, useState } from "react";
 
 interface Props {
   children: React.ReactNode;
+  onSelect?: () => void;
+  currentIndex: number;
+  setCurrentIndex: (value: number) => void;
 }
 
-function CardSlider({ children }: Props) {
+function CardSlider({
+  children,
+  onSelect,
+  currentIndex,
+  setCurrentIndex,
+}: Props) {
   const container = useRef();
-  const items = useRef([]);
-  const [containerHeight, setContainerHeight] = useState();
-
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const items = useRef<HTMLDivElement[]>([]);
+  const [containerHeight, setContainerHeight] = useState<number>();
 
   useLayoutEffect(() => {
-    const tallestItems = items.current
-      .map((el) => el.clientHeight)
-      .sort((a, b) => b - a)[0];
+    if (items) {
+      const tallestItems = items.current
+        .map((el: HTMLDivElement) => el.clientHeight)
+        .sort((a, b) => b - a)[0];
 
-    setContainerHeight(tallestItems);
+      setContainerHeight(tallestItems);
+    }
   }, []);
 
   function goTo(index: number) {
     setCurrentIndex(index);
+    onSelect?.();
   }
 
   return (
     <div>
       <div
         className="relative"
-        ref={container}
+        ref={container.current}
         style={{ height: containerHeight ? containerHeight : "auto" }}
       >
         {Children.map(children, (child, index) => (
           <div
+            //@ts-ignore //this causing problems with clicking the slider
             ref={(ref) => (items.current[index] = ref)}
             className={`${
               typeof containerHeight !== "undefined" && "absolute inset-0"
