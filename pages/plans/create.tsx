@@ -182,7 +182,7 @@ function FilterVenues({
   const attributesSelected = () => venueStopsAttributes[0].length == 0;
 
   return (
-    <div className="bg-white drop-shadow-lg p-5 m-3 space-y-5 rounded-md absolute w-5/6 min-[590px]:w-[350px]">
+    <div className="bg-white drop-shadow-lg px-5 py-4 m-3 space-y-5 rounded-md absolute w-5/6 min-[590px]:w-[350px]">
       <div className="flex justify-between gap-3">
         <h2 className="text-xl font-bold text-gray-900">Plan your route</h2>
         {isPlanModalOpen ? (
@@ -286,7 +286,7 @@ function FilterVenues({
               <Tab.Panel>
                 {suggestionsLoading && <LoadingSpinner />}
                 {suggestions && !suggestionsLoading && (
-                  <div>
+                  <div className="space-y-1">
                     <SuggestionResults suggestions={suggestions} />
                     <div className="flex justify-center">
                       <Button
