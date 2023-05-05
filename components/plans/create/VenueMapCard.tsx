@@ -24,7 +24,7 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
       </div>
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
-          <p className="flex justify-between text-xl font-medium text-primary">
+          <div className="flex justify-between text-xl font-medium text-primary">
             <Link
               target="_blank"
               href={`/venues/${venue.id}`}
@@ -47,7 +47,7 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
               </div>
               <div className="text-lg">({avg_rating})</div>
             </div>
-          </p>
+          </div>
           <div className="space-y-1 mt-1">
             {venue?.attributes?.map((attribute) => {
               return (

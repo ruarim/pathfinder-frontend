@@ -24,7 +24,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
       </div>
       <div className="flex flex-1 flex-col justify-between bg-white p-6">
         <div className="flex-1">
-          <p className="flex justify-between text-xl font-medium text-primary">
+          <div className="flex justify-between text-xl font-medium text-primary">
             <Link href={`/venues/${venue.id}`} className="hover:underline">
               {venue.name}
             </Link>
@@ -43,7 +43,7 @@ export default function VenueCard({ venue }: VenueCardProps) {
               </div>
               <div className="text-lg">({avg_rating})</div>
             </div>
-          </p>
+          </div>
           <div className="space-y-1 mt-1">
             {venue?.attributes?.map((attribute) => {
               return (
