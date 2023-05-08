@@ -85,7 +85,7 @@ export default function AttributesPicker({
         map.flyTo({
           center: [
             firstSuggestion.address.longitude,
-            Number(firstSuggestion.address.latitude) + 0.004,
+            firstSuggestion.address.latitude,
           ],
           zoom: 14,
         });

@@ -179,7 +179,10 @@ function FilterVenues({
   const attributes = attributesData?.data.data;
   const [selectedPlanningIndex, setSelectedPlanningIndex] = useState(0);
   const [venueStopsIndex, setVenueStopsIndex] = useState(1);
+
   const attributesSelected = () => venueStopsAttributes[0].length == 0;
+  const locationSelected = () =>
+    selectedStart.place_name == "" && selectedEnd.place_name == "";
 
   return (
     <div className="bg-white drop-shadow-lg px-5 py-4 m-3 space-y-5 rounded-md absolute w-5/6 min-[590px]:w-[350px]">
@@ -235,6 +238,7 @@ function FilterVenues({
               <div className="w-full">
                 <div className="flex justify-center">
                   <Tab
+                    disabled={locationSelected()}
                     className={({ selected }) =>
                       clsx(
                         "w-5 h-5 rounded-full py-2.5 text-sm font-medium bg-gray-200 text-gray-800",

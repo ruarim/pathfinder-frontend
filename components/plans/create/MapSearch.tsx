@@ -65,7 +65,7 @@ export default function MapSearch({
   };
 
   const flyTo = (long: number, lat: number) => {
-    if (map) map.flyTo({ center: [long, lat + 0.004], zoom: 14 });
+    if (map) map.flyTo({ center: [long, lat], zoom: 14 });
   };
 
   return (

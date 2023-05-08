@@ -17,7 +17,7 @@ export default function SuggestionResults({
       map.flyTo({
         center: [
           suggestions[currentIndex].address.longitude,
-          Number(suggestions[currentIndex].address.latitude) + 0.004,
+          suggestions[currentIndex].address.latitude,
         ],
         zoom: 14,
       });
