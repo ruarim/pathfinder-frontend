@@ -39,6 +39,8 @@ const DEFAULT_CENTER_LOCATION = {
 export default function Create() {
   const { handleLoggedIn } = useAuthContext();
   const router = useRouter();
+
+  const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<LatLong>(
     DEFAULT_CENTER_LOCATION
   );
@@ -53,8 +55,8 @@ export default function Create() {
   const [venueStopsAttributes, setVenueStopsAttributes] = useState<string[][]>([
     [],
   ]);
+  const [suggestedVenueIndex, setSuggestedVenueIndex] = useState(0);
   const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
-  const [isPlanDetailsModalOpen, setPlanDetailsModalOpen] = useState(false);
 
   const { data: venueSuggestion, isLoading: suggestionsLoading } = useQuery(
     ["suggestion", venueStopsAttributes],
@@ -102,6 +104,8 @@ export default function Create() {
           setPlanDetailsModalOpen={setPlanDetailsModalOpen}
           suggestionsLoading={suggestionsLoading}
           suggestions={suggestions}
+          suggestedVenueIndex={suggestedVenueIndex}
+          setSuggestedVenueIndex={setSuggestedVenueIndex}
         />
 
         {isPlanDetailsModalOpen && suggestions && (
@@ -136,6 +140,7 @@ export default function Create() {
           startPoint={selectedStart}
           endPoint={selectedEnd}
           suggestedVenues={suggestions}
+          setSuggestedVenueIndex={setSuggestedVenueIndex}
         />
       </div>
     </MapProvider>
@@ -153,6 +158,8 @@ interface FilterVenuesProps {
   setPlanDetailsModalOpen: (value: boolean) => void;
   suggestionsLoading: boolean;
   suggestions: Venue[] | undefined;
+  suggestedVenueIndex: number;
+  setSuggestedVenueIndex: (index: number) => void;
 }
 
 function FilterVenues({
@@ -166,6 +173,8 @@ function FilterVenues({
   setPlanDetailsModalOpen,
   suggestionsLoading,
   suggestions,
+  suggestedVenueIndex,
+  setSuggestedVenueIndex,
 }: FilterVenuesProps) {
   const hasUserLocation = () =>
     userLocation.lat == DEFAULT_CENTER_LOCATION.lat &&
@@ -174,12 +183,10 @@ function FilterVenues({
       : false;
 
   const [isPlanModalOpen, setPlanModalOpen] = useState(true);
-
   const { data: attributesData } = useGetAttributes();
   const attributes = attributesData?.data.data;
   const [selectedPlanningIndex, setSelectedPlanningIndex] = useState(0);
   const [venueStopsIndex, setVenueStopsIndex] = useState(1);
-
   const attributesSelected = () => venueStopsAttributes[0].length == 0;
   const locationSelected = () =>
     selectedStart.place_name == "" || selectedEnd.place_name == "";
@@ -292,7 +299,11 @@ function FilterVenues({
                 {suggestionsLoading && <LoadingSpinner />}
                 {suggestions && !suggestionsLoading && (
                   <div className="space-y-1">
-                    <SuggestionResults suggestions={suggestions} />
+                    <SuggestionResults
+                      suggestions={suggestions}
+                      currentIndex={suggestedVenueIndex}
+                      setCurrentIndex={setSuggestedVenueIndex}
+                    />
                     <div className="flex justify-center">
                       <Button
                         colour="blue"
@@ -322,6 +333,7 @@ interface MapBoxProps {
   startPoint: MapLocation;
   endPoint: MapLocation;
   suggestedVenues: Venue[] | undefined;
+  setSuggestedVenueIndex: (index: number) => void;
 }
 
 function MapBox({
@@ -329,6 +341,7 @@ function MapBox({
   startPoint,
   endPoint,
   suggestedVenues,
+  setSuggestedVenueIndex,
 }: MapBoxProps) {
   const { map } = useMap();
 
@@ -382,6 +395,7 @@ function MapBox({
     >
       <GeolocateControl position="top-right" />
       <NavigationControl position="top-right" />
+
       {/* start and endpoint */}
       <div className="text-black">
         {startPoint.place_name !== "" && (
@@ -405,21 +419,17 @@ function MapBox({
       </div>
 
       {suggestedVenues &&
-        suggestedVenues
-          .sort(
-            (first: Venue, second: Venue) =>
-              second.address.latitude - first.address.latitude
-          )
-          .map((venue: Venue) => (
-            <Marker
-              key={venue.id}
-              latitude={venue.address.latitude}
-              longitude={venue.address.longitude}
-              anchor="bottom"
-            >
-              <MapPinIcon className="w-8 text-red-500" />
-            </Marker>
-          ))}
+        suggestedVenues.map((venue: Venue, i: number) => (
+          <Marker
+            onClick={() => setSuggestedVenueIndex(i)}
+            key={venue.id}
+            latitude={venue.address.latitude}
+            longitude={venue.address.longitude}
+            anchor="bottom"
+          >
+            <MapPinIcon className="w-8 text-red-500" />
+          </Marker>
+        ))}
       {suggestedCoords && suggestedVenues && (
         /* @ts-ignore */
         <Source id="polylineLayer" type="geojson" data={suggestedRoute}>

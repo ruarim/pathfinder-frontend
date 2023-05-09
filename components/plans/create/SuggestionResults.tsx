@@ -1,16 +1,18 @@
-import { useState } from "react";
 import { useMap } from "react-map-gl";
 import CardSlider from "../../CardSlider";
 import VenueMapCard from "./VenueMapCard";
 
 interface SuggestionResultsProps {
   suggestions: Venue[];
+  currentIndex: number;
+  setCurrentIndex: (index: number) => void;
 }
 export default function SuggestionResults({
   suggestions,
+  currentIndex,
+  setCurrentIndex,
 }: SuggestionResultsProps) {
   const { map } = useMap();
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const select = () => {
     if (map)
