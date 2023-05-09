@@ -182,7 +182,7 @@ function FilterVenues({
 
   const attributesSelected = () => venueStopsAttributes[0].length == 0;
   const locationSelected = () =>
-    selectedStart.place_name == "" && selectedEnd.place_name == "";
+    selectedStart.place_name == "" || selectedEnd.place_name == "";
 
   return (
     <div className="bg-white drop-shadow-lg px-5 py-4 m-3 space-y-5 rounded-md absolute w-5/6 min-[590px]:w-[350px]">
@@ -274,6 +274,7 @@ function FilterVenues({
                   setSelectedEnd={setSelectedEnd}
                   setSelectedPlanningIndex={setSelectedPlanningIndex}
                   hasUserLocation={hasUserLocation()}
+                  locationSelected={locationSelected()}
                 />
               </Tab.Panel>
               <Tab.Panel>

@@ -4,6 +4,7 @@ interface ButtonProps {
   colour: "red" | "blue" | "green" | "gray";
   isLoading?: boolean;
   type?: "button" | "submit" | "reset" | undefined;
+  disabled?: boolean;
 }
 
 export default function Button({
@@ -12,6 +13,7 @@ export default function Button({
   colour,
   isLoading,
   type,
+  disabled,
 }: ButtonProps) {
   const colours = new Map([
     ["red", "bg-red-200  hover:bg-red-300 text-red-700"],
@@ -23,7 +25,7 @@ export default function Button({
   return (
     <button
       type={type}
-      disabled={isLoading}
+      disabled={isLoading || disabled}
       onClick={onClick}
       className={`disabled:opacity-50 disabled:cursor-not-allowed px-5 py-2 mt-2 rounded-full transition text-sm whitespace-nowrap flex ${colours.get(
         colour

@@ -9,6 +9,7 @@ interface LocationPickerProps {
   setSelectedEnd: (location: MapLocation) => void;
   setSelectedPlanningIndex: (index: number) => void;
   hasUserLocation: boolean;
+  locationSelected: boolean;
 }
 export default function LocationPicker({
   selectedStart,
@@ -18,6 +19,7 @@ export default function LocationPicker({
   setSelectedEnd,
   setSelectedPlanningIndex,
   hasUserLocation,
+  locationSelected,
 }: LocationPickerProps) {
   return (
     <div className="space-y-2">
@@ -38,7 +40,11 @@ export default function LocationPicker({
         hasUserLocation={hasUserLocation}
       />
       <div className="flex justify-center">
-        <Button onClick={() => setSelectedPlanningIndex(1)} colour="blue">
+        <Button
+          onClick={() => setSelectedPlanningIndex(1)}
+          colour="blue"
+          disabled={locationSelected}
+        >
           Filter venues
         </Button>
       </div>
