@@ -7,77 +7,74 @@ import CardSlider from "../../CardSlider";
 
 interface AttributesPickerProps {
   attributes: string[] | undefined;
-  venueStopsAttributes: string[][];
-  setVenueStopsAttributes: (stops: string[][]) => void;
-  venueStopsIndex: number;
-  setVenueStopsIndex: (index: number) => void;
-  setSelectedPlanningIndex: (index: number) => void;
+  selectedAttributes: string[][];
+  setSelectedAttributes: (stops: string[][]) => void;
+  attributesIndex: number;
+  setAttributesIndex: (index: number) => void;
+  setSelectedTabIndex: (index: number) => void;
   suggestions: Venue[] | undefined;
 }
 
 export default function AttributesPicker({
   attributes,
-  venueStopsAttributes,
-  setVenueStopsAttributes,
-  venueStopsIndex,
-  setVenueStopsIndex,
-  setSelectedPlanningIndex,
+  selectedAttributes,
+  setSelectedAttributes,
+  attributesIndex,
+  setAttributesIndex,
+  setSelectedTabIndex,
   suggestions,
 }: AttributesPickerProps) {
   const { map } = useMap();
 
   const addStop = (stopIndex: number) => {
-    if (venueStopsAttributes[stopIndex - 1].length > 0) {
-      let stops = venueStopsAttributes;
-      stops[venueStopsIndex] = [];
-      setVenueStopsAttributes([...stops]);
-      setVenueStopsIndex(stopIndex + 1);
+    if (selectedAttributes[stopIndex - 1].length > 0) {
+      let stops = selectedAttributes;
+      stops[attributesIndex] = [];
+      setSelectedAttributes([...stops]);
+      setAttributesIndex(stopIndex + 1);
     }
   };
 
   const removeStop = (stopIndex: number) => {
-    let stops = venueStopsAttributes;
-    if (venueStopsIndex === 1) return;
+    let stops = selectedAttributes;
+    if (attributesIndex === 1) return;
 
     stops?.splice(stopIndex, 1);
-    setVenueStopsAttributes([...stops]);
-    setVenueStopsIndex(venueStopsIndex - 1);
+    setSelectedAttributes([...stops]);
+    setAttributesIndex(attributesIndex - 1);
   };
 
   const removeAttribute = (stopIndex: number, attribute: string) => {
-    if (venueStopsAttributes === undefined) return;
-    let stops = venueStopsAttributes;
+    if (selectedAttributes === undefined) return;
+    let stops = selectedAttributes;
     const attributes = stops[stopIndex];
 
     const attributeIndex = attributes.indexOf(attribute);
     attributes.splice(attributeIndex, 1);
     stops[stopIndex] = attributes;
-    setVenueStopsAttributes([...stops]);
+    setSelectedAttributes([...stops]);
 
-    if (
-      attributes.length === 0 &&
-      venueStopsAttributes.length - 1 !== stopIndex
-    )
+    if (attributes.length === 0 && selectedAttributes.length - 1 !== stopIndex)
       return removeStop(stopIndex);
   };
 
   const addAttribute = (currentIndex: number, attribute: string) => {
     let stopAttributes;
 
-    let stops = venueStopsAttributes;
-    stopAttributes = venueStopsAttributes[currentIndex];
+    let stops = selectedAttributes;
+    stopAttributes = selectedAttributes[currentIndex];
 
     if (!stopAttributes.includes(attribute)) stopAttributes.push(attribute);
 
     stops[currentIndex] = stopAttributes;
-    setVenueStopsAttributes([...stops]);
+    setSelectedAttributes([...stops]);
   };
 
   const attributesSelected = () =>
-    venueStopsAttributes[0].length > 0 ? true : false;
+    selectedAttributes[0].length > 0 ? true : false;
 
   const handleSuggestVenues = () => {
-    setSelectedPlanningIndex(2);
+    setSelectedTabIndex(2);
     if (suggestions && suggestions?.length > 0) {
       const firstSuggestion = suggestions[0];
       if (map)
@@ -102,18 +99,18 @@ export default function AttributesPicker({
             <Picker
               addAttribute={addAttribute}
               attributes={attributes}
-              stopsIndex={venueStopsIndex}
+              stopsIndex={attributesIndex}
             />
           </div>
 
           <SelectedAttributes
-            attributes={venueStopsAttributes}
-            stopsIndex={venueStopsIndex}
+            attributes={selectedAttributes}
+            stopsIndex={attributesIndex}
             removeStop={removeStop}
             removeAttribute={removeAttribute}
           />
           <div className="w-full grid grid-cols-1 place-items-center">
-            <Button onClick={() => addStop(venueStopsIndex)} colour="gray">
+            <Button onClick={() => addStop(attributesIndex)} colour="gray">
               <PlusIcon className="w-5" />
             </Button>
             {attributesSelected() && (

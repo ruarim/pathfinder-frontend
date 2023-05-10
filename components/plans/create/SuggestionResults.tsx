@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMap } from "react-map-gl";
 import CardSlider from "../../CardSlider";
 import VenueMapCard from "./VenueMapCard";
@@ -14,8 +15,8 @@ export default function SuggestionResults({
 }: SuggestionResultsProps) {
   const { map } = useMap();
 
-  const select = () => {
-    if (map)
+  useEffect(() => {
+    if (map) {
       map.flyTo({
         center: [
           suggestions[currentIndex].address.longitude,
@@ -23,16 +24,13 @@ export default function SuggestionResults({
         ],
         zoom: 14,
       });
-  };
+    }
+  }, [currentIndex]);
 
   return (
     <div>
       <h2 className="text-md font-medium text-gray-700 mb-2">Route</h2>
-      <CardSlider
-        onSelect={select}
-        currentIndex={currentIndex}
-        setCurrentIndex={setCurrentIndex}
-      >
+      <CardSlider currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
         {suggestions.map((venue, i) => (
           <VenueMapCard venue={venue} index={i} key={i} />
         ))}

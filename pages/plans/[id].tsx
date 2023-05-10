@@ -71,7 +71,6 @@ export default function Plan({ id }: { id: string }) {
       </div>
     );
 
-  //display plan
   return (
     <div className="flex justify-center items-center p-6">
       {plan && <PlanCard plan={plan} />}
@@ -98,10 +97,8 @@ function PlanCard({ plan }: PlanCardProps) {
   return (
     <div className="w-full">
       {plan && (
-        <div className="mx-auto  sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
-          {/* Product */}
+        <div className="mx-auto sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
-            {/* Product image */}
             <div className="lg:col-span-4 lg:row-end-1">
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 w-full">
                 <MapBox
@@ -389,7 +386,7 @@ function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
   };
 
   return (
-    <div className="space-y-2 pt-3">
+    <div className="space-y-2 pt-3 pb-5">
       {isLoggedIn && user ? (
         isInvited(plan.users, user) ? (
           <div>

@@ -2,22 +2,22 @@ import Button from "../../Button";
 import MapSearch from "./MapSearch";
 
 interface LocationPickerProps {
+  userLocation: LatLong;
   selectedStart: MapLocation;
   setSelectedStart: (location: MapLocation) => void;
-  userLocation: LatLong;
   selectedEnd: MapLocation;
   setSelectedEnd: (location: MapLocation) => void;
-  setSelectedPlanningIndex: (index: number) => void;
+  setSelectedTabIndex: (index: number) => void;
   hasUserLocation: boolean;
   locationSelected: boolean;
 }
 export default function LocationPicker({
-  selectedStart,
-  setSelectedStart,
   userLocation,
+  selectedStart,
   selectedEnd,
+  setSelectedStart,
   setSelectedEnd,
-  setSelectedPlanningIndex,
+  setSelectedTabIndex,
   hasUserLocation,
   locationSelected,
 }: LocationPickerProps) {
@@ -41,7 +41,7 @@ export default function LocationPicker({
       />
       <div className="flex justify-center">
         <Button
-          onClick={() => setSelectedPlanningIndex(1)}
+          onClick={() => setSelectedTabIndex(1)}
           colour="blue"
           disabled={locationSelected}
         >

@@ -62,26 +62,26 @@ export default function Create() {
     place_name: "",
     center: [0, 0],
   });
-  const [venueStopsAttributes, setVenueStopsAttributes] = useState<string[][]>([
+  const [selectedAttributes, setSelectedAttributes] = useState<string[][]>([
     [],
   ]);
   const [suggestedVenueIndex, setSuggestedVenueIndex] = useState(0);
   const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
 
   const { data: venueSuggestion, isLoading: suggestionsLoading } = useQuery(
-    ["suggestion", venueStopsAttributes],
+    ["suggestion", selectedAttributes],
     (): Promise<VenuesResponse> =>
       client.get("venues/suggest/shortest", {
         params: {
           start_coords: [selectedStart.center[1], selectedStart.center[0]],
           end_coords: [selectedEnd.center[1], selectedEnd.center[0]],
-          stops: venueStopsAttributes,
+          stops: selectedAttributes,
         },
         paramsSerializer: {
           indexes: false,
         },
       }),
-    { enabled: venueStopsAttributes[0].length > 0 }
+    { enabled: selectedAttributes[0].length > 0 }
   );
   const suggestions = venueSuggestion?.data.data;
 
@@ -100,6 +100,31 @@ export default function Create() {
     router.push({ pathname: "/plans/[id]", query: { id: res.data.data.id } });
   };
 
+  const handleSavePlan = (
+    name: string,
+    start_date: string | undefined,
+    start_time: string | undefined
+  ) => {
+    if (!suggestions) return;
+    if (handleLoggedIn) {
+      handleLoggedIn();
+    }
+    if (name === "") name = "Untitled Plan";
+    setCreatePlanLoading(true);
+    createPlan({
+      name,
+      start_time,
+      start_date,
+      venues: suggestions.map((venue) => venue.id),
+      startpoint_name: selectedStart.place_name,
+      startpoint_lat: selectedStart.center[1],
+      startpoint_long: selectedStart.center[0],
+      endpoint_name: selectedEnd.place_name,
+      endpoint_lat: selectedEnd.center[1],
+      endpoint_long: selectedEnd.center[0],
+    }).catch(() => setCreatePlanLoading(false));
+  };
+
   return (
     <MapProvider>
       <div className="mx-auto">
@@ -109,8 +134,8 @@ export default function Create() {
           setSelectedEnd={setSelectedEnd}
           selectedStart={selectedStart}
           selectedEnd={selectedEnd}
-          setVenueStopsAttributes={setVenueStopsAttributes}
-          venueStopsAttributes={venueStopsAttributes}
+          setSelectedAttributes={setSelectedAttributes}
+          selectedAttributes={selectedAttributes}
           setPlanDetailsModalOpen={setPlanDetailsModalOpen}
           suggestionsLoading={suggestionsLoading}
           suggestions={suggestions}
@@ -123,23 +148,7 @@ export default function Create() {
             isOpen={isPlanDetailsModalOpen}
             setOpen={setPlanDetailsModalOpen}
             onSave={(name, start_date, start_time) => {
-              if (handleLoggedIn) {
-                handleLoggedIn();
-              }
-              if (name === "") name = "Untitled Plan";
-              setCreatePlanLoading(true);
-              createPlan({
-                name,
-                start_time,
-                start_date,
-                venues: suggestions.map((venue) => venue.id),
-                startpoint_name: selectedStart.place_name,
-                startpoint_lat: selectedStart.center[1],
-                startpoint_long: selectedStart.center[0],
-                endpoint_name: selectedEnd.place_name,
-                endpoint_lat: selectedEnd.center[1],
-                endpoint_long: selectedEnd.center[0],
-              }).catch(() => setCreatePlanLoading(false));
+              handleSavePlan(name, start_date, start_time);
             }}
             isLoading={isCreatePlanLoading}
           />
@@ -163,8 +172,8 @@ interface FilterVenuesProps {
   setSelectedEnd: (location: MapLocation) => void;
   selectedStart: MapLocation;
   selectedEnd: MapLocation;
-  setVenueStopsAttributes: (stops: string[][]) => void;
-  venueStopsAttributes: string[][];
+  setSelectedAttributes: (stops: string[][]) => void;
+  selectedAttributes: string[][];
   setPlanDetailsModalOpen: (value: boolean) => void;
   suggestionsLoading: boolean;
   suggestions: Venue[] | undefined;
@@ -178,8 +187,8 @@ function FilterVenues({
   setSelectedEnd,
   selectedStart,
   selectedEnd,
-  setVenueStopsAttributes,
-  venueStopsAttributes,
+  setSelectedAttributes,
+  selectedAttributes,
   setPlanDetailsModalOpen,
   suggestionsLoading,
   suggestions,
@@ -195,9 +204,11 @@ function FilterVenues({
   const [isPlanModalOpen, setPlanModalOpen] = useState(true);
   const { data: attributesData } = useGetAttributes();
   const attributes = attributesData?.data.data;
-  const [selectedPlanningIndex, setSelectedPlanningIndex] = useState(0);
-  const [venueStopsIndex, setVenueStopsIndex] = useState(1);
-  const attributesSelected = () => venueStopsAttributes[0].length == 0;
+
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [selectedAttributesIndex, setSelectedAttributesIndex] = useState(1);
+
+  const attributesSelected = () => selectedAttributes[0].length == 0;
   const locationSelected = () =>
     selectedStart.place_name == "" || selectedEnd.place_name == "";
 
@@ -224,8 +235,8 @@ function FilterVenues({
       {isPlanModalOpen && (
         <div className="w-full max-w-md ">
           <Tab.Group
-            selectedIndex={selectedPlanningIndex}
-            onChange={setSelectedPlanningIndex}
+            selectedIndex={selectedTabIndex}
+            onChange={setSelectedTabIndex}
           >
             <div className="grid grid-cols-5 place-items-center">
               <label className="w-full col-start-1 flex justify-center font-semibold">
@@ -289,7 +300,7 @@ function FilterVenues({
                   userLocation={userLocation}
                   selectedEnd={selectedEnd}
                   setSelectedEnd={setSelectedEnd}
-                  setSelectedPlanningIndex={setSelectedPlanningIndex}
+                  setSelectedTabIndex={setSelectedTabIndex}
                   hasUserLocation={hasUserLocation()}
                   locationSelected={locationSelected()}
                 />
@@ -297,11 +308,11 @@ function FilterVenues({
               <Tab.Panel>
                 <AttributesPicker
                   attributes={attributes}
-                  venueStopsAttributes={venueStopsAttributes}
-                  setVenueStopsAttributes={setVenueStopsAttributes}
-                  venueStopsIndex={venueStopsIndex}
-                  setVenueStopsIndex={setVenueStopsIndex}
-                  setSelectedPlanningIndex={setSelectedPlanningIndex}
+                  selectedAttributes={selectedAttributes}
+                  setSelectedAttributes={setSelectedAttributes}
+                  attributesIndex={selectedAttributesIndex}
+                  setAttributesIndex={setSelectedAttributesIndex}
+                  setSelectedTabIndex={setSelectedTabIndex}
                   suggestions={suggestions}
                 />
               </Tab.Panel>

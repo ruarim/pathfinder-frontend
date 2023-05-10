@@ -36,7 +36,7 @@ function CardSlider({
 
   return (
     <div className="flex flex-col">
-      <Tab.Group selectedIndex={currentIndex} onChange={setCurrentIndex}>
+      <Tab.Group selectedIndex={currentIndex}>
         <Tab.Panels className="flex-1" ref={container.current}>
           {Children.map(children, (child, index) => (
             <Tab.Panel
