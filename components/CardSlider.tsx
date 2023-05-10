@@ -1,6 +1,6 @@
 import { Tab, Transition } from "@headlessui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Children, useLayoutEffect, useRef, useState } from "react";
+import { Children } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -15,20 +15,6 @@ function CardSlider({
   currentIndex,
   setCurrentIndex,
 }: Props) {
-  const container = useRef();
-  const items = useRef<HTMLDivElement[]>([]);
-  const [containerHeight, setContainerHeight] = useState<number>();
-
-  useLayoutEffect(() => {
-    if (items) {
-      const tallestItems = items.current
-        .map((el: HTMLDivElement) => el.clientHeight)
-        .sort((a, b) => b - a)[0];
-
-      setContainerHeight(tallestItems);
-    }
-  }, []);
-
   function goTo(index: number) {
     setCurrentIndex(index);
     onSelect?.();
@@ -37,20 +23,12 @@ function CardSlider({
   return (
     <div className="flex flex-col">
       <Tab.Group selectedIndex={currentIndex}>
-        <Tab.Panels className="flex-1" ref={container.current}>
+        <Tab.Panels className="flex-1">
           {Children.map(children, (child, index) => (
-            <Tab.Panel
-              key={index}
-              //@ts-ignore
-              ref={(ref) => (items.current[index] = ref)}
-            >
+            <Tab.Panel key={index}>
               <Transition
                 className="h-full [&>div]:h-full"
-                show={
-                  typeof containerHeight === "undefined"
-                    ? true
-                    : currentIndex === index
-                }
+                show={true}
                 enter="transition-opacity duration-150"
                 enterFrom="opacity-0"
                 enterTo="opacity-100"
