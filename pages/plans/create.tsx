@@ -36,6 +36,16 @@ const DEFAULT_CENTER_LOCATION = {
   long: -2.591221556113587,
 };
 
+export const pinColours = [
+  ["text-red-600", "bg-red-100"],
+  ["text-blue-600", "bg-blue-100"],
+  ["text-fuchsia-600", "bg-fuchsia-100"],
+  ["text-lime-600", "bg-lime-100"],
+  ["text-purple-600", "bg-purple-100"],
+  ["text-indigo-600", "bg-indigo-100"],
+  ["text-violet-600", "bg-violet-100"],
+];
+
 export default function Create() {
   const { handleLoggedIn } = useAuthContext();
   const router = useRouter();
@@ -427,7 +437,7 @@ function MapBox({
             longitude={venue.address.longitude}
             anchor="bottom"
           >
-            <MapPinIcon className="w-8 text-red-500" />
+            <MapPinIcon className={`w-8 ${pinColours[i][0]}`} />
           </Marker>
         ))}
       {suggestedCoords && suggestedVenues && (

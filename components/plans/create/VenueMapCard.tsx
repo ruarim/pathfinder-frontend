@@ -2,12 +2,14 @@ import clsx from "clsx";
 import { MapPinIcon, StarIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import timeFormatter from "../../../helpers/timeFormatter";
+import { pinColours } from "../../../pages/plans/create";
 
 interface VenueMapCardProps {
   venue: Venue;
+  index: number;
 }
 
-export default function VenueMapCard({ venue }: VenueMapCardProps) {
+export default function VenueMapCard({ venue, index }: VenueMapCardProps) {
   const avgRating = venue?.rating;
   const maxAttributes = 4;
   return (
@@ -81,8 +83,10 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
                 Closing Time {timeFormatter(venue.closing_time)}
               </time>
             </div>
-            <div className="bg-red-200 rounded-full flex items-center justify-center w-11">
-              <MapPinIcon className="w-8 text-red-600" />
+            <div
+              className={`${pinColours[index][1]} rounded-full flex items-center justify-center w-11`}
+            >
+              <MapPinIcon className={`w-8 ${pinColours[index][0]}`} />
             </div>
           </div>
         </div>

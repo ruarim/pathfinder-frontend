@@ -34,7 +34,7 @@ export default function SuggestionResults({
         setCurrentIndex={setCurrentIndex}
       >
         {suggestions.map((venue, i) => (
-          <VenueMapCard venue={venue} key={i} />
+          <VenueMapCard venue={venue} index={i} key={i} />
         ))}
       </CardSlider>
     </div>
