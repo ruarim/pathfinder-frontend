@@ -35,9 +35,9 @@ function CardSlider({
   }
 
   return (
-    <div>
+    <div className="flex flex-col">
       <Tab.Group selectedIndex={currentIndex} onChange={setCurrentIndex}>
-        <Tab.Panels className="relative" ref={container.current}>
+        <Tab.Panels className="flex-1" ref={container.current}>
           {Children.map(children, (child, index) => (
             <Tab.Panel
               key={index}
@@ -64,7 +64,7 @@ function CardSlider({
           ))}
         </Tab.Panels>
 
-        <Tab.List>
+        <Tab.List className="flex-none">
           {Children.count(children) > 1 && (
             <div className="flex justify-between mt-2">
               <div

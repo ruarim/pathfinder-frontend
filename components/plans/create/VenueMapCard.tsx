@@ -8,8 +8,8 @@ interface VenueMapCardProps {
 }
 
 export default function VenueMapCard({ venue }: VenueMapCardProps) {
-  const avg_rating = venue?.rating;
-
+  const avgRating = venue?.rating;
+  const maxAttributes = 4;
   return (
     <div
       key={venue.name}
@@ -38,18 +38,28 @@ export default function VenueMapCard({ venue }: VenueMapCardProps) {
                   <StarIcon
                     key={rating}
                     className={clsx(
-                      avg_rating > rating ? "text-yellow-400" : "text-gray-300",
+                      avgRating > rating ? "text-yellow-400" : "text-gray-300",
                       "h-4 w-4 flex-shrink-0"
                     )}
                     aria-hidden="true"
                   />
                 ))}
               </div>
-              <div className="text-md">({avg_rating})</div>
+              <div className="text-md">({avgRating})</div>
             </div>
           </div>
-          <div className="space-y-1 mt-1">
-            {venue?.attributes?.map((attribute) => {
+          <div className="space-y-1 mt-1 h-[75px]">
+            {venue?.attributes?.map((attribute, i) => {
+              if (i > maxAttributes) return <></>;
+              if (i == maxAttributes)
+                return (
+                  <div
+                    key={attribute}
+                    className="bg-teal-400 text-white p-2 rounded-md space-x-1 text-xs font-medium inline-flex mr-1"
+                  >
+                    <div>...</div>
+                  </div>
+                );
               return (
                 <div
                   key={attribute}
