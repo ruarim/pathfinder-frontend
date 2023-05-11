@@ -24,7 +24,7 @@ export default function VenueMapCard({ venue, index }: VenueMapCardProps) {
           alt=""
         />
       </div>
-      <div className="flex flex-1 flex-col justify-between bg-white p-6">
+      <div className="flex flex-1 flex-col justify-between bg-white px-6 py-4 ">
         <div className="flex-1">
           <div className="flex justify-between text-md font-medium text-primary">
             <Link
@@ -50,7 +50,7 @@ export default function VenueMapCard({ venue, index }: VenueMapCardProps) {
               <div className="text-md">({avgRating})</div>
             </div>
           </div>
-          <div className="space-y-1 mt-1 h-[75px]">
+          <div className="space-y-1 mt-1 h-[70px]">
             {venue?.attributes?.map((attribute, i) => {
               if (i > maxAttributes) return <></>;
               if (i == maxAttributes)
