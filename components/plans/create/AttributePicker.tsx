@@ -153,14 +153,14 @@ function Picker({
   return (
     <div>
       <CardSlider currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
-        {pages.map((page: string[]) => (
-          <div className="grid grid-cols-4 grid-rows-2 w-full gap-2">
-            {page.map((attribute: string, i: number) => {
+        {pages.map((page: string[], i: number) => (
+          <div key={i} className="grid grid-cols-4 grid-rows-2 w-full gap-2">
+            {page.map((attribute: string) => {
               return (
                 <button
                   onClick={() => addAttribute(stopsIndex - 1, attribute)}
                   className={clsx(
-                    "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-300 bg-gray-200  text-xs font-medium text-gray-700"
+                    "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-300 bg-gray-200  text-xs font-medium text-gray-700 h-10"
                   )}
                   key={attribute}
                 >
