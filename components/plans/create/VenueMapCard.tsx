@@ -15,7 +15,7 @@ export default function VenueMapCard({ venue, index }: VenueMapCardProps) {
   return (
     <div
       key={venue.name}
-      className="flex flex-col overflow-hidden rounded-lg shadow-lg mb-1"
+      className="flex flex-col overflow-hidden rounded-lg shadow-md mb-1"
     >
       <div className="flex-shrink-0">
         <img

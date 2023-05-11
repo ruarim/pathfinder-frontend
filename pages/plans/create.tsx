@@ -69,13 +69,13 @@ export default function Create() {
   const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
 
   const { data: venueSuggestion, isLoading: suggestionsLoading } = useQuery(
-    ["suggestion", selectedAttributes],
+    ["suggestion", selectedAttributes, selectedStart, selectedEnd],
     (): Promise<VenuesResponse> =>
       client.get("venues/suggest/shortest", {
         params: {
           start_coords: [selectedStart.center[1], selectedStart.center[0]],
           end_coords: [selectedEnd.center[1], selectedEnd.center[0]],
-          stops: selectedAttributes,
+          attributes: selectedAttributes,
         },
         paramsSerializer: {
           indexes: false,
@@ -330,7 +330,7 @@ function FilterVenues({
                         colour="blue"
                         onClick={() => setPlanDetailsModalOpen(true)}
                       >
-                        Create plan
+                        Save route
                       </Button>
                     </div>
                   </div>
