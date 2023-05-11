@@ -68,6 +68,11 @@ export default function Create() {
   const [suggestedVenueIndex, setSuggestedVenueIndex] = useState(0);
   const [isCreatePlanLoading, setCreatePlanLoading] = useState(false);
 
+  const shouldSuggest = () =>
+    selectedAttributes[0].length > 0 &&
+    selectedStart.place_name != "" &&
+    selectedEnd.place_name != "";
+
   const { data: venueSuggestion, isLoading: suggestionsLoading } = useQuery(
     ["suggestion", selectedAttributes, selectedStart, selectedEnd],
     (): Promise<VenuesResponse> =>
@@ -81,7 +86,7 @@ export default function Create() {
           indexes: false,
         },
       }),
-    { enabled: selectedAttributes[0].length > 0 }
+    { enabled: shouldSuggest() }
   );
   const suggestions = venueSuggestion?.data.data;
 
