@@ -36,7 +36,7 @@ export default function DropDown({
         <Menu.Items className="absolute right-0 z-10 mt-2 w-16  origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             {options.map((option) => (
-              <Menu.Item>
+              <Menu.Item key={option}>
                 {({ active }) => (
                   <div
                     onClick={() => setValue(option)}

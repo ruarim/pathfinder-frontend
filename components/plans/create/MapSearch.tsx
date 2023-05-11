@@ -82,7 +82,7 @@ export default function MapSearch({
           <div className="flex space-x-2">
             <Combobox.Input
               id="input"
-              className="block w-full rounded-full bg-gray-200 p-2 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+              className="block w-full rounded-full bg-gray-200 p-2 border-gray-300 px-4 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base"
               placeholder={placeholder}
               onChange={(event) => setQuery(event.target.value)}
             />

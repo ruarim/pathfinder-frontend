@@ -58,7 +58,7 @@ export default function PlanDetailsModal({
           <div className="space-y-1">
             <label>Start date</label>
             <Datepicker
-              inputClassName={"border border-gray-300 h-9"}
+              inputClassName={"border border-gray-300 h-9 text-base"}
               useRange={false}
               asSingle={true}
               value={dateValue}
