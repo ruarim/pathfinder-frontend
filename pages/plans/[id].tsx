@@ -35,6 +35,7 @@ import LoadingButton from "../../components/LoadingButton";
 import clsx from "clsx";
 import { AxiosError } from "axios";
 import { useMapRoute } from "../../hooks/queries/useMapRoute";
+import { pinColours } from "./create";
 
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
@@ -159,14 +160,14 @@ function PlanCard({ plan }: PlanCardProps) {
                   <div>
                     {plan.startpoint_name && (
                       <div className="flex">
-                        <MapPinIcon className="w-4 text-green-600" />
+                        <MapPinIcon className={"w-4 text-gray-400"} />
                         {startName[0]}
                       </div>
                     )}
                     <VenueList venues={plan.venues} />
                     {plan.endpoint_name && (
                       <div className="flex">
-                        <MapPinIcon className="w-4 text-blue-500" />
+                        <MapPinIcon className="w-4 text-gray-600" />
                         {endName[0]}
                       </div>
                     )}
@@ -300,12 +301,12 @@ function Rating({ avg_rating, plan }: { avg_rating: number; plan: Plan }) {
 function VenueList({ venues }: { venues: Venue[] }) {
   return (
     <div className="space-y-2">
-      {venues.map((venue) => {
+      {venues.map((venue, i) => {
         const avg_rating = venue?.rating;
         return (
           <Link href={`/venues/${venue.id}`} className="space-y-2">
             <div className="flex">
-              <MapPinIcon className="w-4 text-red-400" />
+              <MapPinIcon className={`w-4 ${pinColours[i][0]}`} />
               <div className="hover:underline ">
                 {venue.name.substring(0, 29)}
                 {venue.name.length > 30 && "..."}
@@ -668,14 +669,14 @@ function MapBox({
         <NavigationControl position="top-right" />
 
         {/* venues  */}
-        {venues.map((venue) => {
+        {venues.map((venue, i) => {
           return (
             <Marker
               latitude={venue.address.latitude}
               longitude={venue.address.longitude}
               anchor="bottom"
             >
-              <MapPinIcon className="w-8 text-red-400" />
+              <MapPinIcon className={`w-8 ${pinColours[i][0]}`} />
             </Marker>
           );
         })}
@@ -687,7 +688,7 @@ function MapBox({
             longitude={startpoint.long}
             anchor="bottom"
           >
-            <MapPinIcon className="w-8 text-green-600" />
+            <MapPinIcon className="w-8 text-gray-400" />
           </Marker>
         )}
 
@@ -698,7 +699,7 @@ function MapBox({
             longitude={endpoint.long}
             anchor="bottom"
           >
-            <MapPinIcon className="w-8 text-blue-400" />
+            <MapPinIcon className="w-8 text-gray-600" />
           </Marker>
         )}
 
