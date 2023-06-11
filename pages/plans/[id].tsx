@@ -35,6 +35,7 @@ import LoadingButton from "../../components/LoadingButton";
 import clsx from "clsx";
 import { AxiosError } from "axios";
 import { useMapRoute } from "../../hooks/queries/useMapRoute";
+import { pinColours } from "./create";
 
 const getCreator = (users: User[]) => {
   return users.find((user) => user.is_creator === 1);
@@ -71,7 +72,6 @@ export default function Plan({ id }: { id: string }) {
       </div>
     );
 
-  //display plan
   return (
     <div className="flex justify-center items-center p-6">
       {plan && <PlanCard plan={plan} />}
@@ -84,6 +84,7 @@ interface PlanCardProps {
 }
 
 function PlanCard({ plan }: PlanCardProps) {
+  const { isLoggedIn } = useAuthContext();
   const { data: userData } = useGetUser();
   const user = userData?.data.user;
   const startName = plan?.startpoint_name
@@ -97,10 +98,8 @@ function PlanCard({ plan }: PlanCardProps) {
   return (
     <div className="w-full">
       {plan && (
-        <div className="mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
-          {/* Product */}
+        <div className="mx-auto sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
-            {/* Product image */}
             <div className="lg:col-span-4 lg:row-end-1">
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100 w-full">
                 <MapBox
@@ -119,8 +118,7 @@ function PlanCard({ plan }: PlanCardProps) {
               </div>
             </div>
 
-            {/* Product details */}
-            <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none w-full">
+            <div className="mx-auto mt-4 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none w-full">
               <div className="flex flex-col-reverse">
                 <div className="space-y-1">
                   <div className="md:flex md:justify-between">
@@ -146,7 +144,7 @@ function PlanCard({ plan }: PlanCardProps) {
                         )}
                       </div>
                       <div className="flex md:justify-end">
-                        {user && isCreator(user, plan.users) && (
+                        {isLoggedIn && user && isCreator(user, plan.users) && (
                           <TogglePublic plan={plan} queryClient={queryClient} />
                         )}
                       </div>
@@ -156,19 +154,20 @@ function PlanCard({ plan }: PlanCardProps) {
                 </div>
               </div>
 
-              <p className="mt-6 text-gray-500">
+              <p className="mt-3 text-gray-500">
+                <h2 className="font-medium text-lg">Venues</h2>
                 <div className="space-y-3 md:pr-2">
                   <div>
                     {plan.startpoint_name && (
                       <div className="flex">
-                        <MapPinIcon className="w-4 text-green-600" />
+                        <MapPinIcon className={"w-4 text-gray-400"} />
                         {startName[0]}
                       </div>
                     )}
                     <VenueList venues={plan.venues} />
                     {plan.endpoint_name && (
                       <div className="flex">
-                        <MapPinIcon className="w-4 text-blue-500" />
+                        <MapPinIcon className="w-4 text-gray-600" />
                         {endName[0]}
                       </div>
                     )}
@@ -301,15 +300,23 @@ function Rating({ avg_rating, plan }: { avg_rating: number; plan: Plan }) {
 
 function VenueList({ venues }: { venues: Venue[] }) {
   return (
-    <div>
-      {venues.map((venue) => {
+    <div className="space-y-2">
+      {venues.map((venue, i) => {
+        const avg_rating = venue?.rating;
         return (
           <Link href={`/venues/${venue.id}`} className="space-y-2">
-            <div className="flex ">
-              <MapPinIcon className="w-4 text-red-400" />
+            <div className="flex">
+              <MapPinIcon className={`w-4 ${pinColours[i][0]}`} />
               <div className="hover:underline ">
                 {venue.name.substring(0, 29)}
                 {venue.name.length > 30 && "..."}
+              </div>
+              <div className="pl-1 flex">
+                <StarIcon
+                  className="text-yellow-400 h-5 w-5 flex-shrink-0 hover:text-yellow-700"
+                  aria-hidden="true"
+                />
+                <p className="font-medium">({avg_rating})</p>
               </div>
             </div>
             <div className="flex px-2 space-x-1 pb-2">
@@ -363,8 +370,8 @@ function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
       startpoint_lat: data.startpoint_lat,
       startpoint_long: data.startpoint_long,
       endpoint_name: data?.endpoint_name,
-      endpoint_lat: data?.startpoint_lat,
-      endpoint_long: data?.startpoint_long,
+      endpoint_lat: data?.endpoint_lat,
+      endpoint_long: data?.endpoint_long,
       start_date: data?.start_date,
       start_time: data?.start_time,
       venues,
@@ -380,7 +387,7 @@ function InviteCard({ plan, user }: { plan: Plan; user?: User }) {
   };
 
   return (
-    <div className="space-y-2 pt-3">
+    <div className="space-y-2 pt-3 pb-5">
       {isLoggedIn && user ? (
         isInvited(plan.users, user) ? (
           <div>
@@ -461,7 +468,6 @@ function SetParticipants({
   const [selectedUser, setSelectedUser] = useState<string>("");
   const queryClient = useQueryClient();
 
-  //addUser mutaion
   const { mutateAsync: addUser } = useMutation<
     PlanResponse,
     unknown,
@@ -614,8 +620,8 @@ function MapBox({
     return { lat: total.lat / venues.length, long: total.long / venues.length };
   };
 
-  const routeCoords = useMapRoute({
-    venuesPlan: venues,
+  const { data: routeData } = useMapRoute({
+    venues,
     startPoint: {
       place_name: startpoint.place_name,
       center: [startpoint.long, startpoint.lat],
@@ -625,6 +631,8 @@ function MapBox({
       center: [endpoint.long, endpoint.lat],
     },
   });
+
+  const routeCoords = routeData?.data?.routes[0]?.geometry.coordinates;
 
   let venuesRoute;
   if (routeCoords)
@@ -661,14 +669,14 @@ function MapBox({
         <NavigationControl position="top-right" />
 
         {/* venues  */}
-        {venues.map((venue) => {
+        {venues.map((venue, i) => {
           return (
             <Marker
               latitude={venue.address.latitude}
               longitude={venue.address.longitude}
               anchor="bottom"
             >
-              <MapPinIcon className="w-8 text-red-400" />
+              <MapPinIcon className={`w-8 ${pinColours[i][0]}`} />
             </Marker>
           );
         })}
@@ -680,7 +688,7 @@ function MapBox({
             longitude={startpoint.long}
             anchor="bottom"
           >
-            <MapPinIcon className="w-8 text-green-600" />
+            <MapPinIcon className="w-8 text-gray-400" />
           </Marker>
         )}
 
@@ -691,7 +699,7 @@ function MapBox({
             longitude={endpoint.long}
             anchor="bottom"
           >
-            <MapPinIcon className="w-8 text-blue-400" />
+            <MapPinIcon className="w-8 text-gray-600" />
           </Marker>
         )}
 

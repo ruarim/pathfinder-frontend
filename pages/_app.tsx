@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import Layout from "../components/Layout";
 import { AuthenticationProvider } from "../providers/AuthenticationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 

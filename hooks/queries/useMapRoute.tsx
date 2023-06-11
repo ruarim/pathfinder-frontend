@@ -1,31 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 
 export const useMapRoute = ({
-  venuesPlan,
+  venues,
   startPoint,
   endPoint,
 }: {
-  venuesPlan: Venue[];
+  venues: Venue[] | undefined;
   startPoint: MapLocation;
   endPoint: MapLocation;
 }) => {
-  const { data: routeData } = useQuery(
-    ["points", venuesPlan, startPoint, endPoint],
-    () => {
-      const step = "20";
-      const radiuses = venuesPlan.map(() => step);
-      if (startPoint.place_name != "") radiuses.push(step);
-      if (endPoint.place_name != "") radiuses.push(step);
-      const radiusesString = radiuses.join(";");
+  const [routePoints, setRoutePoints] = useState("");
 
-      return axios.get(
-        `https://api.mapbox.com/matching/v5/mapbox/driving/${routePoints}?geometries=geojson&radiuses=${radiusesString}&access_token=${mapboxToken}`
+  useEffect(() => {
+    if (venues) {
+      const points = getPlanPoints(
+        venues,
+        { lat: startPoint.center[0], long: startPoint.center[1] },
+        { lat: endPoint.center[0], long: endPoint.center[1] }
       );
+      setRoutePoints(points);
     }
-  );
+  }, [venues]);
 
   const getPlanPoints = (
     venues: Venue[],
@@ -44,11 +43,13 @@ export const useMapRoute = ({
     return points;
   };
 
-  const routePoints = getPlanPoints(
-    venuesPlan,
-    { lat: startPoint.center[0], long: startPoint.center[1] },
-    { lat: endPoint.center[0], long: endPoint.center[1] }
+  return useQuery(
+    ["points", venues, startPoint, endPoint, routePoints],
+    () => {
+      return axios.get(
+        `https://api.mapbox.com/directions/v5/mapbox/walking/${routePoints}?geometries=geojson&access_token=${mapboxToken}`
+      );
+    },
+    { enabled: routePoints !== "" }
   );
-
-  return routeData?.data?.matchings[0]?.geometry.coordinates;
 };

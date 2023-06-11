@@ -10,6 +10,7 @@ import Modal from "../../components/Modal";
 import LoadingButton from "../../components/LoadingButton";
 import { useForm } from "react-hook-form";
 import AvatarIcon from "../../components/AvatarIcon";
+import Button from "../../components/Button";
 
 export default function Venue({ id }: { id: string }) {
   const queryClient = useQueryClient();
@@ -62,10 +63,8 @@ export default function Venue({ id }: { id: string }) {
   return (
     <div>
       {venue && (
-        <div className="mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
-          {/* Product */}
+        <div className="mx-auto pt-6 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
           <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
-            {/* Product image */}
             <div className="lg:col-span-4 lg:row-end-1">
               <div className="aspect-w-4 aspect-h-3 overflow-hidden rounded-lg bg-gray-100">
                 <img
@@ -75,8 +74,7 @@ export default function Venue({ id }: { id: string }) {
               </div>
             </div>
 
-            {/* Product details */}
-            <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
+            <div className="mx-auto mt-4 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
               <div className="flex flex-col-reverse">
                 <div className="mt-4">
                   <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
@@ -283,13 +281,9 @@ function Review({ id }: { id: string }) {
               placeholder="Write a review.."
             ></textarea>
             <div className="flex justify-center">
-              <LoadingButton
-                isLoading={isLoading}
-                type={"submit"}
-                styles="bg-indigo-500 hover:bg-indigo-700 max-w-min flex items-center whitespace-nowrap justify-center px-5 py-2 rounded-md shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed w-full"
-              >
+              <Button isLoading={isLoading} type={"submit"} colour="blue">
                 Add Review
-              </LoadingButton>
+              </Button>
             </div>
             <div className="text-red-600 flex justify-center">
               {errors.content && <p>{errors.content.message}</p>}
