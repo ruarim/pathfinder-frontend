@@ -1,3 +1,7 @@
+# Pathfinder
+
+[![Pathfinder in action.]([https://github.com/ruarim/glastonbury-set-finder/assets/48099261/02fa31ab-1621-420b-aafd-d63f50b1bf5e](https://github.com/ruarim/pint-pathfinder-frontend/assets/48099261/799960b0-e1e8-41ed-874b-935839fe4efd))](https://github.com/ruarim/pint-pathfinder-frontend/assets/48099261/cba89ad7-19ed-4f4f-903e-9562bccd2914)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
