@@ -103,7 +103,7 @@ export default function Login() {
                 </button>
                 <button
                   onClick={handleRegister}
-                  className="flex w-full justify-center rounded-full border border-transparent bg-contrast/75 hover:bg-notice p-3 text-md font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className="flex w-full justify-center rounded-full border border-transparent bg-contrast/75 hover:bg-contrast p-3 text-md font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
                 >
                   Register
                 </button>
