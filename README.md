@@ -1,6 +1,6 @@
 # Pathfinder
 
-[![Pathfinder in action.]([(https://github.com/ruarim/pint-pathfinder-frontend/assets/48099261/799960b0-e1e8-41ed-874b-935839fe4efd)](https://github.com/ruarim/pathfinder-frontend/assets/48099261/f0ff8cc5-f36b-4f11-ad93-ed56ba567074))
+[![Pathfinder in action.](https://github.com/ruarim/pint-pathfinder-frontend/assets/48099261/799960b0-e1e8-41ed-874b-935839fe4efd)](https://github.com/ruarim/pathfinder-frontend/assets/48099261/f0ff8cc5-f36b-4f11-ad93-ed56ba567074)
 
 
 
