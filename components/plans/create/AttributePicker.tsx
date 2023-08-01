@@ -75,7 +75,7 @@ export default function AttributesPicker({
 
   const handleSuggestVenues = () => {
     setSelectedTabIndex(2);
-    if (suggestions && suggestions?.length > 0) {
+    if (suggestions) {
       const firstSuggestion = suggestions[0];
       if (map)
         map.flyTo({

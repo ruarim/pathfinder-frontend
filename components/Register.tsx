@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
-import { useRegistser } from "../hooks/mutations/useRegister";
+import { useRegister } from "../hooks/mutations/useRegister";
 import { useAuthContext } from "../hooks/context/useAuthContext";
 
 export default function Register() {
-  const { mutateAsync: registerUser, data: user } = useRegistser();
+  const { mutateAsync: registerUser, data: user } = useRegister();
   const {
     handleSubmit,
     register,
@@ -66,7 +66,7 @@ export default function Register() {
               </div>
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="username"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Username
