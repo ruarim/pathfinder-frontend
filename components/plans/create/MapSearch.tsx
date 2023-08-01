@@ -70,8 +70,10 @@ export default function MapSearch({
 
   return (
     <div className="top-16">
-      {/* @ts-ignore */}
-      <Combobox value={selected.place_name} onChange={onChange}>
+      <Combobox<string | MapLocation>
+        value={selected.place_name}
+        onChange={onChange}
+      >
         <div>
           <label
             htmlFor="input"
