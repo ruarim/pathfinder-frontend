@@ -57,10 +57,9 @@ type LoginResponse = {
 type Venue = {
   id: number;
   capacity: number;
-  closing_time: string;
   name: string;
   description: string;
-  opening_time: string;
+  hours: string;
   venue_type: "Pub" | "Bar" | "Restaurant";
   address: Address;
   attributes: string[];

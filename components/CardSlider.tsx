@@ -3,7 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { Children } from "react";
 
 interface Props {
-  children: React.ReactNode;
+  children: React.ReactNode[];
   onSelect?: () => void;
   currentIndex: number;
   setCurrentIndex: (value: number) => void;
@@ -15,6 +15,7 @@ function CardSlider({
   currentIndex,
   setCurrentIndex,
 }: Props) {
+  const maxDots = 4;
   function goTo(index: number) {
     setCurrentIndex(index);
     onSelect?.();
@@ -55,7 +56,7 @@ function CardSlider({
                 {LeftArrow}
               </div>
 
-              <div className="flex">
+              <div className={children.length > maxDots ? "hidden" : "flex"}>
                 {Children.map(children, (_, index) => (
                   <Tab
                     key={`nav-${index}`}

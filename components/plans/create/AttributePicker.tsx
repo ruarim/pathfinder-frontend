@@ -145,9 +145,14 @@ function Picker({
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const pageSize = 8;
+
+  const filteredAttributes = attributes.filter(
+    (attribute) => attribute.length < 8
+  );
+
   var pages = [];
-  for (var i = 0; i < attributes.length; i += pageSize) {
-    pages.push(attributes.slice(i, i + pageSize));
+  for (var i = 0; i < filteredAttributes.length; i += pageSize) {
+    pages.push(filteredAttributes.slice(i, i + pageSize));
   }
 
   return (
@@ -155,19 +160,17 @@ function Picker({
       <CardSlider currentIndex={currentIndex} setCurrentIndex={setCurrentIndex}>
         {pages.map((page: string[], i: number) => (
           <div key={i} className="grid grid-cols-4 grid-rows-2 w-full gap-2">
-            {page.map((attribute: string) => {
-              return (
-                <button
-                  onClick={() => addAttribute(stopsIndex - 1, attribute)}
-                  className={clsx(
-                    "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-300 bg-gray-200  text-xs font-medium text-gray-700 h-10"
-                  )}
-                  key={attribute}
-                >
-                  {attribute}
-                </button>
-              );
-            })}
+            {page.map((attribute: string) => (
+              <button
+                onClick={() => addAttribute(stopsIndex - 1, attribute)}
+                className={clsx(
+                  "py-1 px-2 w-full mb-1 rounded-lg transition hover:bg-gray-300 bg-gray-200 text-xs font-medium text-gray-700 h-10"
+                )}
+                key={attribute}
+              >
+                {attribute}
+              </button>
+            ))}
           </div>
         ))}
       </CardSlider>

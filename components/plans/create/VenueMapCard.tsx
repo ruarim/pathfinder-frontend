@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { MapPinIcon, StarIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
-import timeFormatter from "../../../helpers/timeFormatter";
 import { pinColours } from "../../../pages/plans/create";
 
 interface VenueMapCardProps {
@@ -50,7 +49,7 @@ export default function VenueMapCard({ venue, index }: VenueMapCardProps) {
               <div className="text-md">({avgRating})</div>
             </div>
           </div>
-          <div className="space-y-1 mt-1 h-[70px]">
+          <div className="space-y-1 mt-1 truncate ...">
             {venue?.attributes?.map((attribute, i) => {
               if (i > maxAttributes) return <></>;
               if (i == maxAttributes)
@@ -76,17 +75,18 @@ export default function VenueMapCard({ venue, index }: VenueMapCardProps) {
         <div className="mt-1 flex items-center pt-1">
           <div className="flex flex-1 justify-between">
             <div className="flex flex-col text-sm text-primary pt-1">
-              <time dateTime={venue.opening_time}>
-                Opening Time {timeFormatter(venue.opening_time)}
-              </time>
-              <time dateTime={venue.closing_time}>
-                Closing Time {timeFormatter(venue.closing_time)}
+              <time dateTime={venue.hours}>
+                {venue.hours.split(";").map((time) => (
+                  <div>{time}</div>
+                ))}
               </time>
             </div>
-            <div
-              className={`${pinColours[index][1]} rounded-full flex items-center justify-center w-11`}
-            >
-              <MapPinIcon className={`w-8 ${pinColours[index][0]}`} />
+            <div className="flex items-center">
+              <div
+                className={`${pinColours[index][1]} h-12 rounded-full flex items-center justify-center w-12`}
+              >
+                <MapPinIcon className={`w-8 ${pinColours[index][0]}`} />
+              </div>
             </div>
           </div>
         </div>

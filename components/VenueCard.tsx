@@ -1,7 +1,6 @@
 import { StarIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import Link from "next/link";
-import timeFormatter from "../helpers/timeFormatter";
 
 interface VenueCardProps {
   venue: Venue;
@@ -73,11 +72,11 @@ export default function VenueCard({ venue }: VenueCardProps) {
           </div>
 
           <div className="flex flex-col text-sm text-primary">
-            <time dateTime={venue.opening_time}>
-              Opening Time {timeFormatter(venue.opening_time)}
-            </time>
-            <time dateTime={venue.closing_time}>
-              Closing Time {timeFormatter(venue.closing_time)}
+            <h3 className="mt-3 text-primary text-lg">Hours</h3>
+            <time dateTime={venue.hours}>
+              {venue.hours.split(";").map((time) => (
+                <div>{time}</div>
+              ))}
             </time>
           </div>
         </div>
