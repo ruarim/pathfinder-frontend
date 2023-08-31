@@ -32,8 +32,8 @@ import Button from "../../components/Button";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAP_BOX_TOKEN;
 const DEFAULT_CENTER_LOCATION = {
-  lat: 51.47513029807826,
-  long: -2.591221556113587,
+  lat: Number(process.env.NEXT_PUBLIC_DEFAULT_LATITUDE) | 0,
+  long: Number(process.env.NEXT_PUBLIC_DEFAULT_LONGITUDE) | 0,
 };
 
 export const pinColours = [
