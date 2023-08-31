@@ -146,6 +146,7 @@ function Picker({
   const [currentIndex, setCurrentIndex] = useState(0);
   const pageSize = 8;
 
+  //@TODO - Filter out attributes that are too long - temporary fix
   const filteredAttributes = attributes.filter(
     (attribute) => attribute.length < 8
   );
